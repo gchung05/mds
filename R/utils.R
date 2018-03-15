@@ -16,11 +16,11 @@ input_param_checker <- function(
     if (length(check_names) > 0){
       if (class(x) == "character"){
         this_class <- lapply(check_names[x], class)
-      } else this_class <- list(class(x))
-    } else this_class <- list(class(x))
-    if (!all(sapply(this_class, function(x) check_class %in% x))){
+      } else this_class <- class(x)
+    } else this_class <- class(x)
+    if (!any(sapply(this_class, function(x) x %in% check_class))){
       stop(paste0(ifelse(class(x) == "character", paste(x, collapse=" "), quote(x)),
-                  " must be of class '", check_class, "'"))
+                  " must be of class '", paste(check_class, collapse=" "), "'"))
     }
   }
   if (length(check_names) > 0){
@@ -31,12 +31,13 @@ input_param_checker <- function(
 }
 
 # Test running
-temp <- readxl::read_excel("E:/Projects/paradoxEgression/data/raw/VOC_CodesCombined_PI_Data_November2015_R2.xlsx")
-names(temp) <- make.names(names(temp))
-temp$Date <- as.Date(temp$Date)
+# s.data <- readxl::read_excel("E:/Projects/paradoxEgression/data/raw/VOC_CodesCombined_PI_Data_November2015_R2.xlsx")
+# names(s.data) <- make.names(names(s.data))
+# s.data$Date <- as.Date(s.data$Date)
 
-device_event_class(temp,
-                   key="Product.Issue.Number",
-                   time="Date",
-                   device_hierarchy=c("Functional.Family", "Product.Family"),
-                   event_hierarchy=c("VOC_New"))
+# test <- mdpmsdataframe(s.data,
+#                        key="Product Issue Number",
+#                        time="Date",
+#                        device_hierarchy=c("Functional Family", "Product Family"),
+#                        event_hierarchy=c("VOC_New"),
+#                        covariates="_all_")

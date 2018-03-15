@@ -1,19 +1,48 @@
-#' Title
+#' MD-PMS Data Frame
 #'
-#' Short description
+#' Converts a data frame into a MD-PMS data frame.
 #'
-#' @param data_frame The input described
+#' @param data_frame The input data frame requiring components specified in the
+#' remaining arguments.
+#' @param key Character name of (uniquely identifying) primary key variable in
+#' \code{data_frame}. Class must be character. Example: \code{"key_ID"}
+#' @param time Character name of date variable in \code{data_frame}. Class must
+#' be Date, POSIXt, or character. Example: \code{"event_date"}
+#' @param device_hierarchy Vector of character variable names representing the
+#' device hierarchy in \code{data_frame}. Vector ordering is lowest level first,
+#' most general level last. Example: \code{c("Version", "Device", "ProductLine")}
+#' @param event_hierarchy Vector of character variable names representing the
+#' event hierarchy in \code{data_frame}. Vector ordering is most specific event
+#' category first, most broad event category last. Example: \code{c("Family",
+#' "Device", "ProductCode")}
+#' @param covariates Default: \code{NULL}. Default behavior includes no
+#' covariates. \code{"_all_"} includes all covariates, assumed to be remaining
+#' variables in \code{data_frame} not already specified in \code{key},
+#' \code{time}, \code{device_hierarchy}, or \code{event_hierarchy}. Otherwise,
+#' a vector of character variable names representing the desired variables to
+#' retain. Example: \code{c("Reporter", "City", "Country")}
 #'
-#' Long description
-#' blah blah blah
-#'
-#' @return The object of something.
+#' @return A standardized MD-PMS data frame of class \code{mdpmsdata}.
+#' Rows are deduplicated. Attributes are as follows:
+#' \describe{
+#'   \item{key}{Original variable name for \code{key}}
+#'   \item{time}{Original variable name for \code{time}}
+#'   \item{device_hierarchy}{Vector of original variable names for
+#'   \code{device_hierarchy} with converted variable names correspondingly
+#'   named.}
+#'   \item{event_hierarchy}{Vector of original variable names for
+#'   \code{event_hierarchy} with converted variable names correspondingly
+#'   named.}
+#'   \item{covariates}{Vector of original variable names for
+#'   \code{covariates} with converted variable names correspondingly
+#'   named.}
+#' }
 #'
 #' @examples
-#' helloworld()
+#' ## Need to write!
 #'
 #' @export
-device_event_class <- function(
+mdpmsdataframe <- function(
   data_frame,
   key,
   time,
@@ -24,7 +53,8 @@ device_event_class <- function(
   # Check parameters
   input_param_checker(data_frame, check_class="data.frame")
   input_param_checker(key, check_class="character", check_names=data_frame)
-  input_param_checker(time, check_class="Date", check_names=data_frame)
+  input_param_checker(time, check_class=c("character", "POSIXt", "Date"),
+                      check_names=data_frame)
   input_param_checker(device_hierarchy, check_class="character",
                       check_names=data_frame)
   input_param_checker(event_hierarchy, check_class="character",
@@ -50,7 +80,7 @@ device_event_class <- function(
   if (is.null(covariates)){
     covs <- NULL
   } else if (covariates == "_all_"){
-    covs <- names(data.frame)[which(!names(data.frame) %in% key_vars)]
+    covs <- names(data_frame)[which(!names(data_frame) %in% key_vars)]
     names(covs) <- make.names(covs)
   } else{
     covs <- covariates
@@ -70,6 +100,8 @@ device_event_class <- function(
   if (!is.null(covs)){
     dataset <- cbind.data.frame(dataset, data.frame(v_cov))
   }
+  dataset <- unique(dataset)
+
   # Save the output class
   out <- structure(dataset,
                    key=key,
@@ -79,6 +111,5 @@ device_event_class <- function(
                    covariates=covs)
   class(out) <- append(class(out), "mdpmsdata")
 
-  print("Hello, world!")
-
+  return(out)
 }

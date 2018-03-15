@@ -7,14 +7,14 @@
 input_param_checker(x, check_class = NULL, check_names = NULL)
 }
 \arguments{
-\item{x}{Object name, character, or vector of characters}
+\item{x}{Single object name, character, or vector of characters}
 
 \item{check_class}{Name of correct class in character format}
 
 \item{check_names}{Optional: Data frame object}
 }
 \value{
-Stop error or nothing
+Stop error, if an error is found. Else nothing.
 }
 \description{
 Verifies correct class and, optionally, verifies existence in a data frame
