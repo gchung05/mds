@@ -4,34 +4,46 @@
 \alias{mdpmsdataframe}
 \title{MD-PMS Data Frame}
 \usage{
-mdpmsdataframe(data_frame, key, time, device_hierarchy, event_hierarchy,
-  covariates = NULL)
+mdpmsdataframe(data_frame, key = NULL, time, device_hierarchy,
+  event_hierarchy, covariates = NULL)
 }
 \arguments{
 \item{data_frame}{The input data frame requiring components specified in the
 remaining arguments.}
 
 \item{key}{Character name of (uniquely identifying) primary key variable in
-\code{data_frame}. Class must be character. Example: \code{key_ID}}
+\code{data_frame}. Class must be character or numeric.
+
+Example: \code{"key_ID"}
+
+Default: \code{NULL} will create a key variable.}
 
 \item{time}{Character name of date variable in \code{data_frame}. Class must
-be Date, POSIXt, or character. Example: \code{event_date}}
+be Date, POSIXt, or character.
+
+Example: \code{"event_date"}}
 
 \item{device_hierarchy}{Vector of character variable names representing the
 device hierarchy in \code{data_frame}. Vector ordering is lowest level first,
-most general level last. Example: \code{c("Version", "Device", "ProductLine")}}
+most general level last.
+
+Example: \code{c("Version", "Device", "ProductLine")}}
 
 \item{event_hierarchy}{Vector of character variable names representing the
 event hierarchy in \code{data_frame}. Vector ordering is most specific event
-category first, most broad event category last. Example: \code{c("Family",
+category first, most broad event category last.
+
+Example: \code{c("Family",
 "Device", "ProductCode")}}
 
-\item{covariates}{Default: \code{NULL}. Default behavior includes no
-covariates. \code{"_all_"} includes all covariates, assumed to be remaining
-variables in \code{data_frame} not already specified in \code{key},
-\code{time}, \code{device_hierarchy}, or \code{event_hierarchy}. Otherwise,
-a vector of character variable names representing the desired variables to
-retain. Example: \code{c("Reporter", "City", "Country")}}
+\item{covariates}{Vector of character variable names representing the
+desired covariates to retain \code{"_all_"} includes all covariates, assumed
+to be remaining variables in \code{data_frame} not already specified in
+\code{key}, \code{time}, \code{device_hierarchy}, or \code{event_hierarchy}.
+
+Example: \code{c("Reporter", "City", "Country")}
+
+Default: \code{NULL} includes no covariates.}
 }
 \value{
 A standardized MD-PMS data frame of class \code{mdpmsdata}.

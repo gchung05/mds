@@ -2,9 +2,10 @@
 % Please edit documentation in R/utils.R
 \name{input_param_checker}
 \alias{input_param_checker}
-\title{Check input parameters}
+\title{Check Input Parameters}
 \usage{
-input_param_checker(x, check_class = NULL, check_names = NULL)
+input_param_checker(x, check_class = NULL, check_names = NULL,
+  null_ok = T)
 }
 \arguments{
 \item{x}{Single object name, character, or vector of characters}
@@ -12,6 +13,9 @@ input_param_checker(x, check_class = NULL, check_names = NULL)
 \item{check_class}{Name of correct class in character format}
 
 \item{check_names}{Optional: Data frame object}
+
+\item{null_ok}{Default: \code{T}. Allow \code{x} to be \code{NULL}. If
+\code{x} is \code{NULL}, bypass checking.}
 }
 \value{
 Stop error, if an error is found. Else nothing.

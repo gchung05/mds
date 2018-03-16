@@ -1,16 +1,19 @@
-#' Check input parameters
+#' Check Input Parameters
 #'
 #' Verifies correct class and, optionally, verifies existence in a data frame
 #'
 #' @param x Single object name, character, or vector of characters
 #' @param check_class Name of correct class in character format
 #' @param check_names Optional: Data frame object
+#' @param null_ok Default: \code{T}. Allow \code{x} to be \code{NULL}. If
+#' \code{x} is \code{NULL}, bypass checking.
 #'
 #' @return Stop error, if an error is found. Else nothing.
 input_param_checker <- function(
   x,
   check_class=NULL,
-  check_names=NULL
+  check_names=NULL,
+  null_ok=T
 ){
   if (length(check_class) > 0){
     if (length(check_names) > 0){
