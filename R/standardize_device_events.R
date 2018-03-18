@@ -77,7 +77,7 @@ deviceevents <- function(
   input_param_checker(event_hierarchy, check_class="character",
                       check_names=data_frame)
   input_param_checker(covariates, check_class="character",
-                      check_names=data_frame)
+                      check_names=data_frame, exclusions="_all_")
   # Key
   if (is.null(key)){
     v_key <- as.character(c(1:nrow(data_frame)))
@@ -103,7 +103,7 @@ deviceevents <- function(
   if (!is.null(key)) key_vars <- c(key, key_vars)
   if (is.null(covariates)){
     covs <- NULL
-  } else if (covariates == "_all_"){
+  } else if (all(covariates == "_all_")){
     covs <- names(data_frame)[which(!names(data_frame) %in% key_vars)]
     names(covs) <- make.names(covs)
   } else{

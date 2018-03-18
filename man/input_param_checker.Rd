@@ -5,17 +5,21 @@
 \title{Check Input Parameters}
 \usage{
 input_param_checker(x, check_class = NULL, check_names = NULL,
-  null_ok = T)
+  null_ok = T, exclusions = NULL)
 }
 \arguments{
 \item{x}{Single object name, character, or vector of characters}
 
-\item{check_class}{Name of correct class in character format}
+\item{check_class}{Vector of correct classes in character format}
 
-\item{check_names}{Optional: Data frame object}
+\item{check_names}{Default: \code{NULL}. Optional data frame to check if
+\code{x} exists in the data frame.}
 
 \item{null_ok}{Default: \code{T}. Allow \code{x} to be \code{NULL}. If
 \code{x} is \code{NULL}, bypass checking.}
+
+\item{exclusions}{Default: \code{NULL}. Optional values that are excluded
+from checking in \code{check_names} (if it is not \code{NULL}).}
 }
 \value{
 Stop error, if an error is found. Else nothing.
