@@ -27,10 +27,18 @@
 #' event hierarchy in \code{data_frame}. Vector ordering is most specific event
 #' category first, most broad event category last.
 #'
-#' Example: \code{c("Family",
-#' "Device", "ProductCode")}
+#' Example: \code{c("Family", "Device", "ProductCode")}
 #'
 #' Default: \code{NULL} will not include any event hierarchy.
+#'
+#' @param match_levels Vector of character variable names in \code{data_frame}
+#' representing additional grouping factors for exposure. Specified variables
+#' will be implicitly matched to equivalently named variables contained in the
+#' \code{mdpms.deviceevents} object class.
+#'
+#' Example: \code{c("Country", "Region")}
+#'
+#' Default: \code{NULL} will not include any additional grouping factors.
 #'
 #' @param count Character name of exposure count variable in \code{data_frame}.
 #' Class must be numeric.
@@ -63,6 +71,7 @@ exposure <- function(
   time,
   device_hierarchy,
   event_hierarchy=NULL,
+  match_levels=NULL,
   count=NULL
 ){
   # Check parameters
@@ -74,6 +83,8 @@ exposure <- function(
   input_param_checker(device_hierarchy, check_class="character",
                       check_names=data_frame)
   input_param_checker(event_hierarchy, check_class="character",
+                      check_names=data_frame)
+  input_param_checker(match_levels, check_class="character",
                       check_names=data_frame)
   input_param_checker(count, check_class="numeric",
                       check_names=data_frame)
@@ -122,6 +133,7 @@ exposure <- function(
                    time=time,
                    device_hierarchy=device_hierarchy,
                    event_hierarchy=event_hierarchy,
+                   match_levels=match_levels,
                    count=count)
   class(out) <- append(class(out), "mdpms.exposure")
 

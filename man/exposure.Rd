@@ -5,7 +5,7 @@
 \title{MD-PMS Exposure Data Frame}
 \usage{
 exposure(data_frame, key = NULL, time, device_hierarchy,
-  event_hierarchy = NULL, count = NULL)
+  event_hierarchy = NULL, match_levels = NULL, count = NULL)
 }
 \arguments{
 \item{data_frame}{The input data frame requiring components specified in the
@@ -33,10 +33,18 @@ Example: \code{c("Version", "Device", "ProductLine")}}
 event hierarchy in \code{data_frame}. Vector ordering is most specific event
 category first, most broad event category last.
 
-Example: \code{c("Family",
-"Device", "ProductCode")}
+Example: \code{c("Family", "Device", "ProductCode")}
 
 Default: \code{NULL} will not include any event hierarchy.}
+
+\item{match_levels}{Vector of character variable names in \code{data_frame}
+representing additional grouping factors for exposure. Specified variables
+will be implicitly matched to equivalently named variables contained in the
+\code{mdpms.deviceevents} object class.
+
+Example: \code{c("Country", "Region")}
+
+Default: \code{NULL} will not include any additional grouping factors.}
 
 \item{count}{Character name of exposure count variable in \code{data_frame}.
 Class must be numeric.
