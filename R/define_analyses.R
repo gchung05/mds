@@ -1,9 +1,7 @@
-#' MD-PMS Device Event Data Frame
+#' Set MD-PMS Analyses Definitions
 #'
-#' Converts a data frame into a MD-PMS Device Event data frame.
-#'
-#' @param data_frame The input data frame requiring components specified in the
-#' remaining arguments.
+#' Define and enumerate analyses based on MS-PMS device-event data frames and
+#' (optionally) MD-PMS exposure data frames.
 #'
 #' @param key Character name of (uniquely identifying) primary key variable in
 #' \code{data_frame}. Class must be character or numeric.
@@ -12,34 +10,8 @@
 #'
 #' Default: \code{NULL} will create a key variable.
 #'
-#' @param time Character name of date variable in \code{data_frame}. Class must
-#' be Date, POSIXt, or character.
-#'
-#' Example: \code{"event_date"}
-#'
-#' @param device_hierarchy Vector of character variable names representing the
-#' device hierarchy in \code{data_frame}. Vector ordering is lowest level first,
-#' most general level last.
-#'
-#' Example: \code{c("Version", "Device", "ProductLine")}
-#'
-#' @param event_hierarchy Vector of character variable names representing the
-#' event hierarchy in \code{data_frame}. Vector ordering is most specific event
-#' category first, most broad event category last.
-#'
-#' Example: \code{c("Event Code", "Event Group")}
-#'
-#' @param covariates Vector of character variable names representing the
-#' desired covariates to retain \code{"_all_"} includes all covariates, assumed
-#' to be remaining variables in \code{data_frame} not already specified in
-#' \code{key}, \code{time}, \code{device_hierarchy}, or \code{event_hierarchy}.
-#'
-#' Example: \code{c("Reporter", "City", "Country")}
-#'
-#' Default: \code{NULL} includes no covariates.
-#'
-#' @return A standardized MD-PMS data frame of class \code{mdpms.deviceevents}.
-#' Rows are deduplicated. Attributes are as follows:
+#' @return A list of defined analyses of class \code{mdpms.analyses}.
+#' Attributes are as follows:
 #' \describe{
 #'   \item{key}{Original variable name for \code{key}}
 #'   \item{time}{Original variable name for \code{time}}
@@ -58,26 +30,54 @@
 #' ## Need to write!
 #'
 #' @export
-deviceevents <- function(
-  data_frame,
-  key=NULL,
-  time,
-  device_hierarchy,
-  event_hierarchy,
-  covariates=NULL
+define_analyses <- function(
+  deviceevents,
+  exposure=NULL,
+  algorithms=NULL,
+  date_level="month",
+  device_levels="device_1",
+  event_levels=NULL,
+  times_to_calc=NULL,
+  prior=NULL
 ){
+  # # What do I want next?
+  # foo(deviceevents=testDE,
+  #     exposure=NULL, # or specify mdpms.exposure object
+  #     algorithms=NULL, # Default NULL just counts, otherwise several keywords
+  #     date_level="month", # Default is month, otherwise day, quarter, semiannual, annual
+  #     device_level=1, # Otherwise specify number > 1
+  #     event_level=1, # Otherwise specify number > 1,
+  #     times_to_calc=NULL, # Null calculates all time, otherwise a number of units at the date level
+  #     prior=NULL # A prior foo object. If specified, will only calculate new stuff (by time). If specified, times_to_calc is ignored.
+  # )
+
+  # Current possible algorithms where count is the default
+  # algos <- c("count", "Shewhart-WE1", "EWMA-WE1", "PRR")
+
+  # Current possible date levels
+  date_levs <- data.frame(month=NA, day=NA, quarter=NA, semiannual=NA,
+                          annual=NA)
+
   # Check parameters
-  input_param_checker(data_frame, check_class="data.frame")
-  input_param_checker(key, check_class=c("character", "numeric"),
-                      check_names=data_frame)
-  input_param_checker(time, check_class=c("character", "POSIXt", "Date"),
-                      check_names=data_frame)
-  input_param_checker(device_hierarchy, check_class="character",
-                      check_names=data_frame)
-  input_param_checker(event_hierarchy, check_class="character",
-                      check_names=data_frame)
-  input_param_checker(covariates, check_class="character",
-                      check_names=data_frame, exclusions="_all_")
+  input_param_checker(deviceevents, check_class="mdpms.deviceevents")
+  input_param_checker(exposure, check_class="mdpms.exposure")
+  # input_param_checker(algorithms, check_class="character",) # WILL NEED TO WORRY ABOUT THIS SOON
+  input_param_checker(date_level, check_class="character",
+                      check_names=date_levs)
+  input_param_checker(device_levels, check_class="character",
+                      check_names=attributes(deviceevents)$device_hierarchy)
+  input_param_checker(event_levels, check_class="character",
+                      check_names=attributes(deviceevents)$event_hierarchy)
+  input_param_checker(times_to_calc, check_class="numeric")
+  input_param_checker(prior, check_class="mdpms.analyses")
+
+  # I AM HERE!!!!!!!!!
+  # enumerate devices, events, exposures
+  # enumerate times
+  # compare to prior
+  # if exposure exists, account for overlap
+  # define output structure
+
   # Key
   if (is.null(key)){
     v_key <- as.character(c(1:nrow(data_frame)))
@@ -133,7 +133,7 @@ deviceevents <- function(
                    device_hierarchy=device_hierarchy,
                    event_hierarchy=event_hierarchy,
                    covariates=covs)
-  class(out) <- append("mdpms.deviceevents", class(out))
+  class(out) <- append(class(out), "mdpms.deviceevents")
 
   return(out)
 }

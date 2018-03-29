@@ -58,6 +58,7 @@
 #'   \item{event_hierarchy}{Vector of original variable names for
 #'   \code{event_hierarchy} with converted variable names correspondingly
 #'   named.}
+#'   \item{match_levels}{Vector of variable names for grouping factors}
 #'   \item{count}{Original variable name for \code{count}}
 #' }
 #'
@@ -135,7 +136,7 @@ exposure <- function(
                    event_hierarchy=event_hierarchy,
                    match_levels=match_levels,
                    count=count)
-  class(out) <- append(class(out), "mdpms.exposure")
+  class(out) <- append("mdpms.exposure", class(out))
 
   return(out)
 }

@@ -37,13 +37,13 @@ testEX <- exposure(
 )
 
 
-# What do I want next?
-foo(deviceevents=testDE,
-    exposure=NULL, # or specify mdpms.exposure object
-    algorithms=NULL, # Default NULL just counts, otherwise several keywords
-    date_level="month", # Default is month, otherwise day, quarter, semiannual, annual
-    device_level=1, # Otherwise specify number > 1
-    event_level=1, # Otherwise specify number > 1,
-    times_to_calc=NULL, # Null calculates all time, otherwise a number of units at the date level
-    prior=NULL # A prior foo object. If specified, will only calculate new stuff (by time)
-)
+# # What do I want next?
+# foo(deviceevents=testDE,
+#     exposure=NULL, # or specify mdpms.exposure object
+#     algorithms=NULL, # Default NULL just counts, otherwise several keywords
+#     date_level="month", # Default is month, otherwise day, quarter, semiannual, annual
+#     device_level=1, # Otherwise specify number > 1
+#     event_level=1, # Otherwise specify number > 1,
+#     times_to_calc=NULL, # Null calculates all time, otherwise a number of units at the date level
+#     prior=NULL # A prior foo object. If specified, will only calculate new stuff (by time)
+# )
