@@ -10,6 +10,8 @@
 #' \code{x} is \code{NULL}, bypass checking.
 #' @param exclusions Default: \code{NULL}. Optional values that are excluded
 #' from checking in \code{check_names} (if it is not \code{NULL}).
+#' @param max_length Default: \code{NULL}. Optional maximum length of \code{x}.
+#' If \code{NULL}, no max length check will occur.
 #'
 #' @return Stop error, if an error is found. Else nothing.
 input_param_checker <- function(
@@ -17,7 +19,8 @@ input_param_checker <- function(
   check_class=NULL,
   check_names=NULL,
   null_ok=T,
-  exclusions=NULL
+  exclusions=NULL,
+  max_length=NULL
 ){
   if (!is.null(exclusions)){
     x <- x[-which(x %in% exclusions)]
@@ -35,8 +38,13 @@ input_param_checker <- function(
       }
     }
     if (length(check_names) > 0){
-      if(!all(x %in% names(check_names))){
+      if (!all(x %in% names(check_names))){
         stop(paste0(x, " names not found in ", check_names))
+      }
+    }
+    if (!is.null(max_length)){
+      if (length(x) > max_length){
+        stop(paste0(x, " cannot exceed maximum length of ", max_length))
       }
     }
   }

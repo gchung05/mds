@@ -65,6 +65,7 @@ Rows are deduplicated. Attributes are as follows:
   \item{event_hierarchy}{Vector of original variable names for
   \code{event_hierarchy} with converted variable names correspondingly
   named.}
+  \item{match_levels}{Vector of variable names for grouping factors}
   \item{count}{Original variable name for \code{count}}
 }
 }

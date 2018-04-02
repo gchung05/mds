@@ -24,7 +24,7 @@ testDE <- deviceevents(
   time="Date",
   device_hierarchy=c("Functional Family", "PRODFAM2", "PRODFAM1"),
   event_hierarchy=c("VOC_New"),
-  covariates=c("Modality", "Country", "MDR.Decision"))
+  covariates=c("Modality", "Country", "MDR Decision"))
 
 # exposure()
 # --------------
