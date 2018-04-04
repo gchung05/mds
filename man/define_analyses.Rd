@@ -5,8 +5,8 @@
 \title{Set MD-PMS Analyses Definitions}
 \usage{
 define_analyses(deviceevents, exposure = NULL, algorithms = NULL,
-  date_level = "month", device_levels = "device_1", event_levels = NULL,
-  times_to_calc = NULL, prior = NULL)
+  date_level = "month", device_level = "device_1", event_level = NULL,
+  covariates = F, times_to_calc = NULL, prior = NULL)
 }
 \arguments{
 \item{key}{Character name of (uniquely identifying) primary key variable in

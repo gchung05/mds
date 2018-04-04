@@ -53,15 +53,26 @@ define_analyses <- function(
   #     prior=NULL # A prior foo object. If specified, will only calculate new stuff (by time). If specified, times_to_calc is ignored.
   # )
 
+  # Testing
+  deviceevents = testDE
+  exposure = testEX
+  algorithms = NULL
+  date_level = "month"
+  device_level="device_1"
+  event_level=NULL
+  covariates=F
+  times_to_calc=NULL
+  prior=NULL
+
   # Current possibles
   # -----------------
   # Algorithms where count is the default
   # algos <- c("count", "Shewhart-WE1", "EWMA-WE1", "PRR")
   # Date levels
-  date_levs <- data.frame(day="", month="", quarter="",
-                          semiannual="", annual="",
-                          stringsAsFactors=F)
-
+  date_levs <- attributes(convert_date(Sys.Date()))$possible_conversions
+  date_levs <- as.data.frame(as.list(rep("", length(date_levs))),
+                             col.names=date_levs,
+                             stringsAsFactors=F)
   # Check parameters
   input_param_checker(deviceevents, check_class="mdpms.deviceevents")
   input_param_checker(exposure, check_class="mdpms.exposure")
@@ -77,24 +88,22 @@ define_analyses <- function(
   input_param_checker(times_to_calc, check_class="numeric", max_length=1)
   input_param_checker(prior, check_class="mdpms.analyses")
 
-  # Testing
-  deviceevents = testDE
-  exposure = testEX
-  algorithms = NULL
-  date_level = "month"
-  device_level="device_1"
-  event_level=NULL
-  covariates=F
-  times_to_calc=NULL
-  prior=NULL
-
-  # MUST DO!!!!!!!!
-  # create date holding variable that converts deviceevents$time to appropriate
-  # date level. then use "date" variable
-
-  # MUST DO
-  # Check for prior. If no prior, filter set by times to calc
-
+  # Filter deviceevents and exposure by times_to_calc if prior is NULL
+  # ------------------------------------------------------------------
+  if (is.null(prior) & !is.null(times_to_calc)){
+    # Get the latest date
+    latest_date <- max(max(deviceevents$time),
+                       dplyr::if_else(is.null(exposure), as.Date("1900-01-01"),
+                                      max(exposure$time)))
+    latest_date <- convert_date(latest_date, date_level)
+    # Calculate the lower cutoff date
+    cutoff_date <- attributes(latest_date)$adder(latest_date, -times_to_calc)
+    # Filter
+    deviceevents <- deviceevents[deviceevents$time >= cutoff_date, ]
+    if (!is.null(exposure)){
+      exposure <- exposure[exposure$time >= cutoff_date, ]
+    }
+  }
 
   # Devices - Enumerate (calculate the rollup level for the last loop)
   # ------------------------------------------------------------------
@@ -146,6 +155,8 @@ define_analyses <- function(
             devDE <- devDE[devDE[[k]] == l, ]
           }
 
+          # I am here!
+
           # Non-Exposure Case
           # -----------------
           # Calculate the acceptable timeframe for analysis
@@ -160,7 +171,6 @@ define_analyses <- function(
           #' then exposure levels are ignored for that variable. In these cases,
           #' all exposures are used to calculate the date windows
 
-          # I am here!
         }
       }
 

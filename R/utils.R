@@ -1,3 +1,6 @@
+#' @importFrom dplyr "%>%"
+#' @importFrom lubridate "%m+%"
+
 #' Check Input Parameters
 #'
 #' Verifies correct class and, optionally, verifies existence in a data frame
@@ -48,4 +51,64 @@ input_param_checker <- function(
       }
     }
   }
+}
+
+#' Convert to Acceptable Date
+#'
+#' Converts a \code{Date} vector into into its equivalent daily, monthly, yearly,
+#' etc... \code{Date} vector.
+#'
+#' @param x Input vector of class \code{Date}.
+#' @param convert_to Default: \code{"month"}. String value indicating the
+#' conversion. Current acceptable conversions are \code{"day"}, \code{"month"},
+#' \code{"quarter"}, \code{"semiannual"}, \code{"annual"}.
+#'
+#' @return Converted \code{Date} vector of class \code{mdpms.Date} with
+#' attributes \code{adder} (function that adds units),
+#' \code{current_conversion}, and \code{possible_conversions}.
+convert_date <- function(
+  x,
+  convert_to="month"
+){
+  # Acceptable conversions
+  converts <- c("day", "month", "quarter", "semiannual", "annual")
+  if (convert_to == converts[1]){
+    # Day
+    this <- x
+    adder <- function(t, n){
+      t + lubridate::ddays(n)
+    }
+    duration <- lubridate::ddays(1)
+  } else if (convert_to == converts[2]){
+    # Month
+    this <- lubridate::floor_date(x, "month")
+    adder <- function(t, n){
+      t %m+% months(n)
+    }
+  } else if (convert_to == converts[3]){
+    # Quarter
+    this <- lubridate::floor_date(x, "quarter")
+    adder <- function(t, n){
+      t %m+% months(3 * n)
+    }
+  } else if (convert_to == converts[2]){
+    # Semiannual
+    this <- lubridate::floor_date(x, "halfyear")
+    adder <- function(t, n){
+      t %m+% months(6 * n)
+    }
+  } else if (convert_to == converts[2]){
+    # Annual
+    this <- lubridate::floor_date(x, "year")
+    adder <- function(t, n){
+      t + lubridate::dyears(n)
+    }
+  }
+  # Save the output class
+  out <- structure(this,
+                   current_conversion=convert_to,
+                   possible_conversions=converts,
+                   adder=adder)
+  class(out) <- append("mdpms.Date", class(out))
+  return(out)
 }
