@@ -1,3 +1,6 @@
+# NEED TO: Allow ability to retain all remaining variables!!!! Not just covariates
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 #' MD-PMS Device Event Data Frame
 #'
 #' Converts a data frame into a MD-PMS Device Event data frame.

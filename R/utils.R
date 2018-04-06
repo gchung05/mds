@@ -55,60 +55,61 @@ input_param_checker <- function(
 
 #' Convert to Acceptable Date
 #'
-#' Converts a \code{Date} vector into into its equivalent daily, monthly, yearly,
+#' Converts a \code{Date} vector into its equivalent daily, monthly, yearly,
 #' etc... \code{Date} vector.
 #'
 #' @param x Input vector of class \code{Date}.
-#' @param convert_to Default: \code{"month"}. String value indicating the
-#' conversion. Current acceptable conversions are \code{"day"}, \code{"month"},
-#' \code{"quarter"}, \code{"semiannual"}, \code{"annual"}.
+#' @param convert_type Default: \code{"months"}. String value indicating the
+#' date type. Possible values are \code{"days"}, \code{"months"}.
+#' @param convert_to_n Default: \code{1}. Numeric value indicating the number of
+#' \code{convert_type}s to convert to.
+#'
+#' Example: \code{convert_type="months"} and \code{convert_to_n=3} indicates a
+#' quarterly conversion.
 #'
 #' @return Converted \code{Date} vector of class \code{mdpms.Date} with
 #' attributes \code{adder} (function that adds units),
-#' \code{current_conversion}, and \code{possible_conversions}.
+#' \code{convert_to_n}, and \code{convert_type}.
 convert_date <- function(
   x,
-  convert_to="month"
+  convert_type="months",
+  convert_to_n=1
 ){
-  # Acceptable conversions
-  converts <- c("day", "month", "quarter", "semiannual", "annual")
-  if (convert_to == converts[1]){
-    # Day
-    this <- x
+  input_param_checker(convert_type, check_class="character",
+                      check_names=char_to_df(c("months", "days")), max_length=1)
+  if (convert_type == "days"){
+    # Days
+    this <- lubridate::floor_date(x, lubridate::days(convert_to_n))
     adder <- function(t, n){
-      t + lubridate::ddays(n)
+      t + lubridate::ddays(convert_to_n * n)
     }
-    duration <- lubridate::ddays(1)
-  } else if (convert_to == converts[2]){
-    # Month
-    this <- lubridate::floor_date(x, "month")
+  } else if (convert_type == "months"){
+    # Months
+    this <- lubridate::floor_date(x, months(convert_to_n))
     adder <- function(t, n){
-      t %m+% months(n)
-    }
-  } else if (convert_to == converts[3]){
-    # Quarter
-    this <- lubridate::floor_date(x, "quarter")
-    adder <- function(t, n){
-      t %m+% months(3 * n)
-    }
-  } else if (convert_to == converts[2]){
-    # Semiannual
-    this <- lubridate::floor_date(x, "halfyear")
-    adder <- function(t, n){
-      t %m+% months(6 * n)
-    }
-  } else if (convert_to == converts[2]){
-    # Annual
-    this <- lubridate::floor_date(x, "year")
-    adder <- function(t, n){
-      t + lubridate::dyears(n)
+      t %m+% months(convert_to_n * n)
     }
   }
   # Save the output class
   out <- structure(this,
-                   current_conversion=convert_to,
-                   possible_conversions=converts,
+                   convert_to_n=convert_to_n,
+                   convert_type=convert_type,
                    adder=adder)
   class(out) <- append("mdpms.Date", class(out))
+  return(out)
+}
+
+#' Character Vector to Header of Empty Data Frame
+#' Converts a character vector into the column names of an empty data frame.
+#' Used in conjunction with \code{check_names} parameter of
+#' \code{input_param_checker()}
+#'
+#' @param x Input character vector.
+#' @return Empty data frame where columns are named \code{x}.
+char_to_df <- function(
+  x
+){
+  out <- as.data.frame(t(matrix(rep("", length(x)))), stringsAsFactors=F)
+  names(out) <- x
   return(out)
 }

@@ -35,7 +35,7 @@ define_analyses <- function(
   exposure=NULL,
   algorithms=NULL,
   date_level="month",
-  device_level="device_1",
+  device_level,
   event_level=NULL,
   covariates=F,
   times_to_calc=NULL,
@@ -45,10 +45,11 @@ define_analyses <- function(
   # foo(deviceevents=testDE,
   #     exposure=NULL, # or specify mdpms.exposure object
   #     algorithms=NULL, # Default NULL just counts, otherwise several keywords
-  #     date_level="month", # Default is month, otherwise day, quarter, semiannual, annual
-  #     device_level=1, # Specify name
+  #     date_level="months", # Default is months, can also be days.
+  #     date_level_n=1, # Default is 1 (1 month).
+  #     device_level, # Specify name of device variable name using the source name
   #     event_level=NULL, # If null, does not aggregate at event level. Otherwise specify name.
-  #     covariates=F, # Boolean stating whether to include analyses at each level of each covariate
+  #     covariates="_none_", # Vector specifying names of covariates to also define analyses for. _all_ indicates all, _none_ is none.
   #     times_to_calc=NULL, # Null calculates all time, otherwise a number of units at the date level, reverse chron
   #     prior=NULL # A prior foo object. If specified, will only calculate new stuff (by time). If specified, times_to_calc is ignored.
   # )
@@ -57,10 +58,11 @@ define_analyses <- function(
   deviceevents = testDE
   exposure = testEX
   algorithms = NULL
-  date_level = "month"
-  device_level="device_1"
+  date_level = "months"
+  date_level_n=1
+  device_level="Functional Family"
   event_level=NULL
-  covariates=F
+  covariates="_none_"
   times_to_calc=NULL
   prior=NULL
 
@@ -68,23 +70,26 @@ define_analyses <- function(
   # -----------------
   # Algorithms where count is the default
   # algos <- c("count", "Shewhart-WE1", "EWMA-WE1", "PRR")
-  # Date levels
-  date_levs <- attributes(convert_date(Sys.Date()))$possible_conversions
-  date_levs <- as.data.frame(as.list(rep("", length(date_levs))),
-                             col.names=date_levs,
-                             stringsAsFactors=F)
+  # Covariates
+  if (covariates == "_none_"){
+    covariates <- NULL
+  } else if (covariates == "_all_"){
+    covariates <- attributes(deviceevents)$covariates
+  }
+
   # Check parameters
   input_param_checker(deviceevents, check_class="mdpms.deviceevents")
   input_param_checker(exposure, check_class="mdpms.exposure")
   # input_param_checker(algorithms, check_class="character",) # WILL NEED TO WORRY ABOUT THIS SOON
-  input_param_checker(date_level, check_class="character",
-                      check_names=date_levs, max_length=1)
+  input_param_checker(date_level_n, check_class="numeric", max_length=1)
   input_param_checker(device_level, check_class="character",
-                      check_names=attributes(deviceevents)$device_hierarchy,
+                      check_names=char_to_df(attributes(deviceevents)$device_hierarchy),
                       max_length=1)
   input_param_checker(event_level, check_class="character",
-                      check_names=attributes(deviceevents)$event_hierarchy,
-                      max_length)
+                      check_names=char_to_df(attributes(deviceevents)$event_hierarchy),
+                      max_length=1)
+  input_param_checker(covariates, check_class="character",
+                      check_names=attributes(deviceevents)$covariates)
   input_param_checker(times_to_calc, check_class="numeric", max_length=1)
   input_param_checker(prior, check_class="mdpms.analyses")
 
@@ -95,7 +100,7 @@ define_analyses <- function(
     latest_date <- max(max(deviceevents$time),
                        dplyr::if_else(is.null(exposure), as.Date("1900-01-01"),
                                       max(exposure$time)))
-    latest_date <- convert_date(latest_date, date_level)
+    latest_date <- convert_date(latest_date, date_level, date_level_n)
     # Calculate the lower cutoff date
     cutoff_date <- attributes(latest_date)$adder(latest_date, -times_to_calc)
     # Filter
@@ -107,7 +112,8 @@ define_analyses <- function(
 
   # Devices - Enumerate (calculate the rollup level for the last loop)
   # ------------------------------------------------------------------
-  uniq_devs <- c(unique(as.character(deviceevents[[device_level]])), "All")
+  dev_lvl <- names(which(attributes(deviceevents)$device_hierarchy == device_level))
+  uniq_devs <- c(unique(as.character(deviceevents[[dev_lvl]])), "All")
   i <- 1
   while (i <= length(uniq_devs)){
     devDE <- deviceevents
@@ -116,16 +122,17 @@ define_analyses <- function(
     if (i == length(uniq_devs)){
       devDE$device <- "All"
     } else{
-      devDE <- devDE[devDE[[device_level]] == uniq_devs[i], ]
-      devDE$device <- devDE[[device_level]]
+      devDE <- devDE[devDE[[dev_lvl]] == uniq_devs[i], ]
+      devDE$device <- devDE[[dev_lvl]]
     }
 
     # Events - Enumerate (calculate the rollup level for the last loop)
     # -----------------------------------------------------------------
-    if (is.null(event_level)){
+    ev_lvl <- names(which(attributes(deviceevents)$event_hierarchy == event_level))
+    if (is.null(ev_lvl)){
       uniq_evts <- c("All")
     } else{
-      uniq_evts <- c(unique(devDE[[event_level]]), "All")
+      uniq_evts <- c(unique(devDE[[ev_lvl]]), "All")
     }
     j <- 1
     while (j <= length(uniq_evts)){
@@ -134,16 +141,16 @@ define_analyses <- function(
       if (j == length(uniq_evts)){
         devDE$event <- "All"
       } else{
-        devDE <- devDE[devDE[[event_level]] == uniq_evts[j], ]
-        devDE$event <- devDE[[event_level]]
+        devDE <- devDE[devDE[[ev_lvl]] == uniq_evts[j], ]
+        devDE$event <- devDE[[ev_lvl]]
       }
 
       # Covariates - Enumerate (calculate the rollup level for the last loop)
       # ---------------------------------------------------------------------
-      if (!covariates){
+      if (is.null(covariates)){
         uniq_covs <- list("Data"="All")
       } else{
-        uniq_covs <- lapply(attributes(devDE)$covariates, function(x){
+        uniq_covs <- lapply(covariates, function(x){
           unique(as.character(devDE[[x]]))
         })
         uniq_covs$Data <- "All"
@@ -155,15 +162,46 @@ define_analyses <- function(
             devDE <- devDE[devDE[[k]] == l, ]
           }
 
-          # I am here!
-
           # Non-Exposure Case
           # -----------------
-          # Calculate the acceptable timeframe for analysis
-          # Save the planned algorithms to use
+          dt_range <- convert_date(range(devDE$time, na.rm=T),
+                               date_level, date_level_n)
+          names(dt_range) <- c("start", "end")
+
+          this <- list(setNames(devDE$device[1], dev_lvl),
+                       setNames(devDE$event[1], ifelse(is.null(ev_lvl), NA,
+                                                       ev_lvl)),
+                       k, l, dt_range, algorithms)
+          names(this) <- c("device_level", "event_level",
+                           "covariate", "covariate_level",
+                           "date_info", "algorithms")
 
           # Exposure Case
           # -------------
+          thes <- exposure
+          # Filter by device
+          if (device_level %in% attributes(exposure)$device_hierarchy){
+            dev_level_e <- names(which(attributes(exposure)$device_hierarchy ==
+                                         device_level))
+            if (devDE$device[1] != "All"){
+              thes <- thes[thes[[dev_level_e]] == devDE$device[1], ]
+            }
+          }
+          # Filter by event
+          if (event_level %in% attributes(exposure)$event_hierarchy){
+            ev_level_e <- names(which(attributes(exposure)$event_hierarchy ==
+                                        event_level))
+            if (devDE$event[1] != "All"){
+              thes <- thes[thes[[ev_level_e]] == devDE$event[1], ]
+            }
+          }
+          # Filter by covariate
+
+          # I am here!
+
+
+          # Calculate the date range based on exposure availability
+
           #' How to handle mismatched levels in exposure?
           #' Assume for any specific level of device, event, covariate, that
           #' exposure must be matched to that specific granularity

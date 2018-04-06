@@ -4,19 +4,24 @@
 \alias{convert_date}
 \title{Convert to Acceptable Date}
 \usage{
-convert_date(x, convert_to = "month")
+convert_date(x, convert_type = "months", convert_to_n = 1)
 }
 \arguments{
 \item{x}{Input vector of class \code{Date}.}
 
-\item{convert_to}{Default: \code{"month"}. String value indicating the
-conversion. Current acceptable conversions are \code{"day"}, \code{"month"},
-\code{"quarter"}, \code{"semiannual"}, \code{"annual"}.}
+\item{convert_type}{Default: \code{"months"}. String value indicating the
+date type. Possible values are \code{"days"}, \code{"months"}.}
+
+\item{convert_to_n}{Default: \code{1}. Numeric value indicating the number of
+\code{convert_type}s to convert to.
+
+Example: \code{convert_type="months"} and \code{convert_to_n=3} indicates a
+quarterly conversion.}
 }
 \value{
 Converted \code{Date} vector of class \code{mdpms.Date} with
-attributes \code{duration} (Lubridate concept), \code{current_conversion},
-and \code{possible_conversions}.
+attributes \code{adder} (function that adds units),
+\code{convert_to_n}, and \code{convert_type}.
 }
 \description{
 Converts a \code{Date} vector into into its equivalent daily, monthly, yearly,
