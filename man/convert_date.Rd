@@ -24,6 +24,6 @@ attributes \code{adder} (function that adds units),
 \code{convert_to_n}, and \code{convert_type}.
 }
 \description{
-Converts a \code{Date} vector into into its equivalent daily, monthly, yearly,
+Converts a \code{Date} vector into its equivalent daily, monthly, yearly,
 etc... \code{Date} vector.
 }

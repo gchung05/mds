@@ -2,40 +2,103 @@
 % Please edit documentation in R/define_analyses.R
 \name{define_analyses}
 \alias{define_analyses}
-\title{Set MD-PMS Analyses Definitions}
+\title{Assess & Save MD-PMS Analyses Definitions}
 \usage{
 define_analyses(deviceevents, exposure = NULL, algorithms = NULL,
-  date_level = "month", device_level = "device_1", event_level = NULL,
-  covariates = F, times_to_calc = NULL, prior = NULL)
+  date_level = "month", device_level, event_level = NULL,
+  covariates = "_none_", times_to_calc = NULL, prior = NULL)
 }
 \arguments{
-\item{key}{Character name of (uniquely identifying) primary key variable in
-\code{data_frame}. Class must be character or numeric.
+\item{deviceevents}{Object of class \code{mdpms.deviceevents}}
 
-Example: \code{"key_ID"}
+\item{exposure}{Optional object of class \code{mdpms.exposure}. See details
+for how exposure analyses definitions are handled.
 
-Default: \code{NULL} will create a key variable.}
+Default: \code{NULL} will not consider inclusion of exposure.}
+
+\item{algorithms}{To write}
+
+\item{date_level}{String value for the primary date unit to analyze by. Can
+be either \code{'months'} or \code{'days'}.
+
+Default: \code{'months'}}
+
+\item{device_level}{String value indicating the source device variable name
+to analyze by.
+
+Example: If the \code{deviceevents} variable column is \code{device_1} where
+the source variable name for \code{device_1} is \code{'Device Code'}, specify
+\code{device_level='Device Code'}.}
+
+\item{event_level}{String value indicating the event variable name in
+\code{deviceevents} to analyze by. Note that \code{event_level} is not
+matched to \code{exposure}.
+
+Default: \code{NULL} will not analyze by event.
+
+Example: \code{"event_1"}}
+
+\item{covariates}{Character vector specifying names of covariates to also
+define analyses for. Acceptable names are covariate variable names from
+\code{deviceevents}. Analyses will be defined for each unique level of each
+covariate. \code{"_none_"} specifies no covariates, while \code{"_all_"}
+specifies all covariates from \code{deviceevents}.
+
+Default: \code{"_none_"} specifies no covariates.
+
+Example: \code{"Country"}}
+
+\item{times_to_calc}{Integer value indicating the number of date units
+counting backwards from the latest date to define analyses for. If
+\code{prior} is specified, \code{times_to_calc} will be ignored.
+
+Default: \code{NULL} will define analyses across all available time.
+
+Example 1: \code{times_to_calc=12} with \code{date_level="months"} and
+\code{date_level_n=1} defines analyses for the last year by month.
+
+Example 2: \code{times_to_calc=8} with \code{date_level="months"} and
+\code{date_level_n=3} defines analyses for the 2 years by quarter.}
+
+\item{prior}{An object of class \code{mdpms.define_analyses} to NEED TO WRITE.}
+
+\item{date_level_n}{Numeric value indicating the number of \code{date_level}s
+to analyze by.
+
+Default: \code{1}
+
+Example: \code{date_level='months'} and \code{date_level_n=3} indicates
+analysis on a quarterly level.}
 }
 \value{
-A list of defined analyses of class \code{mdpms.analyses}.
+A list of defined analyses of class \code{mdpms.define_analyses}.
+Each list item, indexed by a numeric key, defines a set of analyses for a
+unique combination of device, event, and covariate level. Each list item is
+of the class \code{mdpms.define_analysis}.
 Attributes are as follows:
 \describe{
-  \item{key}{Original variable name for \code{key}}
-  \item{time}{Original variable name for \code{time}}
-  \item{device_hierarchy}{Vector of original variable names for
-  \code{device_hierarchy} with converted variable names correspondingly
-  named.}
-  \item{event_hierarchy}{Vector of original variable names for
-  \code{event_hierarchy} with converted variable names correspondingly
-  named.}
-  \item{covariates}{Vector of original variable names for
-  \code{covariates} with converted variable names correspondingly
-  named.}
+  \item{date_level}{Defined value for \code{date_level}}
+  \item{date_level_n}{Defined value for \code{date_level_n}}
+  \item{device_level}{Defined value for \code{device_level}}
+  \item{event_level}{Defined value for \code{event_level}}
+  \item{times_to_calc}{Defined value for \code{times_to_calc}}
+  \item{prior_used}{Boolean for whether \code{prior} was specified.}
+  \item{timestamp}{System time when the analyses were defined.}
 }
 }
 \description{
-Define and enumerate analyses based on MS-PMS device-event data frames and
-(optionally) MD-PMS exposure data frames.
+Define analyses based on an MD-PMS device-event data frame and (optionally)
+an MD-PMS exposure data frame.
+}
+\details{
+The analyses definitions will always include rollup levels for each
+of \code{device_level}, \code{event_level} (if specified), and
+\code{covariates}. These rollup analyses will be indicated by the keyword
+'All', while the rollup of all covariates will be called 'Data'.
+
+If \code{exposure} is specified, any available \code{match_levels} will be
+used to calculate the appropriate timeframe for analyses. The exception are
+the special rollup analyses (see prior paragraph).
 }
 \examples{
 ## Need to write!

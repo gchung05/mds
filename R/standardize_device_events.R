@@ -70,6 +70,7 @@ deviceevents <- function(
   covariates=NULL
 ){
   # Check parameters
+  # ----------------
   input_param_checker(data_frame, check_class="data.frame")
   input_param_checker(key, check_class=c("character", "numeric"),
                       check_names=data_frame)
@@ -81,6 +82,9 @@ deviceevents <- function(
                       check_names=data_frame)
   input_param_checker(covariates, check_class="character",
                       check_names=data_frame, exclusions="_all_")
+
+  # Address each variable
+  # ---------------------
   # Key
   if (is.null(key)){
     v_key <- as.character(c(1:nrow(data_frame)))
@@ -119,7 +123,9 @@ deviceevents <- function(
       v_cov[[names(covs)[i]]] <- data_frame[[covs[i]]]
     }
   }
+
   # Assemble data frame
+  # -------------------
   dataset <- cbind.data.frame(
     data.frame(key=v_key, time=v_time),
     data.frame(v_dev),
@@ -127,9 +133,26 @@ deviceevents <- function(
   if (!is.null(covs)){
     dataset <- cbind.data.frame(dataset, data.frame(v_cov))
   }
+
+  # Cleanup
+  # -------
   # Deduplicate data frame
   dataset <- unique(dataset)
+  # Drop rows with missing required fields
+  # Missing time
+  if (sum(is.na(dataset$time)) > 0){
+    cat("\nDropping", sum(is.na(dataset$time)),
+        "rows with missing time.")
+    dataset <- dplyr::filter(dataset, !is.na(time))
+  }
+  if (sum(is.na(dataset$device_1)) > 0){
+    cat("\nDropping", sum(is.na(dataset$device_1)),
+        "rows with missing lowest level device_hierarchy.")
+    dataset <- dplyr::filter(dataset, !is.na(device_1))
+  }
+
   # Save the output class
+  # ---------------------
   out <- structure(dataset,
                    key=key,
                    time=time,
