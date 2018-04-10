@@ -84,7 +84,8 @@ define_analyses <- function(
   deviceevents,
   exposure=NULL,
   algorithms=NULL,
-  date_level="month",
+  date_level="months",
+  date_level_n=1,
   device_level,
   event_level=NULL,
   covariates="_none_",
@@ -209,7 +210,7 @@ define_analyses <- function(
           # Build list of instructions
           this <- list(device_level,
                        setNames(devDE$device[1], dev_lvl),
-                       setNames(devDE$event[1], ifelse(is.null(ev_lvl), NA,
+                       setNames(devDE$event[1], ifelse(is.null(ev_lvl), "_all_",
                                                        ev_lvl)),
                        k, l, dt_range, algorithms)
           names(this) <- c("device_level_source",
@@ -245,10 +246,12 @@ define_analyses <- function(
             this$date_range_exposure <- dt_range
           } else this$date_range_exposure <- c(as.Date(NA), as.Date(NA))
           # Establish date range if exposure is to be used in analysis
+          # If exposure is not used, date range is the same as device-events
           dt_range <- c(
-            max(c(this$date_range[1], this$date_range_exposure[1]), na.rm=T),
-            min(c(this$date_range[2], this$date_range_exposure[2]), na.rm=T))
+            max(c(this$date_range_de[1], this$date_range_exposure[1]), na.rm=T),
+            min(c(this$date_range_de[2], this$date_range_exposure[2]), na.rm=T))
           dt_range <- convert_date(dt_range, date_level, date_level_n)
+          names(dt_range) <- c("start", "end")
           this$date_range_de_exp <- dt_range
 
           # Finally, save the analysis
@@ -276,6 +279,50 @@ define_analyses <- function(
   class(out) <- append(class(out), "mdpms.define_analyses")
 
   return(out)
+}
+
+
+#' Create Data Frame from Analyses Definitions
+#'
+#' Returns a data frame summarizing all defined analyses from the
+#' \code{mdpms.define_analyses} object.
+#'
+#' @param inlist Object of class \code{mdpms.define_analyses}
+#' @return A data frame with each row repesenting an analysis.
+#' @export
+define_analyses_dataframe <- function(
+  inlist
+){
+  input_param_checker(inlist, check_class="mdpms.define_analyses")
+  all <- data.frame()
+  for(j in 1:length(inlist)){
+    x <- inlist[[j]]
+    for(i in 1:length(x)){
+      if ("factor" %in% class(x[[i]])){
+        x[[i]] <- as.character(x[[i]])
+      }
+      if (length(x[[i]]) > 1){
+        this <- t(as.data.frame(x[i]))
+        if (is.null(colnames(this))){
+          coln <- rep("", length(this))
+        } else coln <- colnames(this)
+        colnames(this) <- paste0(rownames(this), "_", coln)
+      } else if (length(x[[i]]) == 0){
+        x[[i]] <- NA
+      } else{
+        this <- as.data.frame(x[i])
+      }
+      if (exists("out")){
+        out <- cbind.data.frame(out, this)
+      } else{
+        out <- cbind.data.frame(id=j, this)
+      }
+    }
+    all <- rbind.data.frame(all, out)
+    rm(out)
+  }
+  rownames(all) <- c()
+  return(all)
 }
 
 # # Testing

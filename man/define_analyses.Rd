@@ -5,8 +5,9 @@
 \title{Assess & Save MD-PMS Analyses Definitions}
 \usage{
 define_analyses(deviceevents, exposure = NULL, algorithms = NULL,
-  date_level = "month", device_level, event_level = NULL,
-  covariates = "_none_", times_to_calc = NULL, prior = NULL)
+  date_level = "months", date_level_n = 1, device_level,
+  event_level = NULL, covariates = "_none_", times_to_calc = NULL,
+  prior = NULL)
 }
 \arguments{
 \item{deviceevents}{Object of class \code{mdpms.deviceevents}}
@@ -22,6 +23,14 @@ Default: \code{NULL} will not consider inclusion of exposure.}
 be either \code{'months'} or \code{'days'}.
 
 Default: \code{'months'}}
+
+\item{date_level_n}{Numeric value indicating the number of \code{date_level}s
+to analyze by.
+
+Default: \code{1}
+
+Example: \code{date_level='months'} and \code{date_level_n=3} indicates
+analysis on a quarterly level.}
 
 \item{device_level}{String value indicating the source device variable name
 to analyze by.
@@ -61,14 +70,6 @@ Example 2: \code{times_to_calc=8} with \code{date_level="months"} and
 \code{date_level_n=3} defines analyses for the 2 years by quarter.}
 
 \item{prior}{An object of class \code{mdpms.define_analyses} to NEED TO WRITE.}
-
-\item{date_level_n}{Numeric value indicating the number of \code{date_level}s
-to analyze by.
-
-Default: \code{1}
-
-Example: \code{date_level='months'} and \code{date_level_n=3} indicates
-analysis on a quarterly level.}
 }
 \value{
 A list of defined analyses of class \code{mdpms.define_analyses}.
