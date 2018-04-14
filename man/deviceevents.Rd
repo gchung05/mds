@@ -5,7 +5,7 @@
 \title{MD-PMS Device Event Data Frame}
 \usage{
 deviceevents(data_frame, key = NULL, time, device_hierarchy, event_hierarchy,
-  covariates = NULL)
+  covariates = NULL, descriptors = NULL)
 }
 \arguments{
 \item{data_frame}{The input data frame requiring components specified in the
@@ -39,10 +39,23 @@ Example: \code{c("Event Code", "Event Group")}}
 desired covariates to retain \code{"_all_"} includes all covariates, assumed
 to be remaining variables in \code{data_frame} not already specified in
 \code{key}, \code{time}, \code{device_hierarchy}, or \code{event_hierarchy}.
+It is recommended that covariates are categorical.
 
 Example: \code{c("Reporter", "City", "Country")}
 
 Default: \code{NULL} includes no covariates.}
+
+\item{descriptors}{Vector of character variable names representing additional
+descriptive variables that will not be used in any analyses but may be
+recalled or displayed later during individual device-event review.
+\code{"_all_"} includes all remaining variables in \code{data_frame} not
+already specified in \code{key}, \code{time}, \code{device_hierarchy},
+\code{event_hierarchy}, or \code{covariates}. Typical descriptors are
+free text or high-dimensional categoricals.
+
+Example: \code{c("Description", "Notes", "Manufacturing Line")}
+
+Default: \code{NULL} includes no descriptors.}
 }
 \value{
 A standardized MD-PMS data frame of class \code{mdpms.deviceevents}.
@@ -58,6 +71,9 @@ Rows are deduplicated. Attributes are as follows:
   named.}
   \item{covariates}{Vector of original variable names for
   \code{covariates} with converted variable names correspondingly
+  named.}
+  \item{descriptors}{Vector of original variable names for
+  \code{descriptors} with converted variable names correspondingly
   named.}
 }
 }

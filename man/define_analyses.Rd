@@ -4,10 +4,9 @@
 \alias{define_analyses}
 \title{Assess & Save MD-PMS Analyses Definitions}
 \usage{
-define_analyses(deviceevents, exposure = NULL, algorithms = NULL,
-  date_level = "months", date_level_n = 1, device_level,
-  event_level = NULL, covariates = "_none_", times_to_calc = NULL,
-  prior = NULL)
+define_analyses(deviceevents, exposure = NULL, date_level = "months",
+  date_level_n = 1, device_level, event_level = NULL,
+  covariates = "_none_", times_to_calc = NULL, prior = NULL)
 }
 \arguments{
 \item{deviceevents}{Object of class \code{mdpms.deviceevents}}
@@ -16,8 +15,6 @@ define_analyses(deviceevents, exposure = NULL, algorithms = NULL,
 for how exposure analyses definitions are handled.
 
 Default: \code{NULL} will not consider inclusion of exposure.}
-
-\item{algorithms}{To write}
 
 \item{date_level}{String value for the primary date unit to analyze by. Can
 be either \code{'months'} or \code{'days'}.

@@ -1,6 +1,3 @@
-# NEED TO: Allow ability to retain all remaining variables!!!! Not just covariates
-#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
 #' MD-PMS Device Event Data Frame
 #'
 #' Converts a data frame into a MD-PMS Device Event data frame.
@@ -36,10 +33,23 @@
 #' desired covariates to retain \code{"_all_"} includes all covariates, assumed
 #' to be remaining variables in \code{data_frame} not already specified in
 #' \code{key}, \code{time}, \code{device_hierarchy}, or \code{event_hierarchy}.
+#' It is recommended that covariates are categorical.
 #'
 #' Example: \code{c("Reporter", "City", "Country")}
 #'
 #' Default: \code{NULL} includes no covariates.
+#'
+#' @param descriptors Vector of character variable names representing additional
+#' descriptive variables that will not be used in any analyses but may be
+#' recalled or displayed later during individual device-event review.
+#' \code{"_all_"} includes all remaining variables in \code{data_frame} not
+#' already specified in \code{key}, \code{time}, \code{device_hierarchy},
+#' \code{event_hierarchy}, or \code{covariates}. Typical descriptors are
+#' free text or high-dimensional categoricals.
+#'
+#' Example: \code{c("Description", "Notes", "Manufacturing Line")}
+#'
+#' Default: \code{NULL} includes no descriptors.
 #'
 #' @return A standardized MD-PMS data frame of class \code{mdpms.deviceevents}.
 #' Rows are deduplicated. Attributes are as follows:
@@ -55,6 +65,9 @@
 #'   \item{covariates}{Vector of original variable names for
 #'   \code{covariates} with converted variable names correspondingly
 #'   named.}
+#'   \item{descriptors}{Vector of original variable names for
+#'   \code{descriptors} with converted variable names correspondingly
+#'   named.}
 #' }
 #'
 #' @examples
@@ -67,7 +80,8 @@ deviceevents <- function(
   time,
   device_hierarchy,
   event_hierarchy,
-  covariates=NULL
+  covariates=NULL,
+  descriptors=NULL
 ){
   # Check parameters
   # ----------------
@@ -81,6 +95,8 @@ deviceevents <- function(
   input_param_checker(event_hierarchy, check_class="character",
                       check_names=data_frame)
   input_param_checker(covariates, check_class="character",
+                      check_names=data_frame, exclusions="_all_")
+  input_param_checker(descriptors, check_class="character",
                       check_names=data_frame, exclusions="_all_")
 
   # Address each variable
@@ -114,13 +130,29 @@ deviceevents <- function(
     covs <- names(data_frame)[which(!names(data_frame) %in% key_vars)]
     names(covs) <- make.names(covs)
   } else{
-    covs <- covariates
-    names(covs) <- make.names(covs)
+    covs <- setNames(covariates, make.names(covariates))
   }
   if (!is.null(covs)){
     v_cov <- list()
     for (i in c(1:length(covs))){
       v_cov[[names(covs)[i]]] <- data_frame[[covs[i]]]
+    }
+  }
+  # Descriptors
+  key_vars <- c(time, device_hierarchy, event_hierarchy)
+  if (!is.null(covs)) key_vars <- c(key_vars, covs)
+  if (is.null(descriptors)){
+    dscr <- NULL
+  } else if (all(descriptors == "_all_")){
+    dscr <- names(data_frame)[which(!names(data_frame) %in% key_vars)]
+    names(dscr) <- make.names(dscr)
+  } else{
+    dscr <- setNames(descriptors, make.names(descriptors))
+  }
+  if (!is.null(dscr)){
+    v_dsc <- list()
+    for (i in c(1:length(dscr))){
+      v_dsc[[names(dscr)[i]]] <- data_frame[[dscr[i]]]
     }
   }
 
@@ -130,9 +162,8 @@ deviceevents <- function(
     data.frame(key=v_key, time=v_time),
     data.frame(v_dev),
     data.frame(v_ev))
-  if (!is.null(covs)){
-    dataset <- cbind.data.frame(dataset, data.frame(v_cov))
-  }
+  if (!is.null(covs)) dataset <- cbind.data.frame(dataset, data.frame(v_cov))
+  if (!is.null(dscr)) dataset <- cbind.data.frame(dataset, data.frame(v_dsc))
 
   # Cleanup
   # -------
@@ -158,7 +189,8 @@ deviceevents <- function(
                    time=time,
                    device_hierarchy=device_hierarchy,
                    event_hierarchy=event_hierarchy,
-                   covariates=covs)
+                   covariates=covs,
+                   descriptors=dscr)
   class(out) <- append("mdpms.deviceevents", class(out))
 
   return(out)

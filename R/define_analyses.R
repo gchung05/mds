@@ -8,7 +8,6 @@
 #' for how exposure analyses definitions are handled.
 #'
 #' Default: \code{NULL} will not consider inclusion of exposure.
-#' @param algorithms To write
 #' @param date_level String value for the primary date unit to analyze by. Can
 #' be either \code{'months'} or \code{'days'}.
 #'
@@ -83,7 +82,6 @@
 define_analyses <- function(
   deviceevents,
   exposure=NULL,
-  algorithms=NULL,
   date_level="months",
   date_level_n=1,
   device_level,
@@ -94,12 +92,10 @@ define_analyses <- function(
 ){
   # Current possibles
   # -----------------
-  # Algorithms where count is the default
-  # algos <- c("count", "Shewhart-WE1", "EWMA-WE1", "PRR")
   # Covariates
-  if (covariates == "_none_"){
+  if (all(covariates == "_none_")){
     covariates <- NULL
-  } else if (covariates == "_all_"){
+  } else if (all(covariates == "_all_")){
     covariates <- names(attributes(deviceevents)$covariates)
   }
 
@@ -107,7 +103,6 @@ define_analyses <- function(
   # ----------------
   input_param_checker(deviceevents, check_class="mdpms.deviceevents")
   input_param_checker(exposure, check_class="mdpms.exposure")
-  # input_param_checker(algorithms, check_class="character",) # WILL NEED TO WORRY ABOUT THIS SOON
   input_param_checker(date_level_n, check_class="numeric", max_length=1)
   input_param_checker(device_level, check_class="character",
                       check_names=char_to_df(
@@ -127,9 +122,10 @@ define_analyses <- function(
   # ------------------------------------------------------------------
   if (is.null(prior) & !is.null(times_to_calc)){
     # Get the latest date
-    latest_date <- max(max(deviceevents$time),
-                       dplyr::if_else(is.null(exposure), as.Date("1900-01-01"),
-                                      max(exposure$time)))
+    if (is.null(exposure)){
+      max2 <- as.Date("1900-01-01")
+    } else max2 <- max(exposure$time)
+    latest_date <- max(max(deviceevents$time), max2)
     latest_date <- convert_date(latest_date, date_level, date_level_n)
     # Calculate the lower cutoff date
     cutoff_date <- attributes(latest_date)$adder(latest_date, -times_to_calc)
@@ -196,27 +192,28 @@ define_analyses <- function(
       # ---------------------------------------------------------------------
       for (k in names(uniq_covs)){
         for (l in uniq_covs[[k]]){
+
           # Filter for the current covariate level
           if (paste(k, l) != "Data All"){
-            devDE <- devDE[devDE[[k]] == l, ]
+            devCO <- devDE[devDE[[k]] == l, ]
           }
 
           # Non-Exposure Case
           # -----------------
           # Establish date range
-          dt_range <- convert_date(range(devDE$time, na.rm=T),
+          dt_range <- convert_date(range(devCO$time, na.rm=T),
                                date_level, date_level_n)
           names(dt_range) <- c("start", "end")
           # Build list of instructions
           this <- list(device_level,
-                       setNames(devDE$device[1], dev_lvl),
-                       setNames(devDE$event[1], ifelse(is.null(ev_lvl), "_all_",
+                       setNames(devCO$device[1], dev_lvl),
+                       setNames(devCO$event[1], ifelse(is.null(ev_lvl), "_all_",
                                                        ev_lvl)),
-                       k, l, dt_range, algorithms)
+                       k, l, dt_range)
           names(this) <- c("device_level_source",
                            "device_level", "event_level",
                            "covariate", "covariate_level",
-                           "date_range_de", "algorithms")
+                           "date_range_de")
 
           # Exposure Case
           # -------------
@@ -318,6 +315,17 @@ define_analyses_dataframe <- function(
         out <- cbind.data.frame(id=j, this)
       }
     }
+    # If column names are not equal, use the more descriptive set of names
+    ncall <- nchar(paste(names(all), collapse=""))
+    ncout <- nchar(paste(names(out), collapse=""))
+    if (nrow(all) > 0){
+      if (ncall > ncout){
+        names(out) <- names(all)
+      } else if (ncout > ncall){
+        names(all) <- names(out)
+      }
+    }
+    # Combine
     all <- rbind.data.frame(all, out)
     rm(out)
   }
@@ -328,7 +336,6 @@ define_analyses_dataframe <- function(
 # # Testing
 # deviceevents = testDE
 # exposure = testEX
-# algorithms = NULL
 # date_level = "months"
 # date_level_n=1
 # device_level="Functional Family"
@@ -336,3 +343,7 @@ define_analyses_dataframe <- function(
 # covariates="_none_"
 # times_to_calc=NULL
 # prior=NULL
+
+# # Debug
+# browser()
+# cat("\n",devDE$device[1],devDE$event[1],k,l)

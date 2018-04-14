@@ -1,8 +1,6 @@
 # TESTS
 # +++++
 
-
-
 # Read in complaints
 s.data <- readxl::read_excel("E:/Projects/paradoxEgression/data/raw/VOC_CodesCombined_PI_Data_November2015_R2.xlsx")
 # Read in sales
@@ -10,21 +8,14 @@ s.exp <- readxl::read_excel("E:/Projects/paradoxEgression/data/raw/VOC_Complaint
 
 # deviceevents()
 # --------------
-# All covars
-# testDE <- deviceevents(s.data,
-#                        key="Product Issue Number",
-#                        time="Date",
-#                        device_hierarchy=c("Functional Family", "Product Family"),
-#                        event_hierarchy=c("VOC_New"),
-#                        covariates="_all_")
-# Only a few
 testDE <- deviceevents(
   s.data,
   key="Product Issue Number",
   time="Date",
   device_hierarchy=c("Functional Family", "PRODFAM2", "PRODFAM1"),
   event_hierarchy=c("VOC_New"),
-  covariates=c("Modality", "Country", "MDR Decision"))
+  covariates=c("Modality", "Country", "MDR Decision"),
+  descriptors=c("Product Qty Involved", "Product Code"))
 
 # exposure()
 # --------------
@@ -38,9 +29,15 @@ testEX <- exposure(
 
 # define analyses
 # ---------------
+options(warn=2)
+options(warn=1)
 testDA <- define_analyses(
   testDE,
-  device_level="Functional Family"
+  testEX,
+  date_level_n=3,
+  device_level="Functional Family",
+  covariates=c("Modality"),
+  times_to_calc=12
 )
 testDAdf <- define_analyses_dataframe(testDA)
 
