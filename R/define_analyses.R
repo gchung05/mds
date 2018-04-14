@@ -227,14 +227,14 @@ define_analyses <- function(
             thes <- thes[thes[[dev_level_e]] == as.character(this$device_level), ]
           }
           # Filter by event
-          # <A possible future feature, if requested.>
+          # .... <A possible future feature, if requested.>
           # Filter for the current covariate level
           if (nrow(thes) > 0 &
               this$covariate != "Data" &
               this$covariate %in% attributes(exposure)$match_levels){
             thes <- thes[thes[[this$covariate]] ==
                            as.character(this$covariate_level), ]
-          }
+          } else if (paste(k, l) != "Data All") thes <- data.frame()
           # Establish exposure date range, if exposure data exists
           if (nrow(thes) > 0){
             dt_range <- convert_date(range(thes$time, na.rm=T),
@@ -295,11 +295,14 @@ define_analyses_dataframe <- function(
   for(j in 1:length(inlist)){
     x <- inlist[[j]]
     for(i in 1:length(x)){
+      date_flag <- F
       if ("factor" %in% class(x[[i]])){
         x[[i]] <- as.character(x[[i]])
+      } else if ("Date" %in% class(x[[i]])){
+        date_flag <- T
       }
       if (length(x[[i]]) > 1){
-        this <- t(as.data.frame(x[i]))
+        this <- data.frame(t(data.frame(x[i])), stringsAsFactors=F)
         if (is.null(colnames(this))){
           coln <- rep("", length(this))
         } else coln <- colnames(this)
@@ -307,7 +310,10 @@ define_analyses_dataframe <- function(
       } else if (length(x[[i]]) == 0){
         x[[i]] <- NA
       } else{
-        this <- as.data.frame(x[i])
+        this <- data.frame(x[i], stringsAsFactors=F)
+      }
+      if (date_flag){
+        this <- do.call("cbind.data.frame", lapply(this, as.Date))
       }
       if (exists("out")){
         out <- cbind.data.frame(out, this)
@@ -326,11 +332,37 @@ define_analyses_dataframe <- function(
       }
     }
     # Combine
-    all <- rbind.data.frame(all, out)
+    all <- rbind.data.frame(all, out, stringsAsFactors=F)
     rm(out)
   }
   rownames(all) <- c()
   return(all)
+}
+
+#' @export
+summary.mdpms.define_analyses <- function(
+  inlist
+){
+  input_param_checker(inlist, check_class="mdpms.define_analyses")
+  df <- define_analyses_dataframe(inlist)
+  counts <- setNames(c(length(inlist),
+                       length(unique(df$device_level)),
+                       length(unique(df$event_level)),
+                       length(unique(df$covariate))),
+                     c('Number of Analyses',
+                       'Device Levels',
+                       'Event Levels',
+                       'Covariates'))
+  date_ranges <- data.frame(
+    'Data'=c('Device-Event', 'Exposure', 'Both'),
+    'Start'=c(fNA(df$date_range_de_start, min),
+              fNA(df$date_range_exposure_start, min),
+              fNA(df$date_range_de_exp_start, min)),
+    'End'=c(fNA(df$date_range_de_end, max),
+            fNA(df$date_range_exposure_end, max),
+            fNA(df$date_range_de_exp_end, max)))
+  list('Analyses Counts'=counts,
+       'Date Ranges'=date_ranges)
 }
 
 # # Testing

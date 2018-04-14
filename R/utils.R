@@ -81,13 +81,13 @@ convert_date <- function(
     # Days
     this <- lubridate::floor_date(x, lubridate::days(convert_to_n))
     adder <- function(t, n){
-      t + lubridate::ddays(convert_to_n * n)
+      lubridate::ymd(t) + lubridate::ddays(convert_to_n * n)
     }
   } else if (convert_type == "months"){
     # Months
     this <- lubridate::floor_date(x, months(convert_to_n))
     adder <- function(t, n){
-      t %m+% months(convert_to_n * n)
+      lubridate::ymd(t) %m+% months(convert_to_n * n)
     }
   }
   # Save the output class
@@ -112,4 +112,13 @@ char_to_df <- function(
   out <- as.data.frame(t(matrix(rep("", length(x)))), stringsAsFactors=F)
   names(out) <- x
   return(out)
+}
+
+#' Min and Max functions that allow all to be NA, where f is min or max
+fNA <- function(x, f){
+  if (all(is.na(x))){
+    NA
+  } else{
+    f(x, na.rm=T)
+  }
 }

@@ -27,17 +27,20 @@ testEX <- exposure(
   count="TotalUnits"
 )
 
-# define analyses
-# ---------------
+# define_analyses()
+# define_analyses_dataframe()
+# summary.mdpms.define_analyses()
+# -------------------------------
 options(warn=2)
 options(warn=1)
 testDA <- define_analyses(
   testDE,
   testEX,
-  date_level_n=3,
+  date_level="months",
+  date_level_n=1,
   device_level="Functional Family",
   covariates=c("Modality"),
-  times_to_calc=12
+  times_to_calc=6
 )
 testDAdf <- define_analyses_dataframe(testDA)
-
+summary(testDA)
