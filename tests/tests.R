@@ -31,16 +31,23 @@ testEX <- exposure(
 # define_analyses_dataframe()
 # summary.mdpms.define_analyses()
 # -------------------------------
-options(warn=2)
-options(warn=1)
+# options(warn=2)
+# options(warn=1)
 testDA <- define_analyses(
   testDE,
   testEX,
   date_level="months",
-  date_level_n=1,
+  date_level_n=3,
   device_level="Functional Family",
   covariates=c("Modality"),
   times_to_calc=6
 )
 testDAdf <- define_analyses_dataframe(testDA)
 summary(testDA)
+
+ # time_series()
+# -------------
+time_series(
+  testDA,
+  testDE,
+  testEX)

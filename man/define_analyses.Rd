@@ -36,13 +36,14 @@ Example: If the \code{deviceevents} variable column is \code{device_1} where
 the source variable name for \code{device_1} is \code{'Device Code'}, specify
 \code{device_level='Device Code'}.}
 
-\item{event_level}{String value indicating the event variable name in
-\code{deviceevents} to analyze by. Note that \code{event_level} is not
-matched to \code{exposure}.
+\item{event_level}{String value indicating the source event variable name to
+analyze by. Note that \code{event_level} is not matched to \code{exposure}.
 
 Default: \code{NULL} will not analyze by event.
 
-Example: \code{"event_1"}}
+Example: If the \code{deviceevents} variable column is \code{event_1} where
+the source variable name for \code{event_1} is \code{'Event Code'}, specify
+\code{event_level='Event Code'}.}
 
 \item{covariates}{Character vector specifying names of covariates to also
 define analyses for. Acceptable names are covariate variable names from
