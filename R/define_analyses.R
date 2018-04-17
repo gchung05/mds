@@ -54,7 +54,9 @@
 #'
 #' Example 2: \code{times_to_calc=8} with \code{date_level="months"} and
 #' \code{date_level_n=3} defines analyses for the 2 years by quarter.
+#'
 #' @param prior An object of class \code{mdpms.define_analyses} to NEED TO WRITE.
+#'
 #' @return A list of defined analyses of class \code{mdpms.define_analyses}.
 #' Each list item, indexed by a numeric key, defines a set of analyses for a
 #' unique combination of device, event, and covariate level. Each list item is

@@ -12,8 +12,8 @@
 #'
 #' Default: \code{NULL} will create a key variable.
 #'
-#' @param time Character name of date variable in \code{data_frame}. Class must
-#' be Date, POSIXt, or character.
+#' @param time Character name of date variable in \code{data_frame}
+#' corresponding to the event. Class must be Date, POSIXt, or character.
 #'
 #' Example: \code{"event_date"}
 #'
@@ -47,9 +47,19 @@
 #' \code{event_hierarchy}, or \code{covariates}. Typical descriptors are
 #' free text or high-dimensional categoricals.
 #'
-#' Example: \code{c("Description", "Notes", "Manufacturing Line")}
+#' Example: \code{c("Description", "Unique Device Identifier")}
 #'
 #' Default: \code{NULL} includes no descriptors.
+#'
+#' @param implant_days Character name of integer variable in \code{data_frame}
+#' representing the days in vivo of the device at the time of the event
+#' (\code{time}). More generally, this represents days of exposure of the device
+#' at the time of the event.
+#'
+#' Example: \code{"Implant Days"}. For example, a value of \code{45} indicates
+#' that the implant was in vivo for 45 days at the time of the event.
+#'
+#' Default: \code{NULL} indicates this variable will not be used.
 #'
 #' @return A standardized MD-PMS data frame of class \code{mdpms.deviceevents}.
 #' Rows are deduplicated. Attributes are as follows:
@@ -81,7 +91,8 @@ deviceevents <- function(
   device_hierarchy,
   event_hierarchy,
   covariates=NULL,
-  descriptors=NULL
+  descriptors=NULL,
+  implant_days=NULL
 ){
   # Check parameters
   # ----------------
@@ -98,6 +109,8 @@ deviceevents <- function(
                       check_names=data_frame, exclusions="_all_")
   input_param_checker(descriptors, check_class="character",
                       check_names=data_frame, exclusions="_all_")
+  input_param_checker(implant_days, check_class="numeric",
+                      check_names=data_frame, max_length=1)
 
   # Address each variable
   # ---------------------
@@ -155,6 +168,10 @@ deviceevents <- function(
       v_dsc[[names(dscr)[i]]] <- data_frame[[dscr[i]]]
     }
   }
+  # Implant Days
+  if (!is.null(implant_days)){
+    v_iday <- list(implant_days=data_frame[[implant_days]])
+  }
 
   # Assemble data frame
   # -------------------
@@ -162,6 +179,8 @@ deviceevents <- function(
     data.frame(key=v_key, time=v_time),
     data.frame(v_dev),
     data.frame(v_ev))
+  if (!is.null(implant_days)) dataset <- cbind.data.frame(dataset,
+                                                          data.frame(v_iday))
   if (!is.null(covs)) dataset <- cbind.data.frame(dataset, data.frame(v_cov))
   if (!is.null(dscr)) dataset <- cbind.data.frame(dataset, data.frame(v_dsc))
 
@@ -172,13 +191,13 @@ deviceevents <- function(
   # Drop rows with missing required fields
   # Missing time
   if (sum(is.na(dataset$time)) > 0){
-    cat("\nDropping", sum(is.na(dataset$time)),
-        "rows with missing time.")
+    warning(paste("Dropping", sum(is.na(dataset$time)),
+                  "rows with missing time."))
     dataset <- dplyr::filter(dataset, !is.na(time))
   }
   if (sum(is.na(dataset$device_1)) > 0){
-    cat("\nDropping", sum(is.na(dataset$device_1)),
-        "rows with missing lowest level device_hierarchy.")
+    warning(paste("Dropping", sum(is.na(dataset$device_1)),
+                  "rows with missing lowest level device_hierarchy."))
     dataset <- dplyr::filter(dataset, !is.na(device_1))
   }
 
@@ -190,7 +209,8 @@ deviceevents <- function(
                    device_hierarchy=device_hierarchy,
                    event_hierarchy=event_hierarchy,
                    covariates=covs,
-                   descriptors=dscr)
+                   descriptors=dscr,
+                   implant_days=implant_days)
   class(out) <- append("mdpms.deviceevents", class(out))
 
   return(out)

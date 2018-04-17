@@ -122,3 +122,17 @@ fNA <- function(x, f){
     f(x, na.rm=T)
   }
 }
+
+#' Return next level up device
+next_dev <- function(
+  x
+){
+  paste0("device_", as.numeric(gsub("device_", "", x)) + 1)
+}
+
+#' Return next level up event
+next_ev <- function(
+  x
+){
+  paste0("event_", as.numeric(gsub("event_", "", x)) + 1)
+}
