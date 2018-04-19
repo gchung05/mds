@@ -47,7 +47,7 @@ summary(testDA)
 
  # time_series()
 # -------------
-time_series(
+testTS <- time_series(
   testDA,
-  testDE,
-  testEX)
+  deviceevents=testDE,
+  exposure=testEX)

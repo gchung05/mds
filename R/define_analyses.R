@@ -3,8 +3,8 @@
 #' Define analyses based on an MD-PMS device-event data frame and (optionally)
 #' an MD-PMS exposure data frame.
 #'
-#' @param deviceevents Object of class \code{mdpms.deviceevents}
-#' @param exposure Optional object of class \code{mdpms.exposure}. See details
+#' @param deviceevents A device-events object of class \code{mds_de}
+#' @param exposure Optional exposure object of class \code{mds_e}. See details
 #' for how exposure analyses definitions are handled.
 #'
 #' Default: \code{NULL} will not consider inclusion of exposure.
@@ -55,12 +55,12 @@
 #' Example 2: \code{times_to_calc=8} with \code{date_level="months"} and
 #' \code{date_level_n=3} defines analyses for the 2 years by quarter.
 #'
-#' @param prior An object of class \code{mdpms.define_analyses} to NEED TO WRITE.
+#' @param prior An object of class \code{mds_das} to NEED TO WRITE.
 #'
-#' @return A list of defined analyses of class \code{mdpms.define_analyses}.
+#' @return A list of defined analyses of class \code{mds_das}.
 #' Each list item, indexed by a numeric key, defines a set of analyses for a
 #' unique combination of device, event, and covariate level. Each list item is
-#' of the class \code{mdpms.define_analysis}.
+#' of the class \code{mds_da}.
 #' Attributes are as follows:
 #' \describe{
 #'   \item{date_level}{Defined value for \code{date_level}}
@@ -105,8 +105,8 @@ define_analyses <- function(
 
   # Check parameters
   # ----------------
-  input_param_checker(deviceevents, check_class="mdpms.deviceevents")
-  input_param_checker(exposure, check_class="mdpms.exposure")
+  input_param_checker(deviceevents, check_class="mds_de")
+  input_param_checker(exposure, check_class="mds_e")
   input_param_checker(date_level_n, check_class="numeric", max_length=1)
   input_param_checker(device_level, check_class="character",
                       check_names=char_to_df(
@@ -120,7 +120,7 @@ define_analyses <- function(
                       check_names=char_to_df(
                         names(attributes(deviceevents)$covariates)))
   input_param_checker(times_to_calc, check_class="numeric", max_length=1)
-  input_param_checker(prior, check_class="mdpms.analyses")
+  input_param_checker(prior, check_class=c("mds_da", "mds_das"))
 
   # Filter deviceevents and exposure by times_to_calc if prior is NULL
   # ------------------------------------------------------------------
@@ -200,7 +200,7 @@ define_analyses <- function(
           # Filter for the current covariate level
           if (paste(k, l) != "Data All"){
             devCO <- devDE[devDE[[k]] == l, ]
-          }
+          } else devCO <- devDE
 
           # Non-Exposure Case
           # -----------------
@@ -269,7 +269,7 @@ define_analyses <- function(
 
           # Finally, save the analysis
           # --------------------------
-          class(this) <- append(class(this), "mdpms.define_analysis")
+          class(this) <- append(class(this), "mds_da")
           out[[z]] <- this
           z <- z + 1
         }
@@ -289,7 +289,7 @@ define_analyses <- function(
                    times_to_calc=times_to_calc,
                    prior_used=!is.null(prior),
                    timestamp=Sys.time())
-  class(out) <- append(class(out), "mdpms.define_analyses")
+  class(out) <- append(class(out), "mds_das")
 
   return(out)
 }
@@ -298,15 +298,15 @@ define_analyses <- function(
 #' Create Data Frame from Analyses Definitions
 #'
 #' Returns a data frame summarizing all defined analyses from the
-#' \code{mdpms.define_analyses} object.
+#' \code{mds_das} object.
 #'
-#' @param inlist Object of class \code{mdpms.define_analyses}
+#' @param inlist Object of class \code{mds_das}
 #' @return A data frame with each row repesenting an analysis.
 #' @export
 define_analyses_dataframe <- function(
   inlist
 ){
-  input_param_checker(inlist, check_class="mdpms.define_analyses")
+  input_param_checker(inlist, check_class="mds_das")
   all <- data.frame()
   for(j in 1:length(inlist)){
     x <- inlist[[j]]
@@ -356,10 +356,10 @@ define_analyses_dataframe <- function(
 }
 
 #' @export
-summary.mdpms.define_analyses <- function(
+summary.mds_das <- function(
   inlist
 ){
-  input_param_checker(inlist, check_class="mdpms.define_analyses")
+  input_param_checker(inlist, check_class="mds_das")
   df <- define_analyses_dataframe(inlist)
   counts <- setNames(c(length(inlist),
                        nrow(df[!is.na(df[["date_range_exposure_start"]]), ]),

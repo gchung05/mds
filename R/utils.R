@@ -95,7 +95,7 @@ convert_date <- function(
                    convert_to_n=convert_to_n,
                    convert_type=convert_type,
                    adder=adder)
-  class(out) <- append("mdpms.Date", class(out))
+  class(out) <- append("mds_Date", class(out))
   return(out)
 }
 

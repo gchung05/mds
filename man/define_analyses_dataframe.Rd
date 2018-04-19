@@ -7,12 +7,12 @@
 define_analyses_dataframe(inlist)
 }
 \arguments{
-\item{inlist}{Object of class \code{mdpms.define_analyses}}
+\item{inlist}{Object of class \code{mds_das}}
 }
 \value{
 A data frame with each row repesenting an analysis.
 }
 \description{
 Returns a data frame summarizing all defined analyses from the
-\code{mdpms.define_analyses} object.
+\code{mds_das} object.
 }

@@ -5,7 +5,7 @@
 \title{MD-PMS Device Event Data Frame}
 \usage{
 deviceevents(data_frame, key = NULL, time, device_hierarchy, event_hierarchy,
-  covariates = NULL, descriptors = NULL)
+  covariates = NULL, descriptors = NULL, implant_days = NULL)
 }
 \arguments{
 \item{data_frame}{The input data frame requiring components specified in the
@@ -18,8 +18,8 @@ Example: \code{"key_ID"}
 
 Default: \code{NULL} will create a key variable.}
 
-\item{time}{Character name of date variable in \code{data_frame}. Class must
-be Date, POSIXt, or character.
+\item{time}{Character name of date variable in \code{data_frame}
+corresponding to the event. Class must be Date, POSIXt, or character.
 
 Example: \code{"event_date"}}
 
@@ -53,12 +53,22 @@ already specified in \code{key}, \code{time}, \code{device_hierarchy},
 \code{event_hierarchy}, or \code{covariates}. Typical descriptors are
 free text or high-dimensional categoricals.
 
-Example: \code{c("Description", "Notes", "Manufacturing Line")}
+Example: \code{c("Description", "Unique Device Identifier")}
 
 Default: \code{NULL} includes no descriptors.}
+
+\item{implant_days}{Character name of integer variable in \code{data_frame}
+representing the days in vivo of the device at the time of the event
+(\code{time}). More generally, this represents days of exposure of the device
+at the time of the event.
+
+Example: \code{"Implant Days"}. For example, a value of \code{45} indicates
+that the implant was in vivo for 45 days at the time of the event.
+
+Default: \code{NULL} indicates this variable will not be used.}
 }
 \value{
-A standardized MD-PMS data frame of class \code{mdpms.deviceevents}.
+A standardized MD-PMS data frame of class \code{mds_de}.
 Rows are deduplicated. Attributes are as follows:
 \describe{
   \item{key}{Original variable name for \code{key}}

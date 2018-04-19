@@ -9,9 +9,9 @@ define_analyses(deviceevents, exposure = NULL, date_level = "months",
   covariates = "_none_", times_to_calc = NULL, prior = NULL)
 }
 \arguments{
-\item{deviceevents}{Object of class \code{mdpms.deviceevents}}
+\item{deviceevents}{A device-events object of class \code{mds_de}}
 
-\item{exposure}{Optional object of class \code{mdpms.exposure}. See details
+\item{exposure}{Optional exposure object of class \code{mds_e}. See details
 for how exposure analyses definitions are handled.
 
 Default: \code{NULL} will not consider inclusion of exposure.}
@@ -67,13 +67,13 @@ Example 1: \code{times_to_calc=12} with \code{date_level="months"} and
 Example 2: \code{times_to_calc=8} with \code{date_level="months"} and
 \code{date_level_n=3} defines analyses for the 2 years by quarter.}
 
-\item{prior}{An object of class \code{mdpms.define_analyses} to NEED TO WRITE.}
+\item{prior}{An object of class \code{mds_das} to NEED TO WRITE.}
 }
 \value{
-A list of defined analyses of class \code{mdpms.define_analyses}.
+A list of defined analyses of class \code{mds_das}.
 Each list item, indexed by a numeric key, defines a set of analyses for a
 unique combination of device, event, and covariate level. Each list item is
-of the class \code{mdpms.define_analysis}.
+of the class \code{mds_da}.
 Attributes are as follows:
 \describe{
   \item{date_level}{Defined value for \code{date_level}}

@@ -34,7 +34,7 @@
 #' @param match_levels Vector of character variable names in \code{data_frame}
 #' representing additional grouping factors for exposure. Specified variables
 #' will be implicitly matched to equivalently named variables contained in the
-#' \code{mdpms.deviceevents} object class.
+#' \code{mds_de} object class.
 #'
 #' Example: \code{c("Country", "Region")}
 #'
@@ -47,7 +47,7 @@
 #'
 #' Default: \code{NULL} will assume each row represents one exposure.
 #'
-#' @return A standardized MD-PMS data frame of class \code{mdpms.exposure}.
+#' @return A standardized MD-PMS data frame of class \code{mds_e}.
 #' Rows are deduplicated. Attributes are as follows:
 #' \describe{
 #'   \item{key}{Original variable name for \code{key}}
@@ -163,7 +163,7 @@ exposure <- function(
                    event_hierarchy=event_hierarchy,
                    match_levels=match_levels,
                    count=count)
-  class(out) <- append("mdpms.exposure", class(out))
+  class(out) <- append("mds_e", class(out))
 
   return(out)
 }

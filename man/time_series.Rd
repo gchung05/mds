@@ -2,31 +2,24 @@
 % Please edit documentation in R/time_series.R
 \name{time_series}
 \alias{time_series}
-\title{Generate Time Series from Defined Analyses}
+\title{Generate Time Series from Defined Analysis or Analyses}
 \usage{
-time_series(inlist, deviceevents, exposure = NULL)
+time_series(x, ...)
 }
 \arguments{
-\item{inlist}{Character name of (uniquely identifying) primary key variable in
-\code{data_frame}. Class must be character or numeric.
+\item{x}{An object of class \code{mds_da} or \code{mds_das}.}
 
-Example: \code{"key_ID"}
-
-Default: \code{NULL} will create a key variable.}
+\item{...}{Further arguments passed onto \code{time_series} methods,
+primarily \code{time_series.mds_da()}.}
 }
 \value{
-A standardized MD-PMS data frame of class \code{mdpms.deviceevents}.
-Rows are deduplicated. Attributes are as follows:
-\describe{
-  \item{key}{Original variable name for \code{key}}
-}
+A time series object or list of time series objects.
 }
 \description{
-Converts defined analyses into a time series data frame. Accepts both
-a collection of analyses (Class \code{mdpms.define_analyses}) or a single
-analysis (Class \code{mdpms.define_analysis}).
+Generic function for calculating time series. See
+\code{\link{time_series.mds_da}} or \code{\link{time_series.mds_das}} as
+applicable.
 }
-\examples{
-## Need to write!
-
+\seealso{
+\code{\link{time_series.mds_da}}, \code{\link{time_series.mds_das}}
 }

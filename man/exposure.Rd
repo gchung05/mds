@@ -40,7 +40,7 @@ Default: \code{NULL} will not include any event hierarchy.}
 \item{match_levels}{Vector of character variable names in \code{data_frame}
 representing additional grouping factors for exposure. Specified variables
 will be implicitly matched to equivalently named variables contained in the
-\code{mdpms.deviceevents} object class.
+\code{mds_de} object class.
 
 Example: \code{c("Country", "Region")}
 
@@ -54,7 +54,7 @@ Example: \code{"Units Sold"}
 Default: \code{NULL} will assume each row represents one exposure.}
 }
 \value{
-A standardized MD-PMS data frame of class \code{mdpms.exposure}.
+A standardized MD-PMS data frame of class \code{mds_e}.
 Rows are deduplicated. Attributes are as follows:
 \describe{
   \item{key}{Original variable name for \code{key}}

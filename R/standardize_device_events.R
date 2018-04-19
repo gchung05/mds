@@ -61,7 +61,7 @@
 #'
 #' Default: \code{NULL} indicates this variable will not be used.
 #'
-#' @return A standardized MD-PMS data frame of class \code{mdpms.deviceevents}.
+#' @return A standardized MD-PMS data frame of class \code{mds_de}.
 #' Rows are deduplicated. Attributes are as follows:
 #' \describe{
 #'   \item{key}{Original variable name for \code{key}}
@@ -211,7 +211,7 @@ deviceevents <- function(
                    covariates=covs,
                    descriptors=dscr,
                    implant_days=implant_days)
-  class(out) <- append("mdpms.deviceevents", class(out))
+  class(out) <- append("mds_de", class(out))
 
   return(out)
 }
