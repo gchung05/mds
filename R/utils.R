@@ -1,6 +1,3 @@
-#' @importFrom dplyr "%>%"
-#' @importFrom lubridate "%m+%"
-
 #' Check Input Parameters
 #'
 #' Verifies correct class and, optionally, verifies existence in a data frame
@@ -87,7 +84,7 @@ convert_date <- function(
     # Months
     this <- lubridate::floor_date(x, months(convert_to_n))
     adder <- function(t, n){
-      lubridate::ymd(t) %m+% months(convert_to_n * n)
+      lubridate::add_with_rollback(lubridate::ymd(t), months(convert_to_n * n))
     }
   }
   # Save the output class

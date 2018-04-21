@@ -4,10 +4,10 @@
 \alias{time_series.mds_das}
 \title{Generate Time Series from Defined Analyses}
 \usage{
-\method{time_series}{mds_das}(analyses, ...)
+\method{time_series}{mds_das}(analysis, ...)
 }
 \arguments{
-\item{analyses}{An object of class \code{mds_das}.}
+\item{analysis}{An object of class \code{mds_das}.}
 
 \item{...}{Further arguments passed into \code{\link{time_series.mds_da}}.}
 }

@@ -26,12 +26,7 @@ time_series.mds_das <- function(
   analysis,
   ...
 ){
-  # Check parameters
-  # ----------------
-  input_param_checker(analysis, check_class=c("mds_das"))
-
   # Create list
-  # -----------
   out <- list()
   for(i in 1:length(analysis)){
     out[[i]] <- time_series(analysis=analysis[[i]], ...)
@@ -116,7 +111,6 @@ time_series.mds_da <- function(
 ){
   # Check parameters
   # ----------------
-  input_param_checker(analysis, check_class=c("mds_da"))
   input_param_checker(deviceevents, check_class="mds_de")
   input_param_checker(exposure, check_class="mds_e")
 
