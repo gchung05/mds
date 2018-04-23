@@ -5,13 +5,6 @@
 #' @param data_frame The input data frame requiring components specified in the
 #' remaining arguments.
 #'
-#' @param key Character name of (uniquely identifying) primary key variable in
-#' \code{data_frame}. Class must be character or numeric.
-#'
-#' Example: \code{"key_ID"}
-#'
-#' Default: \code{NULL} will create a key variable.
-#'
 #' @param time Character name of date variable in \code{data_frame}
 #' corresponding to the event. Class must be Date, POSIXt, or character.
 #'
@@ -28,6 +21,13 @@
 #' category first, most broad event category last.
 #'
 #' Example: \code{c("Event Code", "Event Group")}
+#'
+#' @param key Character name of (uniquely identifying) primary key variable in
+#' \code{data_frame}. Class must be character or numeric.
+#'
+#' Example: \code{"key_ID"}
+#'
+#' Default: \code{NULL} will create a key variable.
 #'
 #' @param covariates Vector of character variable names representing the
 #' desired covariates to retain \code{"_all_"} includes all covariates, assumed
@@ -81,15 +81,25 @@
 #' }
 #'
 #' @examples
-#' ## Need to write!
+#' # A barebones dataset
+#' de <- deviceevent(maude, "date_received", "device_name", "event_type")
+#' # With more variables and variable types
+#' a1 <- deviceevent(
+#' data_frame=maude,
+#' time="date_received",
+#' device_hierarchy=c("device_name", "device_class"),
+#' event_hierarchy=c("event_type", "medical_specialty_description"),
+#' key="report_number",
+#' covariates=c("region"),
+#' descriptors="_all_")
 #'
 #' @export
-deviceevents <- function(
+deviceevent <- function(
   data_frame,
-  key=NULL,
   time,
   device_hierarchy,
   event_hierarchy,
+  key=NULL,
   covariates=NULL,
   descriptors=NULL,
   implant_days=NULL
@@ -153,7 +163,8 @@ deviceevents <- function(
   }
   # Descriptors
   key_vars <- c(time, device_hierarchy, event_hierarchy)
-  if (!is.null(covs)) key_vars <- c(key_vars, covs)
+  if (!is.null(key)) key_vars <- c(key, key_vars)
+  if (!is.null(covs)) key_vars <- c(covs, key_vars)
   if (is.null(descriptors)){
     dscr <- NULL
   } else if (all(descriptors == "_all_")){
@@ -176,13 +187,15 @@ deviceevents <- function(
   # Assemble data frame
   # -------------------
   dataset <- cbind.data.frame(
-    data.frame(key=v_key, time=v_time),
+    data.frame(key=v_key, time=v_time, stringsAsFactors=F),
     data.frame(v_dev),
     data.frame(v_ev))
   if (!is.null(implant_days)) dataset <- cbind.data.frame(dataset,
                                                           data.frame(v_iday))
   if (!is.null(covs)) dataset <- cbind.data.frame(dataset, data.frame(v_cov))
-  if (!is.null(dscr)) dataset <- cbind.data.frame(dataset, data.frame(v_dsc))
+  if (!is.null(dscr)) dataset <- cbind.data.frame(dataset,
+                                                  data.frame(v_dsc,
+                                                             stringsAsFactors=F))
 
   # Cleanup
   # -------
@@ -204,10 +217,10 @@ deviceevents <- function(
   # Save the output class
   # ---------------------
   out <- structure(dataset,
-                   key=key,
                    time=time,
                    device_hierarchy=device_hierarchy,
                    event_hierarchy=event_hierarchy,
+                   key=key,
                    covariates=covs,
                    descriptors=dscr,
                    implant_days=implant_days)
