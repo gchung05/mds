@@ -85,23 +85,23 @@ test_that("output shape is as expected", {
 })
 
 test_that("input variable matches mapped output variable", {
-  expect_equal(as.character(a1$key[1:10]), maude$report_number[1:10])
-  expect_equal(gsub("-", "", as.character(lubridate::ymd(a1$time[1:10]))),
-               maude$date_received[1:10])
-  expect_equal(as.character(a1$device_1[1:10]), maude$device_name[1:10])
-  expect_equal(as.character(a1$device_2[1:10]), maude$device_class[1:10])
-  expect_equal(as.character(a1$event_1[1:10]), maude$event_type[1:10])
-  expect_equal(as.character(a1$event_2[1:10]),
-               maude$medical_specialty_description[1:10])
-  expect_equal(as.character(a1$region[1:10]), maude$region[1:10])
-  expect_equal(a1$product_problem_flag[1:10], maude$product_problem_flag[1:10])
-  expect_equal(a1$adverse_event_flag[1:10], maude$adverse_event_flag[1:10])
-  expect_equal(a1$report_source_code[1:10], maude$report_source_code[1:10])
-  expect_equal(a1$lot_number[1:10], maude$lot_number[1:10])
-  expect_equal(a1$model_number[1:10], maude$model_number[1:10])
-  expect_equal(a1$manufacturer_d_name[1:10], maude$manufacturer_d_name[1:10])
-  expect_equal(a1$manufacturer_d_country[1:10], maude$manufacturer_d_country[1:10])
-  expect_equal(a1$brand_name[1:10], maude$brand_name[1:10])
+  expect_equal(as.character(a1$key), maude$report_number)
+  expect_equal(gsub("-", "", as.character(lubridate::ymd(a1$time))),
+               maude$date_received)
+  expect_equal(as.character(a1$device_1), maude$device_name)
+  expect_equal(as.character(a1$device_2), maude$device_class)
+  expect_equal(as.character(a1$event_1), maude$event_type)
+  expect_equal(as.character(a1$event_2),
+               maude$medical_specialty_description)
+  expect_equal(as.character(a1$region), maude$region)
+  expect_equal(a1$product_problem_flag, maude$product_problem_flag)
+  expect_equal(a1$adverse_event_flag, maude$adverse_event_flag)
+  expect_equal(a1$report_source_code, maude$report_source_code)
+  expect_equal(a1$lot_number, maude$lot_number)
+  expect_equal(a1$model_number, maude$model_number)
+  expect_equal(a1$manufacturer_d_name, maude$manufacturer_d_name)
+  expect_equal(a1$manufacturer_d_country, maude$manufacturer_d_country)
+  expect_equal(a1$brand_name, maude$brand_name)
   expect_equal(PdescriptorsV[which(!PdescriptorsV %in% names(a1))], character(0))
 })
 

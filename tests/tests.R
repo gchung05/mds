@@ -1,10 +1,10 @@
-# # TESTS
-# # +++++
-#
-# # TAKE 1-----------------------------------------------------------
+# TESTS
+# +++++
+
+# # # TAKE 1-----------------------------------------------------------
 # # deviceevents()
 # # --------------
-# testDE <- deviceevents(
+# testDE <- deviceevent(
 #   maude,
 #   key="report_number",
 #   time="date_received",
@@ -29,8 +29,8 @@
 # # -------------------------------
 # testDA <- define_analyses(
 #   testDE,
-#   testEX,
 #   device_level="device_name",
+#   exposure=testEX,
 #   covariates=c("region")
 # )
 # testDAdf <- define_analyses_dataframe(testDA)
@@ -58,7 +58,7 @@
 #
 # # deviceevents()
 # # --------------
-# testDE <- deviceevents(
+# testDE <- deviceevent(
 #   s.data,
 #   key="Product Issue Number",
 #   time="Date",

@@ -4,12 +4,28 @@
 \alias{define_analyses}
 \title{Assess & Save MD-PMS Analyses Definitions}
 \usage{
-define_analyses(deviceevents, exposure = NULL, date_level = "months",
-  date_level_n = 1, device_level, event_level = NULL,
+define_analyses(deviceevents, device_level, event_level = NULL,
+  exposure = NULL, date_level = "months", date_level_n = 1,
   covariates = "_none_", times_to_calc = NULL, prior = NULL)
 }
 \arguments{
 \item{deviceevents}{A device-events object of class \code{mds_de}}
+
+\item{device_level}{String value indicating the source device variable name
+to analyze by.
+
+Example: If the \code{deviceevents} variable column is \code{device_1} where
+the source variable name for \code{device_1} is \code{'Device Code'}, specify
+\code{device_level='Device Code'}.}
+
+\item{event_level}{String value indicating the source event variable name to
+analyze by. Note that \code{event_level} is not matched to \code{exposure}.
+
+Default: \code{NULL} will not analyze by event.
+
+Example: If the \code{deviceevents} variable column is \code{event_1} where
+the source variable name for \code{event_1} is \code{'Event Code'}, specify
+\code{event_level='Event Code'}.}
 
 \item{exposure}{Optional exposure object of class \code{mds_e}. See details
 for how exposure analyses definitions are handled.
@@ -28,22 +44,6 @@ Default: \code{1}
 
 Example: \code{date_level='months'} and \code{date_level_n=3} indicates
 analysis on a quarterly level.}
-
-\item{device_level}{String value indicating the source device variable name
-to analyze by.
-
-Example: If the \code{deviceevents} variable column is \code{device_1} where
-the source variable name for \code{device_1} is \code{'Device Code'}, specify
-\code{device_level='Device Code'}.}
-
-\item{event_level}{String value indicating the source event variable name to
-analyze by. Note that \code{event_level} is not matched to \code{exposure}.
-
-Default: \code{NULL} will not analyze by event.
-
-Example: If the \code{deviceevents} variable column is \code{event_1} where
-the source variable name for \code{event_1} is \code{'Event Code'}, specify
-\code{event_level='Event Code'}.}
 
 \item{covariates}{Character vector specifying names of covariates to also
 define analyses for. Acceptable names are covariate variable names from
@@ -67,7 +67,7 @@ Example 1: \code{times_to_calc=12} with \code{date_level="months"} and
 Example 2: \code{times_to_calc=8} with \code{date_level="months"} and
 \code{date_level_n=3} defines analyses for the 2 years by quarter.}
 
-\item{prior}{An object of class \code{mds_das} to NEED TO WRITE.}
+\item{prior}{Future placeholder, currently not used.}
 }
 \value{
 A list of defined analyses of class \code{mds_das}.
@@ -100,6 +100,27 @@ used to calculate the appropriate timeframe for analyses. The exception are
 the special rollup analyses (see prior paragraph).
 }
 \examples{
-## Need to write!
+# Device-Events
+de <- deviceevent(
+  data_frame=maude,
+  time="date_received",
+  device_hierarchy=c("device_name", "device_class"),
+  event_hierarchy=c("event_type", "medical_specialty_description"),
+  key="report_number",
+  covariates=c("region"),
+  descriptors="_all_")
+# Exposures
+ex <- exposure(
+  data_frame=sales,
+  time="sales_month",
+  device_hierarchy="device_name",
+  match_levels="region",
+  count="sales_volume")
+# Defined Analyses - Simple example
+da <- define_analyses(de, "device_name")
+# Defined Analyses - Simple example with a quarterly analysis
+da <- define_analyses(de, "device_name", date_level_n=3)
+# Defined Analyses - Example with event type, exposures, and covariates
+da <- define_analyses(de, "device_name", "event_type", ex, covariates="region")
 
 }

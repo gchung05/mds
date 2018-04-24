@@ -63,28 +63,36 @@
 #' }
 #'
 #' @examples
-#' ## Need to write!
+#' # A barebones dataset
+#' ex <- exposure(sales, "sales_month", "device_name")
+#' # With more variables and variable types
+#' ex <- exposure(
+#'   data_frame=sales,
+#'   time="sales_month",
+#'   device_hierarchy="device_name",
+#'   match_levels="region",
+#'   count="sales_volume")
 #'
 #' @export
 exposure <- function(
   data_frame,
-  key=NULL,
   time,
   device_hierarchy,
   event_hierarchy=NULL,
+  key=NULL,
   match_levels=NULL,
   count=NULL
 ){
   # Check parameters
   # ----------------
   input_param_checker(data_frame, check_class="data.frame")
-  input_param_checker(key, check_class=c("character", "numeric"),
-                      check_names=data_frame)
   input_param_checker(time, check_class=c("character", "POSIXt", "Date"),
                       check_names=data_frame)
   input_param_checker(device_hierarchy, check_class="character",
                       check_names=data_frame)
   input_param_checker(event_hierarchy, check_class="character",
+                      check_names=data_frame)
+  input_param_checker(key, check_class=c("character", "numeric"),
                       check_names=data_frame)
   input_param_checker(match_levels, check_class="character",
                       check_names=data_frame)
@@ -93,12 +101,6 @@ exposure <- function(
 
   # Address each variable
   # ---------------------
-  # Key
-  if (is.null(key)){
-    v_key <- as.character(c(1:nrow(data_frame)))
-  } else{
-    v_key <- as.character(data_frame[[key]])
-  }
   # Time
   v_time <- as.Date(parsedate::parse_date(data_frame[[time]]))
   # Device Hierarchy
@@ -115,6 +117,19 @@ exposure <- function(
       v_ev[[names(event_hierarchy)[i]]] <- data_frame[[event_hierarchy[i]]]
     }
   }
+  # Key
+  if (is.null(key)){
+    v_key <- as.character(c(1:nrow(data_frame)))
+  } else{
+    v_key <- as.character(data_frame[[key]])
+  }
+  # Match Levels
+  if (!is.null(match_levels)){
+    v_ml <- list()
+    for (i in c(1:length(match_levels))){
+      v_ml[[match_levels[i]]] <- data_frame[[match_levels[i]]]
+    }
+  }
   # Count
   if (is.null(count)){
     ct <- c("count"=NA)
@@ -127,10 +142,13 @@ exposure <- function(
   # Assemble data frame
   # -------------------
   dataset <- cbind.data.frame(
-    data.frame(key=v_key, time=v_time, count=v_ct),
+    data.frame(key=v_key, time=v_time, count=v_ct, stringsAsFactors=F),
     data.frame(v_dev))
   if (!is.null(event_hierarchy)){
     dataset <- cbind.data.frame(dataset, data.frame(v_ev))
+  }
+  if (!is.null(match_levels)){
+    dataset <- cbind.data.frame(dataset, data.frame(v_ml))
   }
 
   # Cleanup
@@ -157,10 +175,10 @@ exposure <- function(
   # Save the output class
   # ---------------------
   out <- structure(dataset,
-                   key=key,
                    time=time,
                    device_hierarchy=device_hierarchy,
                    event_hierarchy=event_hierarchy,
+                   key=key,
                    match_levels=match_levels,
                    count=count)
   class(out) <- append("mds_e", class(out))

@@ -4,21 +4,6 @@
 #' an MD-PMS exposure data frame.
 #'
 #' @param deviceevents A device-events object of class \code{mds_de}
-#' @param exposure Optional exposure object of class \code{mds_e}. See details
-#' for how exposure analyses definitions are handled.
-#'
-#' Default: \code{NULL} will not consider inclusion of exposure.
-#' @param date_level String value for the primary date unit to analyze by. Can
-#' be either \code{'months'} or \code{'days'}.
-#'
-#' Default: \code{'months'}
-#' @param date_level_n Numeric value indicating the number of \code{date_level}s
-#' to analyze by.
-#'
-#' Default: \code{1}
-#'
-#' Example: \code{date_level='months'} and \code{date_level_n=3} indicates
-#' analysis on a quarterly level.
 #' @param device_level String value indicating the source device variable name
 #' to analyze by.
 #'
@@ -34,6 +19,21 @@
 #' the source variable name for \code{event_1} is \code{'Event Code'}, specify
 #' \code{event_level='Event Code'}.
 #'
+#' @param exposure Optional exposure object of class \code{mds_e}. See details
+#' for how exposure analyses definitions are handled.
+#'
+#' Default: \code{NULL} will not consider inclusion of exposure.
+#' @param date_level String value for the primary date unit to analyze by. Can
+#' be either \code{'months'} or \code{'days'}.
+#'
+#' Default: \code{'months'}
+#' @param date_level_n Numeric value indicating the number of \code{date_level}s
+#' to analyze by.
+#'
+#' Default: \code{1}
+#'
+#' Example: \code{date_level='months'} and \code{date_level_n=3} indicates
+#' analysis on a quarterly level.
 #' @param covariates Character vector specifying names of covariates to also
 #' define analyses for. Acceptable names are covariate variable names from
 #' \code{deviceevents}. Analyses will be defined for each unique level of each
@@ -55,7 +55,7 @@
 #' Example 2: \code{times_to_calc=8} with \code{date_level="months"} and
 #' \code{date_level_n=3} defines analyses for the 2 years by quarter.
 #'
-#' @param prior An object of class \code{mds_das} to NEED TO WRITE.
+#' @param prior Future placeholder, currently not used.
 #'
 #' @return A list of defined analyses of class \code{mds_das}.
 #' Each list item, indexed by a numeric key, defines a set of analyses for a
@@ -80,16 +80,37 @@
 #' used to calculate the appropriate timeframe for analyses. The exception are
 #' the special rollup analyses (see prior paragraph).
 #' @examples
-#' ## Need to write!
+#' # Device-Events
+#' de <- deviceevent(
+#'   data_frame=maude,
+#'   time="date_received",
+#'   device_hierarchy=c("device_name", "device_class"),
+#'   event_hierarchy=c("event_type", "medical_specialty_description"),
+#'   key="report_number",
+#'   covariates=c("region"),
+#'   descriptors="_all_")
+#' # Exposures
+#' ex <- exposure(
+#'   data_frame=sales,
+#'   time="sales_month",
+#'   device_hierarchy="device_name",
+#'   match_levels="region",
+#'   count="sales_volume")
+#' # Defined Analyses - Simple example
+#' da <- define_analyses(de, "device_name")
+#' # Defined Analyses - Simple example with a quarterly analysis
+#' da <- define_analyses(de, "device_name", date_level_n=3)
+#' # Defined Analyses - Example with event type, exposures, and covariates
+#' da <- define_analyses(de, "device_name", "event_type", ex, covariates="region")
 #'
 #' @export
 define_analyses <- function(
   deviceevents,
+  device_level,
+  event_level=NULL,
   exposure=NULL,
   date_level="months",
   date_level_n=1,
-  device_level,
-  event_level=NULL,
   covariates="_none_",
   times_to_calc=NULL,
   prior=NULL
@@ -114,13 +135,18 @@ define_analyses <- function(
                       max_length=1)
   input_param_checker(event_level, check_class="character",
                       check_names=char_to_df(
-                        names(attributes(deviceevents)$event_hierarchy)),
+                        attributes(deviceevents)$event_hierarchy),
                       max_length=1)
   input_param_checker(covariates, check_class="character",
                       check_names=char_to_df(
                         names(attributes(deviceevents)$covariates)))
   input_param_checker(times_to_calc, check_class="numeric", max_length=1)
   input_param_checker(prior, check_class=c("mds_da", "mds_das"))
+  if (!is.null(times_to_calc)){
+    if (times_to_calc < 1 | (times_to_calc %% 1 != 0)){
+      stop("times_to_calc must be positive integer")
+    }
+  }
 
   # Filter deviceevents and exposure by times_to_calc if prior is NULL
   # ------------------------------------------------------------------
@@ -165,17 +191,18 @@ define_analyses <- function(
     if (is.null(ev_lvl)){ # Set rollup level
       uniq_evts <- c("All")
     } else{
-      uniq_evts <- c(unique(devDE[[ev_lvl]]), "All")
+      uniq_evts <- c(as.character(unique(devDE[[ev_lvl]])), "All")
     }
     j <- 1
     while (j <= length(uniq_evts)){
+      devDEev <- devDE
       # Filter for the current event
       # event is a holding variable
       if (j == length(uniq_evts)){ # Set rollup level
-        devDE$event <- "All"
+        devDEev$event <- "All"
       } else{
-        devDE <- devDE[devDE[[ev_lvl]] == uniq_evts[j], ]
-        devDE$event <- devDE[[ev_lvl]]
+        devDEev <- devDEev[devDEev[[ev_lvl]] == uniq_evts[j], ]
+        devDEev$event <- devDEev[[ev_lvl]]
       }
 
       # Covariates - Enumerate (calculate the rollup level for the last loop)
@@ -185,7 +212,7 @@ define_analyses <- function(
         uniq_covs <- list("Data"="All")
       } else{
         uniq_covs <- lapply(covariates, function(x){
-          this <- unique(as.character(devDE[[x]]))
+          this <- unique(as.character(devDEev[[x]]))
           this <- this[!is.na(this)]
         })
         names(uniq_covs) <- covariates
@@ -196,11 +223,10 @@ define_analyses <- function(
       # ---------------------------------------------------------------------
       for (k in names(uniq_covs)){
         for (l in uniq_covs[[k]]){
-
           # Filter for the current covariate level
           if (paste(k, l) != "Data All"){
-            devCO <- devDE[devDE[[k]] == l, ]
-          } else devCO <- devDE
+            devCO <- devDEev[devDEev[[k]] == l, ]
+          } else devCO <- devDEev
 
           # Non-Exposure Case
           # -----------------
@@ -389,21 +415,7 @@ summary.mds_das <- function(
     'End'=c(fNA(df$date_range_de_end, max),
             fNA(df$date_range_exposure_end, max),
             fNA(df$date_range_de_exp_end, max)))
-  list('Analyses Counts'=counts,
+  list('Analyses Timestamp'=attributes(object)$timestamp,
+       'Analyses Counts'=counts,
        'Date Ranges'=date_ranges)
 }
-
-# # Testing
-# deviceevents = testDE
-# exposure = testEX
-# date_level = "months"
-# date_level_n=1
-# device_level="Functional Family"
-# event_level=NULL
-# covariates="_none_"
-# times_to_calc=NULL
-# prior=NULL
-
-# # Debug
-# browser()
-# cat("\n",devDE$device[1],devDE$event[1],k,l)

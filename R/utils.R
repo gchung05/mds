@@ -74,6 +74,9 @@ convert_date <- function(
 ){
   input_param_checker(convert_type, check_class="character",
                       check_names=char_to_df(c("months", "days")), max_length=1)
+  if (convert_to_n < 1 | (convert_to_n %% 1 != 0)){
+    stop("convert_to_n must be positive integer")
+  }
   if (convert_type == "days"){
     # Days
     this <- lubridate::floor_date(x, lubridate::days(convert_to_n))

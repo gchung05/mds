@@ -4,19 +4,12 @@
 \alias{exposure}
 \title{MD-PMS Exposure Data Frame}
 \usage{
-exposure(data_frame, key = NULL, time, device_hierarchy,
-  event_hierarchy = NULL, match_levels = NULL, count = NULL)
+exposure(data_frame, time, device_hierarchy, event_hierarchy = NULL,
+  key = NULL, match_levels = NULL, count = NULL)
 }
 \arguments{
 \item{data_frame}{The input data frame requiring components specified in the
 remaining arguments.}
-
-\item{key}{Character name of (uniquely identifying) primary key variable in
-\code{data_frame}. Class must be character or numeric.
-
-Example: \code{"key_ID"}
-
-Default: \code{NULL} will create a key variable.}
 
 \item{time}{Character name of date variable in \code{data_frame}. Class must
 be Date, POSIXt, or character.
@@ -36,6 +29,13 @@ category first, most broad event category last.
 Example: \code{c("Family", "Device", "ProductCode")}
 
 Default: \code{NULL} will not include any event hierarchy.}
+
+\item{key}{Character name of (uniquely identifying) primary key variable in
+\code{data_frame}. Class must be character or numeric.
+
+Example: \code{"key_ID"}
+
+Default: \code{NULL} will create a key variable.}
 
 \item{match_levels}{Vector of character variable names in \code{data_frame}
 representing additional grouping factors for exposure. Specified variables
@@ -73,6 +73,14 @@ Rows are deduplicated. Attributes are as follows:
 Converts a data frame into a MD-PMS Exposure data frame.
 }
 \examples{
-## Need to write!
+# A barebones dataset
+ex <- exposure(sales, "sales_month", "device_name")
+# With more variables and variable types
+ex <- exposure(
+  data_frame=sales,
+  time="sales_month",
+  device_hierarchy="device_name",
+  match_levels="region",
+  count="sales_volume")
 
 }

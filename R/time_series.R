@@ -12,9 +12,38 @@
 #' @export
 time_series <- function(analysis, ...) UseMethod("time_series", analysis)
 
+
 #' Generate Time Series from Defined Analyses
 #'
-#' Converts a collection of defined analyses (class \code{mds_das}) to a list
+#' Converts a list of defined analyses (class \code{list}) to a list
+#' of time series objects.
+#'
+#' @param analysis A \code{list} containing defined analyses, each of class
+#' \code{mds_da}.
+#' @param ... Further arguments passed into \code{\link{time_series.mds_da}}.
+#' @return A list of time series objects.
+#' @seealso \code{\link{time_series.mds_da}}
+#' @export
+time_series.list <- function(
+  analysis,
+  ...
+){
+  # Dispatch to correct method based on list search
+  if ("mds_da" %in% class(analysis)){
+    time_series.mds_da(analysis=analysis, ...)
+  } else if ("mds_das" %in% class(analysis)){
+    time_series.mds_das(analysis=analysis, ...)
+  } else if (all(sapply(analysis, function(x) "mds_da" %in% class(x)))){
+    time_series.mds_das(analysis=analysis, ...)
+  } else{
+    stop("Analysis object not valid. See ?time_series")
+  }
+}
+
+
+#' Generate Time Series from Defined Analyses
+#'
+#' Converts a list of defined analyses (class \code{mds_das}) to a list
 #' of time series objects.
 #'
 #' @param analysis An object of class \code{mds_das}.
