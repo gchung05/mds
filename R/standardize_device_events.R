@@ -153,7 +153,7 @@ deviceevent <- function(
     covs <- names(data_frame)[which(!names(data_frame) %in% key_vars)]
     names(covs) <- make.names(covs)
   } else{
-    covs <- setNames(covariates, make.names(covariates))
+    covs <- stats::setNames(covariates, make.names(covariates))
   }
   if (!is.null(covs)){
     v_cov <- list()
@@ -171,7 +171,7 @@ deviceevent <- function(
     dscr <- names(data_frame)[which(!names(data_frame) %in% key_vars)]
     names(dscr) <- make.names(dscr)
   } else{
-    dscr <- setNames(descriptors, make.names(descriptors))
+    dscr <- stats::setNames(descriptors, make.names(descriptors))
   }
   if (!is.null(dscr)){
     v_dsc <- list()
@@ -206,12 +206,12 @@ deviceevent <- function(
   if (sum(is.na(dataset$time)) > 0){
     warning(paste("Dropping", sum(is.na(dataset$time)),
                   "rows with missing time."))
-    dataset <- dplyr::filter(dataset, !is.na(time))
+    dataset <- dataset[!is.na(dataset$time), ]
   }
   if (sum(is.na(dataset$device_1)) > 0){
     warning(paste("Dropping", sum(is.na(dataset$device_1)),
                   "rows with missing lowest level device_hierarchy."))
-    dataset <- dplyr::filter(dataset, !is.na(device_1))
+    dataset <- dataset[!is.na(dataset$device_1), ]
   }
 
   # Save the output class

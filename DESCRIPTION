@@ -14,8 +14,10 @@ License: GPL-3
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1
+Depends: R (>= 2.10)
 Imports:
+  stats,
+  graphics,
   parsedate,
-  lubridate,
-  dplyr
+  lubridate
 Suggests: testthat

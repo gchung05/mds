@@ -2,10 +2,19 @@
 % Please edit documentation in R/utils.R
 \name{next_ev}
 \alias{next_ev}
-\title{Return next level up event}
+\title{Return next level up event
+Returns the variable name of the next level in the event hierarchy}
 \usage{
 next_ev(x)
 }
+\arguments{
+\item{x}{String input of event name, such as \code{"event_1"},
+\code{"event_2"}, etc.}
+}
+\value{
+String representation of the next event level variable
+}
 \description{
 Return next level up event
+Returns the variable name of the next level in the event hierarchy
 }

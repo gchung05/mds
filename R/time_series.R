@@ -50,6 +50,7 @@ time_series.mds_das <- function(
 #' @param use_hierarchy Logical value indicating whether device and event
 #' hierarchies should be used in counting contingency tables for
 #' disproportionality analysis. See details for more.
+#' @param ... Further arguments for future work.
 #'
 #' @return A standardized MD-PMS time series data frame of class \code{mds_ts}.
 #' The data frame contains, by defined date levels, the following:
@@ -107,7 +108,8 @@ time_series.mds_da <- function(
   analysis,
   deviceevents,
   exposure=NULL,
-  use_hierarchy=T
+  use_hierarchy=T,
+  ...
 ){
   # Check parameters
   # ----------------
@@ -191,7 +193,8 @@ time_series.mds_da <- function(
           warning(paste("Dropping", nmiss, "records with missing", nextdev))
           this <- this[!is.na(this[[nextdev]]), ]
         }
-        nextdev <- setNames(this[this$isdev == T, ][[nextdev]][1], nextdev)
+        nextdev <- stats::setNames(this[this$isdev == T, ][[nextdev]][1],
+                                   nextdev)
         this <- this[this[[names(nextdev)]] == nextdev, ]
       }
     }
@@ -204,7 +207,7 @@ time_series.mds_da <- function(
           warning(paste("Dropping", nmiss, "records with missing", nextev))
           this <- this[!is.na(this[[nextev]]), ]
         }
-        nextev <- setNames(this[this$isev == T, ][[nextev]][1], nextev)
+        nextev <- stats::setNames(this[this$isev == T, ][[nextev]][1], nextev)
         this <- this[this[[names(nextev)]] == nextev, ]
       }
     }
@@ -220,9 +223,9 @@ time_series.mds_da <- function(
     thist <- this[this$time >= i & this$time < j, ]
     if (length(atype) > 1){
       # 2-Level Analysis - Populate contingency table
-      tbl2x2 <- list(t(setNames(data.frame(table(thist[[atype[1]]],
-                                                 thist[[atype[2]]]))[, 3],
-                                c("nA", "nC", "nB", "nD"))))
+      tbl2x2 <- list(t(stats::setNames(data.frame(table(thist[[atype[1]]],
+                                                        thist[[atype[2]]]))[, 3],
+                                       c("nA", "nC", "nB", "nD"))))
       trow <- data.frame(time=i, tbl2x2)
       trow$ids <- list(unique(
         as.character(thist[thist[[atype[1]]] == T &
@@ -268,7 +271,7 @@ time_series.mds_da <- function(
     } else if (x == "isev"){
       analysis$event_level
     } else if (x == "iscov"){
-      setNames(analysis$covariate_level, analysis$covariate)
+      stats::setNames(analysis$covariate_level, analysis$covariate)
     }
   })
   # Level of the entire contingency table
@@ -276,14 +279,14 @@ time_series.mds_da <- function(
     nABCD <- lapply(atype, function(x){
       if (x == "isdev"){
         if (is.null(nextdev)){
-          setNames("All", names(analysis$device_level))
+          stats::setNames("All", names(analysis$device_level))
         } else nextdev
       } else if (x == "isev"){
         if (is.null(nextev)){
-          setNames("All", names(analysis$event_level))
+          stats::setNames("All", names(analysis$event_level))
         } else nextev
       } else if (x == "iscov"){
-        setNames("All", analysis$covariate)
+        stats::setNames("All", analysis$covariate)
       }
     })
   } else nABCD <- NULL

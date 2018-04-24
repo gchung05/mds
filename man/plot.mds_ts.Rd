@@ -4,17 +4,31 @@
 \alias{plot.mds_ts}
 \title{Plot MD-PMS Time Series}
 \usage{
-\method{plot}{mds_ts}(tsobj, mode = "nA", xlab = "Time", ylab = "Count",
+\method{plot}{mds_ts}(x, mode = "nA", xlab = "Time", ylab = "Count",
   main = NULL, ...)
 }
 \arguments{
-\item{tsobj}{An object of class \code{mds_ts}.}
+\item{x}{An object of class \code{mds_ts}.}
 
 \item{mode}{Series to plot. Valid values are: \code{'nA'}, \code{'nB'},
 \code{'nC'}, \code{'nD'}, \code{'exposure'}, \code{'rate'}. \code{'rate'} is
 simply \code{'nA' / 'exposure'}. See details for more.
 
 Default: \code{'nA'}}
+
+\item{xlab}{x-axis label
+
+#' Default: \code{'Time'}}
+
+\item{ylab}{y-axis label
+
+Default: \code{'Count'}}
+
+\item{main}{Plot title
+
+Default: \code{NULL} infers the title from \code{x} and \code{mode}.}
+
+\item{...}{Further arguments to pass onto \code{plot()} generic.}
 }
 \description{
 Quickly visualizes an MD-PMS times series of class \code{mds_ts}.

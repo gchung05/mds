@@ -111,7 +111,12 @@ char_to_df <- function(
   return(out)
 }
 
-#' Min and Max functions that allow all to be NA, where f is min or max
+#' Min/Max With All NA's Allowed
+#' Min and Max functions that allows the vector \code{x} to be \code{NA}, where
+#' \code{f} is \code{min} or \code{max}
+#' @param x Numeric input vector
+#' @param f Either \code{min} or \code{max}
+#' @return Numeric value corresponding to \code{min} or \code{max}, or \code{NA}
 fNA <- function(x, f){
   if (all(is.na(x))){
     NA
@@ -121,6 +126,10 @@ fNA <- function(x, f){
 }
 
 #' Return next level up device
+#' Returns the variable name of the next level in the device hierarchy
+#' @param x String input of device name, such as \code{"device_1"},
+#' \code{"device_2"}, etc.
+#' @return String representation of the next device level variable
 next_dev <- function(
   x
 ){
@@ -128,6 +137,10 @@ next_dev <- function(
 }
 
 #' Return next level up event
+#' Returns the variable name of the next level in the event hierarchy
+#' @param x String input of event name, such as \code{"event_1"},
+#' \code{"event_2"}, etc.
+#' @return String representation of the next event level variable
 next_ev <- function(
   x
 ){

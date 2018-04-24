@@ -210,8 +210,8 @@ define_analyses <- function(
           names(dt_range) <- c("start", "end")
           # Build list of instructions
           this <- list(device_level,
-                       setNames(devCO$device[1], dev_lvl),
-                       setNames(devCO$event[1], ifelse(
+                       stats::setNames(devCO$device[1], dev_lvl),
+                       stats::setNames(devCO$event[1], ifelse(
                          is.null(ev_lvl),
                          names(attributes(deviceevents)$event_hierarchy)[1],
                          ev_lvl)),
@@ -224,17 +224,19 @@ define_analyses <- function(
           # Exposure Case
           # -------------
           if (is.null(exposure)){ thes <- data.frame() } else thes <- exposure
-          dev_level_e <- cov_level_e <- setNames(NA, NA)
+          dev_level_e <- cov_level_e <- stats::setNames(NA, NA)
 
           # Filter by device
           if (nrow(thes) > 0 &
-              this$device_level_source %in% attributes(exposure)$device_hierarchy){
+              this$device_level_source %in%
+              attributes(exposure)$device_hierarchy){
             dev_label <- names(which(attributes(exposure)$device_hierarchy ==
-                                         this$device_level_source))
-            dev_level_e <- setNames(as.character(this$device_level), dev_label)
+                                       this$device_level_source))
+            dev_level_e <- stats::setNames(as.character(this$device_level),
+                                           dev_label)
             if (dev_level_e != "All"){
               thes <- thes[thes[[names(dev_level_e)]] == dev_level_e, ]
-              if (nrow(thes) == 0) dev_level_e <- setNames(NA, dev_label)
+              if (nrow(thes) == 0) dev_level_e <- stats::setNames(NA, dev_label)
             }
           }
           this$exp_device_level <- dev_level_e
@@ -243,11 +245,12 @@ define_analyses <- function(
           # Filter for the current covariate level
           if (nrow(thes) > 0 &
               this$covariate %in% attributes(exposure)$match_levels){
-            cov_level_e <- setNames(as.character(this$covariate_level),
+            cov_level_e <- stats::setNames(as.character(this$covariate_level),
                                     this$covariate)
             if (cov_level_e != "All"){
               thes <- thes[thes[[names(cov_level_e)]] == cov_level_e, ]
-              if (nrow(thes) == 0) cov_level_e <- setNames(NA, this$covariate)
+              if (nrow(thes) == 0) cov_level_e <- stats::setNames(
+                NA, this$covariate)
             }
           } else if (paste(k, l) != "Data All") thes <- data.frame()
           this$exp_covariate_level <- cov_level_e
@@ -355,22 +358,29 @@ define_analyses_dataframe <- function(
   return(all)
 }
 
+#' Summarize a Collection of MD-PMS Defined Analyses
+#' Prints basic counts and date ranges by various analysis factors as defined in
+#' the original \code{define_analyses()} call.
+#' @param object A MD-PMS Defined Analyses object of class \code{mds_das}
+#' @param ... Additional arguments affecting the summary produced
+#' @return List of analyses counts and date ranges.
 #' @export
 summary.mds_das <- function(
-  inlist
+  object, ...
 ){
-  input_param_checker(inlist, check_class="mds_das")
-  df <- define_analyses_dataframe(inlist)
-  counts <- setNames(c(length(inlist),
-                       nrow(df[!is.na(df[["date_range_exposure_start"]]), ]),
-                       length(unique(df$device_level)),
-                       length(unique(df$event_level)),
-                       length(unique(df$covariate))),
-                     c('Total Analyses',
-                       'Analyses with Exposure',
-                       'Device Levels',
-                       'Event Levels',
-                       'Covariates'))
+  input_param_checker(object, check_class="mds_das")
+  df <- define_analyses_dataframe(object)
+  counts <- stats::setNames(
+    c(length(object),
+      nrow(df[!is.na(df[["date_range_exposure_start"]]), ]),
+      length(unique(df$device_level)),
+      length(unique(df$event_level)),
+      length(unique(df$covariate))),
+    c('Total Analyses',
+      'Analyses with Exposure',
+      'Device Levels',
+      'Event Levels',
+      'Covariates'))
   date_ranges <- data.frame(
     'Data'=c('Device-Event', 'Exposure', 'Both'),
     'Start'=c(fNA(df$date_range_de_start, min),

@@ -2,12 +2,26 @@
 #'
 #' Quickly visualizes an MD-PMS times series of class \code{mds_ts}.
 #'
-#' @param tsobj An object of class \code{mds_ts}.
+#' @param x An object of class \code{mds_ts}.
 #' @param mode Series to plot. Valid values are: \code{'nA'}, \code{'nB'},
 #' \code{'nC'}, \code{'nD'}, \code{'exposure'}, \code{'rate'}. \code{'rate'} is
 #' simply \code{'nA' / 'exposure'}. See details for more.
 #'
 #' Default: \code{'nA'}
+#'
+#' @param xlab x-axis label
+#'
+#' #' Default: \code{'Time'}
+#'
+#' @param ylab y-axis label
+#'
+#' Default: \code{'Count'}
+#'
+#' @param main Plot title
+#'
+#' Default: \code{NULL} infers the title from \code{x} and \code{mode}.
+#'
+#' @param ... Further arguments to pass onto \code{plot()} generic.
 #'
 #' @details \code{mode} values defined as follows. Note: The following
 #' definitions use a device-event pair as a working example, however it may also
@@ -23,57 +37,57 @@
 #' }
 #' @export
 plot.mds_ts <- function(
-  tsobj,
+  x,
   mode='nA',
   xlab='Time',
   ylab='Count',
   main=NULL,
   ...
 ){
-  obj <- data.frame(x=tsobj$time)
+  obj <- data.frame(x=x$time)
   if (mode == 'nA'){
-    obj$y <- tsobj[[mode]]
+    obj$y <- x[[mode]]
     # Set the default title
     if (is.null(main)){
-      main <- paste(attributes(tsobj)$nLabels$nA, collapse=" & ")
+      main <- paste(attributes(x)$nLabels$nA, collapse=" & ")
     }
   } else if (mode %in% c('nB', 'nC', 'nD', 'exposure')){
-    if (!mode %in% names(tsobj)){
-      stop(paste('The analysis of tsobj does not contain', mode))
+    if (!mode %in% names(x)){
+      stop(paste('The analysis of x does not contain', mode))
     }
-    obj$y <- tsobj[[mode]]
+    obj$y <- x[[mode]]
     # Set the default title
     if (is.null(main)){
       if (mode != 'exposure'){
         if (mode == 'nB'){
-          main <- paste(attributes(tsobj)$nLabels$rows, 'excluding',
-                        attributes(tsobj)$nLabels$nA[1], '&',
-                        attributes(tsobj)$nLabels$nA[2])
+          main <- paste(attributes(x)$nLabels$rows, 'excluding',
+                        attributes(x)$nLabels$nA[1], '&',
+                        attributes(x)$nLabels$nA[2])
         } else if (mode == 'nC'){
-          main <- paste(attributes(tsobj)$nLabels$nA[1], '&',
-                        attributes(tsobj)$nLabels$cols, 'excluding',
-                        attributes(tsobj)$nLabels$nA[2])
+          main <- paste(attributes(x)$nLabels$nA[1], '&',
+                        attributes(x)$nLabels$cols, 'excluding',
+                        attributes(x)$nLabels$nA[2])
         } else if (mode == 'nD'){
-          main <- paste(attributes(tsobj)$nLabels$rows, 'excluding',
-                        attributes(tsobj)$nLabels$nA[1], '&',
-                        attributes(tsobj)$nLabels$cols, 'excluding',
-                        attributes(tsobj)$nLabels$nA[2])
+          main <- paste(attributes(x)$nLabels$rows, 'excluding',
+                        attributes(x)$nLabels$nA[1], '&',
+                        attributes(x)$nLabels$cols, 'excluding',
+                        attributes(x)$nLabels$nA[2])
         }
       } else main <- 'Exposure'
     }
   } else if (mode == 'rate'){
-    if (!'exposure' %in% names(tsobj)){
-      stop(paste('tsobj requires exposure to calculate rate'))
+    if (!'exposure' %in% names(x)){
+      stop(paste('x requires exposure to calculate rate'))
     }
-    obj$y <- tsobj$nA / tsobj$exposure
+    obj$y <- x$nA / x$exposure
     if (ylab == 'Count') ylab <- 'Rate'
     # Set the default title
     if (is.null(main)){
-      main <- paste(paste(attributes(tsobj)$nLabels$nA, collapse=" & "),
+      main <- paste(paste(attributes(x)$nLabels$nA, collapse=" & "),
                     '/ Exposure')
     }
   } else{
     stop(paste(mode, 'is not a valid mode'))
   }
-  plot.default(obj$x, obj$y, xlab=xlab, ylab=ylab, main=main, ...)
+  graphics::plot.default(obj$x, obj$y, xlab=xlab, ylab=ylab, main=main, ...)
 }

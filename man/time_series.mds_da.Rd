@@ -5,7 +5,7 @@
 \title{Generate Time Series from Defined Analysis}
 \usage{
 \method{time_series}{mds_da}(analysis, deviceevents, exposure = NULL,
-  use_hierarchy = T)
+  use_hierarchy = T, ...)
 }
 \arguments{
 \item{analysis}{A defined analysis object of class \code{mds_da}.}
@@ -22,6 +22,8 @@ Default: \code{NULL} will not consider exposure data.}
 \item{use_hierarchy}{Logical value indicating whether device and event
 hierarchies should be used in counting contingency tables for
 disproportionality analysis. See details for more.}
+
+\item{...}{Further arguments for future work.}
 }
 \value{
 A standardized MD-PMS time series data frame of class \code{mds_ts}.

@@ -9,7 +9,7 @@
   \item{device_name}{Name of the device mapped from the \code{maude} dataset.}
   \item{region}{Geographical region mapped from the \code{maude} dataset.}
   \item{sales_month}{The month of sales.}
-  \item{seales_volume}{The volume of sales.}
+  \item{sales_volume}{The volume of sales.}
 }}
 \source{
 Random normal distribution using \code{rnorm()}.

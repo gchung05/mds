@@ -146,12 +146,12 @@ exposure <- function(
   if (sum(is.na(dataset$time)) > 0){
     warning(paste("Dropping", sum(is.na(dataset$time)),
                   "rows with missing time."))
-    dataset <- dplyr::filter(dataset, !is.na(time))
+    dataset <- dataset[!is.na(dataset$time), ]
   }
   if (sum(is.na(dataset$device_1)) > 0){
     warning(paste("Dropping", sum(is.na(dataset$device_1)),
                   "rows with missing lowest level device_hierarchy."))
-    dataset <- dplyr::filter(dataset, !is.na(device_1))
+    dataset <- dataset[!is.na(dataset$device_1), ]
   }
 
   # Save the output class
