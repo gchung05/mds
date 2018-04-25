@@ -338,28 +338,3 @@ time_series.mds_da <- function(
 
   return(out)
 }
-
-# # Debugging
-# analysis=testDA[[256]]
-# deviceevents=testDE
-# exposure=testEX
-# use_hierarchy=T
-
-#' Counting the focus level is easy, but how to count the nons?
-#'
-#' For a given: dev, ev
-#' Assuming no cov level (Data All case)
-#' ---------------------
-#' For each time period, 4 numbers are needed
-#' 1. the dev ev | 2., 3., 4. the non-dev, non-ev (these shall not req ids)
-#' Non-dev are all devices belonging to the same one-level up dev hierarchy
-#' Non-ev are all events belonging to the same one-level up ev hierarchy
-#' UNLESS: any dev/ev level is "All", then NA's for 2-4.
-#'
-#' For a given: dev, ev, cov
-#' -------------------------
-#' If a specific dev and ev
-#' The cov level and ev|dev are n11, 2-4. are non-cov and non-ev within dev
-#' If specific dev and all ev
-#' The cov level and dev are n11, 2-4. are non-cov and non-dev (same 1-lvl up hierarchy)
-#' UNLESS: dev and ev are both all, then NA's for 2-4.

@@ -172,3 +172,49 @@ test_that("time change attributes are consistent", {
   expect_equal(attributes(a1)$date_level, "days")
   expect_equal(attributes(a1)$date_level_n, 7)
 })
+
+
+# define_analyses_dataframe()
+# ---------------------------
+
+# Reference example
+a1 <- define_analyses(
+  Pde, Pdevice_level,
+  exposure=Pexp,
+  covariates=Pcovariates)
+a3 <- define_analyses_dataframe(a1)
+
+test_that("output structure as expected", {
+  expect_is(a3, "data.frame")
+  expect_equal(nrow(a3), length(a1))
+  expect_equal(a3$device_level_source[1], attributes(a1)$device_level)
+})
+
+
+# summary.mds_das()
+# -----------------
+
+# Reference example
+a2 <- summary(a1)
+
+test_that("output groups as expected", {
+  expect_equal(names(a2), c("Analyses Timestamp", "Analyses Counts",
+                            "Date Ranges"))
+})
+test_that("timestamp is equal to analyses", {
+  expect_equal(a2$`Analyses Timestamp`, attributes(a1)$timestamp)
+})
+test_that("Analyses counts are populated", {
+  expect_equal(names(a2$`Analyses Counts`),
+               c("Total Analyses", "Analyses with Exposure", "Device Levels",
+                 "Event Levels", "Covariates"))
+  expect_is(a2$`Analyses Counts`, "integer")
+  expect_equal(all(a2$`Analyses Counts` > 0), T)
+})
+test_that("Date ranges are populated", {
+  expect_equal(names(a2$`Date Ranges`), c("Data", "Start", "End"))
+  expect_equal(as.character(a2$`Date Ranges`$Data),
+               c("Device-Event", "Exposure", "Both"))
+  expect_is(a2$`Date Ranges`$Start, "Date")
+  expect_is(a2$`Date Ranges`$End, "Date")
+})

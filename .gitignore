@@ -5,3 +5,4 @@
 .Rproj
 *.Rproj
 tests/tests.R
+inst/doc
