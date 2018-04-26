@@ -398,7 +398,8 @@ summary.mds_das <- function(
   df <- define_analyses_dataframe(object)
   counts <- stats::setNames(
     c(length(object),
-      nrow(df[!is.na(df[["date_range_exposure_start"]]), ]),
+      ifelse(is.null(df$date_range_exposure_start), 0,
+             nrow(df[!is.na(df$date_range_exposure_start), ])),
       length(unique(df$device_level)),
       length(unique(df$event_level)),
       length(unique(df$covariate))),
@@ -410,10 +411,12 @@ summary.mds_das <- function(
   date_ranges <- data.frame(
     'Data'=c('Device-Event', 'Exposure', 'Both'),
     'Start'=c(fNA(df$date_range_de_start, min),
-              fNA(df$date_range_exposure_start, min),
+              ifelse(is.null(df$date_range_exposure_start), NA,
+                     fNA(df$date_range_exposure_start, min)),
               fNA(df$date_range_de_exp_start, min)),
     'End'=c(fNA(df$date_range_de_end, max),
-            fNA(df$date_range_exposure_end, max),
+            ifelse(is.null(df$date_range_exposure_end), NA,
+                   fNA(df$date_range_exposure_end, max)),
             fNA(df$date_range_de_exp_end, max)))
   list('Analyses Timestamp'=attributes(object)$timestamp,
        'Analyses Counts'=counts,
