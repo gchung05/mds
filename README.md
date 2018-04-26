@@ -1,4 +1,4 @@
-
+[![Travis-CI Build Status](https://travis-ci.org/gchung05/mds.svg?branch=master)](https://travis-ci.org/gchung05/mds)
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 Why Use `mds`?
 --------------

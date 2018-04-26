@@ -6,3 +6,4 @@
 ^tests/tests.R
 ^README\.Rmd$
 ^README-.*\.png$
+^\.travis\.yml$
