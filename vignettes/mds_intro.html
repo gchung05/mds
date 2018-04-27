@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<meta name="date" content="2018-04-27" />
+
+<title>Standardizing Medical Devices Surveillance Data</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
+
+
+
+<link href="data:text/css;charset=utf-8,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23header%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%20code%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Standardizing Medical Devices Surveillance Data</h1>
+<h4 class="date"><em>2018-04-27</em></h4>
+
+
+
+<p><strong>Why?</strong></p>
+<p>Medical device event data are messy.</p>
+<p>Common challenges include:</p>
+<ul>
+<li>Performing ongoing surveillance on messy data</li>
+<li>Quickly answering simple questions such as:
+<ul>
+<li>Are events trending up?</li>
+<li>How did my trends look 1 year ago? 2 years ago?</li>
+</ul></li>
+<li>Incompatibility of various sources of device-events</li>
+<li>Difficulty integrating exposures, a.k.a. denominator data</li>
+<li>Understanding all the possible combinations to analyze</li>
+<li>Application of disproportionality analysis (DPA)</li>
+<li>Documentation of analyses in a auditable, reproducible way</li>
+</ul>
+<p><strong>How?</strong></p>
+<p>The <code>mds</code> package provides a standardized framework to address these challenges:</p>
+<ul>
+<li>Standardize events involving medical devices</li>
+<li>Standardize exposures of the device (also known as opportunities for an event to occur, or event denominator)</li>
+<li>Enumerate possible analyses in a flexible way</li>
+<li>Generate times series of analyses for trending over time</li>
+<li>Set up analyses for easy application of disproportionality analysis (DPA)</li>
+<li>Save all files in lightweight <code>R</code> files for auditability, documentation, and reproducibility</li>
+</ul>
+<p><strong>Purpose of This Vignette</strong></p>
+<ul>
+<li>Introduce the basics on using <code>mds</code></li>
+<li><a href="#foursteps">4 steps</a> to go from raw device-event and exposure data to <a href="#quickplot">plotting</a> event counts and rates over time</li>
+<li>How to use the core <code>mds</code> functions: <a href="#de">deviceevent()</a>, <a href="#ex">exposure()</a>, <a href="#da">define_analyses()</a>, <a href="#ts">time_series()</a></li>
+<li>Explain advanced usage options</li>
+</ul>
+<p><strong>Note on Statistical Algorithms</strong></p>
+<p><code>mds</code> data and analysis standards allow for seamless application of various statistical trending algorithms via the <code>mdsstat</code> package (under development).</p>
+<div id="data-maude-and-simulated-sales" class="section level2">
+<h2>Data: MAUDE and Simulated Sales</h2>
+<p>Our example dataset <code>maude</code> was queried from the <a href="https://open.fda.gov/api/">FDA MAUDE API</a> and contains 535 reported events on bone cement in 2017. Furthermore, a simulated exposure dataset <code>sales</code> was generated to provide denominator data for our bone cement events.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(mds)
+<span class="kw">dim</span>(maude)
+<span class="co">#&gt; [1] 535  15</span>
+<span class="kw">dim</span>(sales)
+<span class="co">#&gt; [1] 360   4</span></code></pre></div>
+<pre><code>head(maude, 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">report_number</th>
+<th align="left">event_type</th>
+<th align="left">date_received</th>
+<th align="left">product_problem_flag</th>
+<th align="left">adverse_event_flag</th>
+<th align="left">report_source_code</th>
+<th align="left">lot_number</th>
+<th align="left">model_number</th>
+<th align="left">manufacturer_d_name</th>
+<th align="left">manufacturer_d_country</th>
+<th align="left">brand_name</th>
+<th align="left">device_name</th>
+<th align="left">medical_specialty_description</th>
+<th align="left">device_class</th>
+<th align="left">region</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">0002249697-2017-00023</td>
+<td align="left">Malfunction</td>
+<td align="left">20170103</td>
+<td align="left">Y</td>
+<td align="left">N</td>
+<td align="left">Manufacturer report</td>
+<td align="left">MHX076</td>
+<td align="left"></td>
+<td align="left">STRYKER ORTHOPAEDICS-MAHWAH</td>
+<td align="left">US</td>
+<td align="left">SIMPLEX P - US TOBRA FD 10-PK</td>
+<td align="left">Bone Cement</td>
+<td align="left">Orthopedic</td>
+<td align="left">2</td>
+<td align="left">Central</td>
+</tr>
+<tr class="even">
+<td align="left">0002249697-2017-00028</td>
+<td align="left">Malfunction</td>
+<td align="left">20170103</td>
+<td align="left">Y</td>
+<td align="left">N</td>
+<td align="left">Manufacturer report</td>
+<td align="left">MHX080</td>
+<td align="left"></td>
+<td align="left">STRYKER ORTHOPAEDICS-MAHWAH</td>
+<td align="left">US</td>
+<td align="left">SIMPLEX P - US TOBRA FD 10-PK</td>
+<td align="left">Bone Cement</td>
+<td align="left">Orthopedic</td>
+<td align="left">2</td>
+<td align="left">West</td>
+</tr>
+<tr class="odd">
+<td align="left">0002249697-2017-00025</td>
+<td align="left">Malfunction</td>
+<td align="left">20170103</td>
+<td align="left">Y</td>
+<td align="left">N</td>
+<td align="left">Manufacturer report</td>
+<td align="left">MHX076</td>
+<td align="left"></td>
+<td align="left">STRYKER ORTHOPAEDICS-MAHWAH</td>
+<td align="left">US</td>
+<td align="left">SIMPLEX P - US TOBRA FD 10-PK</td>
+<td align="left">Bone Cement</td>
+<td align="left">Orthopedic</td>
+<td align="left">2</td>
+<td align="left">Central</td>
+</tr>
+</tbody>
+</table>
+<pre><code>head(sales, 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">device_name</th>
+<th align="left">region</th>
+<th align="left">sales_month</th>
+<th align="right">sales_volume</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Arthroscope</td>
+<td align="left">Central</td>
+<td align="left">2017-01-01</td>
+<td align="right">83</td>
+</tr>
+<tr class="even">
+<td align="left">Arthroscope</td>
+<td align="left">Central</td>
+<td align="left">2017-02-01</td>
+<td align="right">119</td>
+</tr>
+<tr class="odd">
+<td align="left">Arthroscope</td>
+<td align="left">Central</td>
+<td align="left">2017-03-01</td>
+<td align="right">112</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="foursteps" class="section level2">
+<h2>Raw Data to Trending in 4 Steps</h2>
+<p>The general workflow to go from data to trending over time is as follows:</p>
+<ol style="list-style-type: decimal">
+<li>Use <code>deviceevent()</code> to standardize device-event data.</li>
+<li>Use <code>exposure()</code> to standardize exposure data (optional).</li>
+<li>Use <code>define_analyses()</code> to enumerate possible analysis combinations.</li>
+<li>Use <code>time_series()</code> to generate counts (and/or rates) by time based on your defined analyses.</li>
+</ol>
+<div id="live-example" class="section level3">
+<h3>Live Example</h3>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Step 1 - Device Events</span>
+de &lt;-<span class="st"> </span><span class="kw">deviceevent</span>(
+  maude,
+  <span class="dt">time=</span><span class="st">&quot;date_received&quot;</span>,
+  <span class="dt">device_hierarchy=</span><span class="kw">c</span>(<span class="st">&quot;device_name&quot;</span>, <span class="st">&quot;device_class&quot;</span>),
+  <span class="dt">event_hierarchy=</span><span class="kw">c</span>(<span class="st">&quot;event_type&quot;</span>, <span class="st">&quot;medical_specialty_description&quot;</span>),
+  <span class="dt">key=</span><span class="st">&quot;report_number&quot;</span>,
+  <span class="dt">covariates=</span><span class="st">&quot;region&quot;</span>,
+  <span class="dt">descriptors=</span><span class="st">&quot;_all_&quot;</span>)
+
+<span class="co"># Step 2 - Exposures (Optional step)</span>
+ex &lt;-<span class="st"> </span><span class="kw">exposure</span>(
+  sales,
+  <span class="dt">time=</span><span class="st">&quot;sales_month&quot;</span>,
+  <span class="dt">device_hierarchy=</span><span class="st">&quot;device_name&quot;</span>,
+  <span class="dt">match_levels=</span><span class="st">&quot;region&quot;</span>,
+  <span class="dt">count=</span><span class="st">&quot;sales_volume&quot;</span>)
+
+<span class="co"># Step 3 - Define Analyses</span>
+da &lt;-<span class="st"> </span><span class="kw">define_analyses</span>(
+  de,
+  <span class="dt">device_level=</span><span class="st">&quot;device_name&quot;</span>,
+  <span class="dt">exposure=</span>ex,
+  <span class="dt">covariates=</span><span class="st">&quot;region&quot;</span>)
+
+<span class="co"># Step 4 - Time Series</span>
+ts &lt;-<span class="st"> </span><span class="kw">time_series</span>(
+  da,
+  <span class="dt">deviceevents=</span>de,
+  <span class="dt">exposure=</span>ex)</code></pre></div>
+</div>
+</div>
+<div id="what-to-do-next" class="section level2">
+<h2>What to Do Next</h2>
+<p>You may:</p>
+<ul>
+<li>Save your data (<code>de</code>, <code>ex</code>), analyses (<code>da</code>), and time series (<code>ts</code>) for documentation</li>
+<li>Summarize your analyses using <code>summary()</code> and <code>define_analyses_dataframe()</code></li>
+<li><code>plot()</code> your time series (<a href="#po">plotting options</a>)</li>
+<li>Run trending statistics (and/or use the <code>mdsstat</code> package)</li>
+</ul>
+<div id="summarize-defined-analyses" class="section level3">
+<h3>Summarize Defined Analyses</h3>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(da)
+<span class="co">#&gt; $`Analyses Timestamp`</span>
+<span class="co">#&gt; [1] &quot;2018-04-27 01:03:57 EDT&quot;</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; $`Analyses Counts`</span>
+<span class="co">#&gt;         Total Analyses Analyses with Exposure          Device Levels </span>
+<span class="co">#&gt;                     32                     32                     11 </span>
+<span class="co">#&gt;           Event Levels             Covariates </span>
+<span class="co">#&gt;                      1                      2 </span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; $`Date Ranges`</span>
+<span class="co">#&gt;           Data      Start        End</span>
+<span class="co">#&gt; 1 Device-Event 2017-01-01 2017-12-01</span>
+<span class="co">#&gt; 2     Exposure 2017-01-01 2017-12-01</span>
+<span class="co">#&gt; 3         Both 2017-01-01 2017-12-01</span></code></pre></div>
+</div>
+<div id="show-all-analyses-as-a-data-frame" class="section level3">
+<h3>Show All Analyses as a Data Frame</h3>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">dadf &lt;-<span class="st"> </span><span class="kw">define_analyses_dataframe</span>(da)</code></pre></div>
+<pre><code>head(dadf, 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">id</th>
+<th align="left">device_level_source</th>
+<th align="left">device_level</th>
+<th align="left">event_level</th>
+<th align="left">covariate</th>
+<th align="left">covariate_level</th>
+<th align="left">date_range_de_start</th>
+<th align="left">date_range_de_end</th>
+<th align="left">exp_device_level</th>
+<th align="left">exp_covariate_level</th>
+<th align="left">date_range_exposure_start</th>
+<th align="left">date_range_exposure_end</th>
+<th align="left">date_range_de_exp_start</th>
+<th align="left">date_range_de_exp_end</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">1</td>
+<td align="left">device_name</td>
+<td align="left">Bone Cement</td>
+<td align="left">All</td>
+<td align="left">region</td>
+<td align="left">Central</td>
+<td align="left">2017-01-01</td>
+<td align="left">2017-12-01</td>
+<td align="left">Bone Cement</td>
+<td align="left">Central</td>
+<td align="left">2017-01-01</td>
+<td align="left">2017-12-01</td>
+<td align="left">2017-01-01</td>
+<td align="left">2017-12-01</td>
+</tr>
+<tr class="even">
+<td align="right">2</td>
+<td align="left">device_name</td>
+<td align="left">Bone Cement</td>
+<td align="left">All</td>
+<td align="left">region</td>
+<td align="left">West</td>
+<td align="left">2017-01-01</td>
+<td align="left">2017-12-01</td>
+<td align="left">Bone Cement</td>
+<td align="left">West</td>
+<td align="left">2017-01-01</td>
+<td align="left">2017-12-01</td>
+<td align="left">2017-01-01</td>
+<td align="left">2017-12-01</td>
+</tr>
+<tr class="odd">
+<td align="right">3</td>
+<td align="left">device_name</td>
+<td align="left">Bone Cement</td>
+<td align="left">All</td>
+<td align="left">region</td>
+<td align="left">East</td>
+<td align="left">2017-01-01</td>
+<td align="left">2017-12-01</td>
+<td align="left">Bone Cement</td>
+<td align="left">East</td>
+<td align="left">2017-01-01</td>
+<td align="left">2017-12-01</td>
+<td align="left">2017-01-01</td>
+<td align="left">2017-12-01</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="quickplot" class="section level3">
+<h3>Plot Time Series of Counts and Rates</h3>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(ts[[<span class="dv">1</span>]])
+<span class="kw">plot</span>(ts[[<span class="dv">4</span>]], <span class="st">&quot;rate&quot;</span>, <span class="dt">type=</span><span class="st">'l'</span>)</code></pre></div>
+<p><img src="data:image/png;base64,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" /><img src="data:image/png;base64,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fiOfxvD41Z8DAan9xAYcMlDpAYlHdOxFDfjrDet7kpLJIp+JVzz7mwCk88rC571Fr5HJmdxh9fjb77PIrVabSg5IFC7ngf94w19yVAN4lkKS2YlNHE1e8cX26bYfblHtGiqyHDOxfRinW8CTEqbUgOTzS8RGZ3KTKviMBZ5F7BHPc3FATt49DwfAluNQbbTevfDqTkBC34oHa4w2qBD1RK506NxO0MkiQoVHkd4GtDB1zKecvIkX8SbDlINVp6NI224nByQ2pv4pCwAkGhveDglAJq8Ih/7HdVodru4KvV5jr4JuoYBy2WzoB5ccgwAdv/z5W7mbtc3Lq9w/waOGTOXlOCyRRQMSbonlMXLhUBFSxfjP17wZ4oBsXrFzM6hhtjpf3dmDqDYowZa9rlIBUr3IXgcP2wUA4p37tjQRJPM6i/06pYbech2O7Cv5kPGYyR36FtqLFWoII9qRzTvubQAgWSbdBsm8Je7DSveRjLmadByzrzM89ArUQierx98PqCeRD25q10IB5UPGw08H0DEb1NA+HUBLEgECIkBABAiIAAERICACBESAgAgQEAECIkBABAiIAAERICACBESAgAgQEAECIkBABAiIAAERICACBESAgBYHyD7R9Oo/6Iv9SbQ4QEIeSxcmEwECWjAguZQzE4uJd8fMrq1JvcwXafGAxGJisfhHrPEz632n1OIB7Urzsrfrfaf0ZfGAzLpO/mLX+07py6oAmfW+U/qyKkCj39rTojUBgktCx9CaANn1vlP6sipAZr3vlFokoCWJAAERICACBESAgAgQEAECIkBABAiIAAERICACBESAgAgQEAECIkBABAiIAAERICACBESAgAgQEAECIkBAvwJ/VFFNIWfIZgAAAABJRU5ErkJggg==" /></p>
+</div>
+</div>
+<div id="de" class="section level2">
+<h2><code>deviceevent()</code> to Standardize Device-Event Data</h2>
+<p><strong>Basic Usage</strong></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">de &lt;-<span class="st"> </span><span class="kw">deviceevent</span>(maude, <span class="st">&quot;date_received&quot;</span>, <span class="kw">c</span>(<span class="st">&quot;device_name&quot;</span>, <span class="st">&quot;device_class&quot;</span>), <span class="kw">c</span>(<span class="st">&quot;event_type&quot;</span>, <span class="st">&quot;medical_specialty_description&quot;</span>))</code></pre></div>
+<pre><code>head(de, 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">key</th>
+<th align="left">time</th>
+<th align="left">device_1</th>
+<th align="left">device_2</th>
+<th align="left">event_1</th>
+<th align="left">event_2</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">1</td>
+<td align="left">2017-01-03</td>
+<td align="left">Bone Cement</td>
+<td align="left">2</td>
+<td align="left">Malfunction</td>
+<td align="left">Orthopedic</td>
+</tr>
+<tr class="even">
+<td align="left">2</td>
+<td align="left">2017-01-03</td>
+<td align="left">Bone Cement</td>
+<td align="left">2</td>
+<td align="left">Malfunction</td>
+<td align="left">Orthopedic</td>
+</tr>
+<tr class="odd">
+<td align="left">3</td>
+<td align="left">2017-01-03</td>
+<td align="left">Bone Cement</td>
+<td align="left">2</td>
+<td align="left">Malfunction</td>
+<td align="left">Orthopedic</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Advanced Usage</strong></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">de &lt;-<span class="st"> </span><span class="kw">deviceevent</span>(
+  maude,
+  <span class="dt">time=</span><span class="st">&quot;date_received&quot;</span>,
+  <span class="dt">device_hierarchy=</span><span class="kw">c</span>(<span class="st">&quot;device_name&quot;</span>, <span class="st">&quot;device_class&quot;</span>),
+  <span class="dt">event_hierarchy=</span><span class="kw">c</span>(<span class="st">&quot;event_type&quot;</span>, <span class="st">&quot;medical_specialty_description&quot;</span>),
+  <span class="dt">key=</span><span class="st">&quot;report_number&quot;</span>,
+  <span class="dt">covariates=</span><span class="st">&quot;region&quot;</span>,
+  <span class="dt">descriptors=</span><span class="st">&quot;_all_&quot;</span>)</code></pre></div>
+<pre><code>head(de, 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">key</th>
+<th align="left">time</th>
+<th align="left">device_1</th>
+<th align="left">device_2</th>
+<th align="left">event_1</th>
+<th align="left">event_2</th>
+<th align="left">region</th>
+<th align="left">product_problem_flag</th>
+<th align="left">adverse_event_flag</th>
+<th align="left">report_source_code</th>
+<th align="left">lot_number</th>
+<th align="left">model_number</th>
+<th align="left">manufacturer_d_name</th>
+<th align="left">manufacturer_d_country</th>
+<th align="left">brand_name</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">0002249697-2017-00023</td>
+<td align="left">2017-01-03</td>
+<td align="left">Bone Cement</td>
+<td align="left">2</td>
+<td align="left">Malfunction</td>
+<td align="left">Orthopedic</td>
+<td align="left">Central</td>
+<td align="left">Y</td>
+<td align="left">N</td>
+<td align="left">Manufacturer report</td>
+<td align="left">MHX076</td>
+<td align="left"></td>
+<td align="left">STRYKER ORTHOPAEDICS-MAHWAH</td>
+<td align="left">US</td>
+<td align="left">SIMPLEX P - US TOBRA FD 10-PK</td>
+</tr>
+<tr class="even">
+<td align="left">0002249697-2017-00028</td>
+<td align="left">2017-01-03</td>
+<td align="left">Bone Cement</td>
+<td align="left">2</td>
+<td align="left">Malfunction</td>
+<td align="left">Orthopedic</td>
+<td align="left">West</td>
+<td align="left">Y</td>
+<td align="left">N</td>
+<td align="left">Manufacturer report</td>
+<td align="left">MHX080</td>
+<td align="left"></td>
+<td align="left">STRYKER ORTHOPAEDICS-MAHWAH</td>
+<td align="left">US</td>
+<td align="left">SIMPLEX P - US TOBRA FD 10-PK</td>
+</tr>
+<tr class="odd">
+<td align="left">0002249697-2017-00025</td>
+<td align="left">2017-01-03</td>
+<td align="left">Bone Cement</td>
+<td align="left">2</td>
+<td align="left">Malfunction</td>
+<td align="left">Orthopedic</td>
+<td align="left">Central</td>
+<td align="left">Y</td>
+<td align="left">N</td>
+<td align="left">Manufacturer report</td>
+<td align="left">MHX076</td>
+<td align="left"></td>
+<td align="left">STRYKER ORTHOPAEDICS-MAHWAH</td>
+<td align="left">US</td>
+<td align="left">SIMPLEX P - US TOBRA FD 10-PK</td>
+</tr>
+</tbody>
+</table>
+<div id="required-arguments" class="section level4">
+<h4>Required Arguments</h4>
+<dl>
+<dt><code>data_frame</code></dt>
+<dd>is the input device-event data frame. All remaining arguments refer to variables within this data frame.
+</dd>
+<dt><code>time</code></dt>
+<dd>is the name of the variable containing the time of the event. The input format of the time will be flexibly converted into <code>Date</code> format.
+</dd>
+<dt><code>device_hierarchy</code></dt>
+<dd>organizes all your device variables into a hierarchy. The hierarchical concept reflects how devices are often nested into progressively more general groups. Set the first variable as the lowest device level that you would like to trend at. <code>mds</code> remembers this hierarchy and allows trending at multiple levels as you specify.
+</dd>
+<dt><code>event_hierarchy</code></dt>
+<dd>organizes all your event variables into a hierarchy. Like devices, event variables should be categorical in nature. <em>Free text descriptions should not be listed here</em>, but rather in the <code>descriptors</code> argument. The hierarchical concept reflects how events are often nested into progressively more general groups. Set the first variable as the lowest event level that you would like to trend at. <code>mds</code> remembers this hierarchy and allows trending at multiple levels as you specify. <em>If your data does not have an event variable</em>, you will need to create a dummy variable.
+</dd>
+</dl>
+</div>
+<div id="optional-arguments" class="section level4">
+<h4>Optional Arguments</h4>
+<dl>
+<dt><code>key</code></dt>
+<dd>is a unique identifier for each unique event in <code>data_frame</code>. If your data pipeline carries over a key variable, it is recommended to specify it here. The <code>key</code> allows downstream aggregated analysis to be able to “look up” individual constituent events.
+</dd>
+<dt><code>covariates</code></dt>
+<dd>are a special group of variables that may be analyzed within device. For instance, declaring <code>covariates=&quot;Region&quot;</code> will allow analysis of regions within device. These variables should be categorical in nature.
+</dd>
+<dt><code>descriptors</code></dt>
+<dd>are additional variables that should be retained for the purpose of describing individual events in downstream analysis.
+</dd>
+<dt><code>implant_days</code></dt>
+<dd>contains the age in days of an implantable device at the time of the event.
+</dd>
+</dl>
+</div>
+</div>
+<div id="ex" class="section level2">
+<h2><code>exposure()</code> to Standardize Exposure Data</h2>
+<p>Exposure data is meant to support device-event data. As such, the general expectation is that variable values match between exposure and device-event data. For example, 10 exposures for <code>ev3 Solitaire</code> in <code>France</code> will be matched <strong>exactly</strong> to <code>ev3 Solitaire</code> events in <code>France</code>, and not to events for <code>EV3 SOLITAIRE</code> in <code>FRANCE</code>.</p>
+<p><strong>Basic Usage</strong></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ex &lt;-<span class="st"> </span><span class="kw">exposure</span>(sales, <span class="st">&quot;sales_month&quot;</span>, <span class="st">&quot;device_name&quot;</span>)</code></pre></div>
+<pre><code>head(ex, 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">key</th>
+<th align="left">time</th>
+<th align="right">count</th>
+<th align="left">device_1</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">1</td>
+<td align="left">2017-01-01</td>
+<td align="right">1</td>
+<td align="left">Arthroscope</td>
+</tr>
+<tr class="even">
+<td align="left">2</td>
+<td align="left">2017-02-01</td>
+<td align="right">1</td>
+<td align="left">Arthroscope</td>
+</tr>
+<tr class="odd">
+<td align="left">3</td>
+<td align="left">2017-03-01</td>
+<td align="right">1</td>
+<td align="left">Arthroscope</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Advanced Usage</strong></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ex &lt;-<span class="st"> </span><span class="kw">exposure</span>(
+  sales,
+  <span class="dt">time=</span><span class="st">&quot;sales_month&quot;</span>,
+  <span class="dt">device_hierarchy=</span><span class="st">&quot;device_name&quot;</span>,
+  <span class="dt">match_levels=</span><span class="st">&quot;region&quot;</span>,
+  <span class="dt">count=</span><span class="st">&quot;sales_volume&quot;</span>)</code></pre></div>
+<pre><code>head(ex, 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">key</th>
+<th align="left">time</th>
+<th align="right">count</th>
+<th align="left">device_1</th>
+<th align="left">region</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">1</td>
+<td align="left">2017-01-01</td>
+<td align="right">83</td>
+<td align="left">Arthroscope</td>
+<td align="left">Central</td>
+</tr>
+<tr class="even">
+<td align="left">2</td>
+<td align="left">2017-02-01</td>
+<td align="right">119</td>
+<td align="left">Arthroscope</td>
+<td align="left">Central</td>
+</tr>
+<tr class="odd">
+<td align="left">3</td>
+<td align="left">2017-03-01</td>
+<td align="right">112</td>
+<td align="left">Arthroscope</td>
+<td align="left">Central</td>
+</tr>
+</tbody>
+</table>
+<div id="required-arguments-1" class="section level4">
+<h4>Required Arguments</h4>
+<p>Note: Although not required, <code>count</code> will commonly be used as well.</p>
+<dl>
+<dt><code>data_frame</code></dt>
+<dd>is the input exposure data frame. All remaining arguments refer to variables within this data frame.
+</dd>
+<dt><code>time</code></dt>
+<dd>is the name of the variable containing the time of the exposure. The input format of the time will be flexibly converted into <code>Date</code> format. If exposure will be used, it is <strong>critical</strong> to have sufficient time granularity. For example, if analysis will be done monthly, exposure data must be no less granular than monthly. <code>mds</code> does not make assumptions about filling in holes in time!
+</dd>
+<dt><code>device_hierarchy</code></dt>
+<dd>contains all exposure device variables to match to your device-event data. As such, the values within these variables must match exactly to the values within each respective variable in the device-event data <code>device_hierarchy</code> parameter.
+</dd>
+<dt><code>event_hierarchy</code></dt>
+<dd>contains all exposure event variables to match to your device-event data. As such, the values within these variables must match exactly to the values within each respective variable in the device-event data <code>event_hierarchy</code> parameter. Exposures at an event level is not common.
+</dd>
+</dl>
+</div>
+<div id="optional-arguments-1" class="section level4">
+<h4>Optional Arguments</h4>
+<dl>
+<dt><code>count</code></dt>
+<dd>is the most commonly specified optional parameter. It contains the number of exposures. If not specified, the number of rows will be used as a proxy for count.
+</dd>
+<dt><code>key</code></dt>
+<dd>is a unique identifier for each unique exposure in <code>data_frame</code>. If your data pipeline carries over a key variable, it is recommended to specify it here. The <code>key</code> allows downstream aggregated analysis to be able to “look up” individual constituent exposure records.
+</dd>
+<dt><code>match_levels</code></dt>
+<dd>are variables aside from time, device, and event that specify an exposure. A common “match level” is country, if your exposure data is specific by country.
+</dd>
+</dl>
+</div>
+</div>
+<div id="da" class="section level2">
+<h2><code>define_analyses()</code> to Enumerate Analysis Combinations</h2>
+<p>After standardizing device-event data using <code>deviceevent()</code> and, optionally, exposure data using <code>exposure()</code>, the next step is to <strong>discover what types of analyses are possible</strong>. This is separated from actually doing the analysis (counting, calculations, statistics, etc.) because:</p>
+<ul>
+<li>You may not need to analyze everything</li>
+<li>You may want to customize specific analyses, such as:
+<ul>
+<li>Custom date ranges</li>
+<li>Covariate analysis for certain device-events</li>
+<li>Analyze by month for one device, by quarter for another device</li>
+<li>Use exposures for certain devices but not others</li>
+</ul></li>
+<li>A saved list of defined analyses quickly and easily answers:
+<ul>
+<li>Which devices and events did I analyze? When?</li>
+<li>Did I also look at covariates?</li>
+<li>Over what time period did I analyze?</li>
+<li>Did I analyze monthly, quarterly, yearly, etc?</li>
+<li>Did I use exposures?</li>
+</ul></li>
+</ul>
+<p><strong>Basic Usage</strong></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">da &lt;-<span class="st"> </span><span class="kw">define_analyses</span>(de, <span class="st">&quot;device_name&quot;</span>)</code></pre></div>
+<p>Note that <code>define_analyses()</code> returns a list of individual analyses. Each individual analysis contains a set of instructions. You can view an analysis by submitting <code>da[[1]]</code>, <code>da[[2]]</code>, etc., but a less cumbersome overview is possible using <code>summary()</code> and <code>define_analyses_dataframe()</code>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(da)
+<span class="co">#&gt; $`Analyses Timestamp`</span>
+<span class="co">#&gt; [1] &quot;2018-04-27 01:04:01 EDT&quot;</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; $`Analyses Counts`</span>
+<span class="co">#&gt;         Total Analyses Analyses with Exposure          Device Levels </span>
+<span class="co">#&gt;                     11                      0                     11 </span>
+<span class="co">#&gt;           Event Levels             Covariates </span>
+<span class="co">#&gt;                      1                      1 </span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; $`Date Ranges`</span>
+<span class="co">#&gt;           Data      Start        End</span>
+<span class="co">#&gt; 1 Device-Event 2017-01-01 2017-12-01</span>
+<span class="co">#&gt; 2     Exposure       &lt;NA&gt;       &lt;NA&gt;</span>
+<span class="co">#&gt; 3         Both 2017-01-01 2017-12-01</span></code></pre></div>
+<pre><code>head(define_analyses_dataframe(da), 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">id</th>
+<th align="left">device_level_source</th>
+<th align="left">device_level</th>
+<th align="left">event_level</th>
+<th align="left">covariate</th>
+<th align="left">covariate_level</th>
+<th align="left">date_range_de_start</th>
+<th align="left">date_range_de_end</th>
+<th align="left">exp_device_level</th>
+<th align="left">exp_covariate_level</th>
+<th align="left">date_range_exposure_X1</th>
+<th align="left">date_range_exposure_X2</th>
+<th align="left">date_range_de_exp_start</th>
+<th align="left">date_range_de_exp_end</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">1</td>
+<td align="left">device_name</td>
+<td align="left">Bone Cement</td>
+<td align="left">All</td>
+<td align="left">Data</td>
+<td align="left">All</td>
+<td align="left">2017-01-01</td>
+<td align="left">2017-12-01</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+<td align="left">2017-01-01</td>
+<td align="left">2017-12-01</td>
+</tr>
+<tr class="even">
+<td align="right">2</td>
+<td align="left">device_name</td>
+<td align="left">Bone Cement, Antibiotic</td>
+<td align="left">All</td>
+<td align="left">Data</td>
+<td align="left">All</td>
+<td align="left">2017-01-01</td>
+<td align="left">2017-12-01</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+<td align="left">2017-01-01</td>
+<td align="left">2017-12-01</td>
+</tr>
+<tr class="odd">
+<td align="right">3</td>
+<td align="left">device_name</td>
+<td align="left">Cement, Bone, Vertebroplasty</td>
+<td align="left">All</td>
+<td align="left">Data</td>
+<td align="left">All</td>
+<td align="left">2017-01-01</td>
+<td align="left">2017-12-01</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+<td align="left">2017-01-01</td>
+<td align="left">2017-12-01</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Advanced Usage</strong></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">da &lt;-<span class="st"> </span><span class="kw">define_analyses</span>(
+  de,
+  <span class="dt">device_level=</span><span class="st">&quot;device_name&quot;</span>,
+  <span class="dt">exposure=</span>ex,
+  <span class="dt">covariates=</span><span class="st">&quot;region&quot;</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(da)
+<span class="co">#&gt; $`Analyses Timestamp`</span>
+<span class="co">#&gt; [1] &quot;2018-04-27 01:04:01 EDT&quot;</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; $`Analyses Counts`</span>
+<span class="co">#&gt;         Total Analyses Analyses with Exposure          Device Levels </span>
+<span class="co">#&gt;                     32                     32                     11 </span>
+<span class="co">#&gt;           Event Levels             Covariates </span>
+<span class="co">#&gt;                      1                      2 </span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; $`Date Ranges`</span>
+<span class="co">#&gt;           Data      Start        End</span>
+<span class="co">#&gt; 1 Device-Event 2017-01-01 2017-12-01</span>
+<span class="co">#&gt; 2     Exposure 2017-01-01 2017-12-01</span>
+<span class="co">#&gt; 3         Both 2017-01-01 2017-12-01</span></code></pre></div>
+<pre><code>head(define_analyses_dataframe(da), 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">id</th>
+<th align="left">device_level_source</th>
+<th align="left">device_level</th>
+<th align="left">event_level</th>
+<th align="left">covariate</th>
+<th align="left">covariate_level</th>
+<th align="left">date_range_de_start</th>
+<th align="left">date_range_de_end</th>
+<th align="left">exp_device_level</th>
+<th align="left">exp_covariate_level</th>
+<th align="left">date_range_exposure_start</th>
+<th align="left">date_range_exposure_end</th>
+<th align="left">date_range_de_exp_start</th>
+<th align="left">date_range_de_exp_end</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">1</td>
+<td align="left">device_name</td>
+<td align="left">Bone Cement</td>
+<td align="left">All</td>
+<td align="left">region</td>
+<td align="left">Central</td>
+<td align="left">2017-01-01</td>
+<td align="left">2017-12-01</td>
+<td align="left">Bone Cement</td>
+<td align="left">Central</td>
+<td align="left">2017-01-01</td>
+<td align="left">2017-12-01</td>
+<td align="left">2017-01-01</td>
+<td align="left">2017-12-01</td>
+</tr>
+<tr class="even">
+<td align="right">2</td>
+<td align="left">device_name</td>
+<td align="left">Bone Cement</td>
+<td align="left">All</td>
+<td align="left">region</td>
+<td align="left">West</td>
+<td align="left">2017-01-01</td>
+<td align="left">2017-12-01</td>
+<td align="left">Bone Cement</td>
+<td align="left">West</td>
+<td align="left">2017-01-01</td>
+<td align="left">2017-12-01</td>
+<td align="left">2017-01-01</td>
+<td align="left">2017-12-01</td>
+</tr>
+<tr class="odd">
+<td align="right">3</td>
+<td align="left">device_name</td>
+<td align="left">Bone Cement</td>
+<td align="left">All</td>
+<td align="left">region</td>
+<td align="left">East</td>
+<td align="left">2017-01-01</td>
+<td align="left">2017-12-01</td>
+<td align="left">Bone Cement</td>
+<td align="left">East</td>
+<td align="left">2017-01-01</td>
+<td align="left">2017-12-01</td>
+<td align="left">2017-01-01</td>
+<td align="left">2017-12-01</td>
+</tr>
+</tbody>
+</table>
+<div id="required-arguments-2" class="section level4">
+<h4>Required Arguments</h4>
+<dl>
+<dt><code>deviceevents</code></dt>
+<dd>is a standardized device-event data frame. (<code>class()</code> should contain <code>&quot;mds_de&quot;</code>)
+</dd>
+<dt><code>device_level</code></dt>
+<dd>is the source device variable to analyze by. Access these variable names by submitting <code>attributes(de)$device_hierarchy</code>.
+</dd>
+</dl>
+</div>
+<div id="optional-arguments-2" class="section level4">
+<h4>Optional Arguments</h4>
+<dl>
+<dt><code>event_level</code></dt>
+<dd>is the source event variable to analyze by. Access these variable names by submitting <code>attributes(de)$event_hierarchy</code>.
+</dd>
+<dt><code>exposure</code></dt>
+<dd>is a standardized exposure data frame. (<code>class()</code> should contain <code>&quot;mde_e&quot;</code>)
+</dd>
+<dt><code>date_level</code> and <code>date_level_n</code></dt>
+<dd>are arguments used together to specify the time interval to analyze by. Default of <code>&quot;months&quot;</code> and <code>1</code> analyzes by month. Other examples include <code>&quot;months&quot;</code> and <code>12</code> for yearly, or <code>&quot;days&quot;</code> and <code>7</code> for weekly.
+</dd>
+<dt><code>covariates</code></dt>
+<dd>are variables to analyze within device. For example, <code>c(&quot;region&quot;)</code> analyzes by each level of <code>region</code> within device.
+</dd>
+<dt><code>times_to_calc</code></dt>
+<dd>specifies how many time periods (counting back in time) to analyze for. Time period is defined using <code>date_level</code> and <code>date_level_n</code>.
+</dd>
+</dl>
+</div>
+<div id="what-about-analyses-across-all-events-all-devices-etc" class="section level3">
+<h3>What About Analyses Across All Events, All Devices, etc?</h3>
+<p><strong>It is always assumed that analyses at aggregated levels are desired.</strong> (such as analysis of all events for a given device, or analysis of all events across all devices)</p>
+<p>Aggregated level analysis is easily recognized by the <code>&quot;All&quot;</code> and <code>&quot;Data&quot;</code> values in <code>device_level</code>, <code>event_level</code>, <code>covariate</code>, and <code>covariate_level</code>.</p>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th align="right">id</th>
+<th align="left">device_level_source</th>
+<th align="left">device_level</th>
+<th align="left">event_level</th>
+<th align="left">covariate</th>
+<th align="left">covariate_level</th>
+<th align="left">date_range_de_start</th>
+<th align="left">date_range_de_end</th>
+<th align="left">exp_device_level</th>
+<th align="left">exp_covariate_level</th>
+<th align="left">date_range_exposure_start</th>
+<th align="left">date_range_exposure_end</th>
+<th align="left">date_range_de_exp_start</th>
+<th align="left">date_range_de_exp_end</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>11</td>
+<td align="right">11</td>
+<td align="left">device_name</td>
+<td align="left">Cement, Bone, Vertebroplasty</td>
+<td align="left">All</td>
+<td align="left">region</td>
+<td align="left">West</td>
+<td align="left">2017-02-01</td>
+<td align="left">2017-09-01</td>
+<td align="left">Cement, Bone, Vertebroplasty</td>
+<td align="left">West</td>
+<td align="left">2017-01-01</td>
+<td align="left">2017-12-01</td>
+<td align="left">2017-02-01</td>
+<td align="left">2017-09-01</td>
+</tr>
+<tr class="even">
+<td>12</td>
+<td align="right">12</td>
+<td align="left">device_name</td>
+<td align="left">Cement, Bone, Vertebroplasty</td>
+<td align="left">All</td>
+<td align="left">Data</td>
+<td align="left">All</td>
+<td align="left">2017-01-01</td>
+<td align="left">2017-12-01</td>
+<td align="left">Cement, Bone, Vertebroplasty</td>
+<td align="left">NA</td>
+<td align="left">2017-01-01</td>
+<td align="left">2017-12-01</td>
+<td align="left">2017-01-01</td>
+<td align="left">2017-12-01</td>
+</tr>
+<tr class="odd">
+<td>32</td>
+<td align="right">32</td>
+<td align="left">device_name</td>
+<td align="left">All</td>
+<td align="left">All</td>
+<td align="left">Data</td>
+<td align="left">All</td>
+<td align="left">2017-01-01</td>
+<td align="left">2017-12-01</td>
+<td align="left">All</td>
+<td align="left">NA</td>
+<td align="left">2017-01-01</td>
+<td align="left">2017-12-01</td>
+<td align="left">2017-01-01</td>
+<td align="left">2017-12-01</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="how-to-customize-analyses" class="section level3">
+<h3>How to Customize Analyses</h3>
+<p>There are several options:</p>
+<ul>
+<li>Select certain analyses from the list (e.g. <code>da[[c(1:5, 24:27)]])</code>)</li>
+<li>Rerun <code>define_analyses()</code> with different parameter settings</li>
+<li>Edit values within an individual analysis (e.g. <code>da[[1]]$date_range_exposure['start'] &lt;- as.Date(&quot;2016-10-01&quot;)</code>)</li>
+</ul>
+</div>
+</div>
+<div id="ts" class="section level2">
+<h2><code>time_series()</code> to Generate Counts, Rates, and More</h2>
+<p>Once an analysis has been defined using <code>define_analyses()</code>, the analyses instructions can be executed using <code>time_series()</code>, returning by defined time periods:</p>
+<ul>
+<li>Counts at the device, event, and <em>(optionally)</em> covariate level of interest.</li>
+<li>Event IDs (the <code>key</code> parameter from <code>deviceevent()</code>) for lookup of individual event records.</li>
+<li>Exposure counts</li>
+<li>Exposure IDs (the <code>key</code> parameter from <code>exposure()</code>) for lookup of individual exposure records.</li>
+<li>Disproportionality analysis (DPA) related counts:
+<ul>
+<li>Counts of the device &amp; non-event</li>
+<li>Counts of the non-device &amp; event</li>
+<li>Counts of the non-device &amp; non-event</li>
+</ul></li>
+</ul>
+<p><strong>Basic Usage</strong></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ts &lt;-<span class="st"> </span><span class="kw">time_series</span>(da, de)</code></pre></div>
+<p>Note that <code>time_series()</code> returns, in a list, one time series data frame for every analysis. You can select a time series by submitting <code>ts[[1]]</code>, <code>ts[[2]]</code>, etc.</p>
+<pre><code>head(ts[[1]], 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">time</th>
+<th align="right">nA</th>
+<th align="right">nC</th>
+<th align="right">nB</th>
+<th align="right">nD</th>
+<th align="left">ids</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">17167</td>
+<td align="right">13</td>
+<td align="right">8</td>
+<td align="right">7</td>
+<td align="right">11</td>
+<td align="left">c(“0002249697-2017-00023”, “0002249697-2017-00025”, “0002249697-2017-00027”, “0002249697-2017-00026”, “0002249697-2017-00103”, “0002249697-2017-00173”, “0002249697-2017-00201”, “0002249697-2017-00209”, “0001825034-2017-00195”, “0001822565-2017-00310”, “0002249697-2017-00319”, “0001822565-2017-00339”, “0002249697-2017-00344”)</td>
+</tr>
+<tr class="even">
+<td align="left">17198</td>
+<td align="right">7</td>
+<td align="right">15</td>
+<td align="right">7</td>
+<td align="right">7</td>
+<td align="left">c(“0002249697-2017-00488”, “0002249697-2017-00521”, “9615014-2017-00015”, “9615014-2017-00016”, “MW5067838”, “0002249697-2017-00559”, “0001825034-2017-00895”)</td>
+</tr>
+<tr class="odd">
+<td align="left">17226</td>
+<td align="right">5</td>
+<td align="right">13</td>
+<td align="right">3</td>
+<td align="right">11</td>
+<td align="left">c(“0002249697-2017-00755”, “0002249697-2017-00770”, “0001822565-2017-01529”, “0001825034-2017-01771”, “0002249697-2017-00992”)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Advanced Usage</strong></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ts &lt;-<span class="st"> </span><span class="kw">time_series</span>(
+  da,
+  <span class="dt">deviceevents=</span>de,
+  <span class="dt">exposure=</span>ex)</code></pre></div>
+<pre><code>head(ts[[1]], 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">time</th>
+<th align="right">nA</th>
+<th align="right">nC</th>
+<th align="right">nB</th>
+<th align="right">nD</th>
+<th align="left">ids</th>
+<th align="right">exposure</th>
+<th align="left">ids_exposure</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">17167</td>
+<td align="right">13</td>
+<td align="right">8</td>
+<td align="right">7</td>
+<td align="right">11</td>
+<td align="left">c(“0002249697-2017-00023”, “0002249697-2017-00025”, “0002249697-2017-00027”, “0002249697-2017-00026”, “0002249697-2017-00103”, “0002249697-2017-00173”, “0002249697-2017-00201”, “0002249697-2017-00209”, “0001825034-2017-00195”, “0001822565-2017-00310”, “0002249697-2017-00319”, “0001822565-2017-00339”, “0002249697-2017-00344”)</td>
+<td align="right">8597</td>
+<td align="left">37</td>
+</tr>
+<tr class="even">
+<td align="left">17198</td>
+<td align="right">7</td>
+<td align="right">15</td>
+<td align="right">7</td>
+<td align="right">7</td>
+<td align="left">c(“0002249697-2017-00488”, “0002249697-2017-00521”, “9615014-2017-00015”, “9615014-2017-00016”, “MW5067838”, “0002249697-2017-00559”, “0001825034-2017-00895”)</td>
+<td align="right">5115</td>
+<td align="left">38</td>
+</tr>
+<tr class="odd">
+<td align="left">17226</td>
+<td align="right">5</td>
+<td align="right">13</td>
+<td align="right">3</td>
+<td align="right">11</td>
+<td align="left">c(“0002249697-2017-00755”, “0002249697-2017-00770”, “0001822565-2017-01529”, “0001825034-2017-01771”, “0002249697-2017-00992”)</td>
+<td align="right">10191</td>
+<td align="left">39</td>
+</tr>
+</tbody>
+</table>
+<div id="required-arguments-3" class="section level4">
+<h4>Required Arguments</h4>
+<dl>
+<dt><code>analysis</code></dt>
+<dd>is a single defined analysis (<code>class()</code> should contain <code>&quot;mds_da&quot;</code>) or a list of defined analysis.
+</dd>
+<dt><code>deviceevents</code></dt>
+<dd>is a standardized device-event data frame (<code>class()</code> contains <code>&quot;mds_de&quot;</code>). It is typically the same data frame used to generate <code>analysis</code>, but can be another <code>&quot;mds_de&quot;</code> data frame, such as a cut of the data at a different time. Note if, say, an older dataset is being used, the <code>analysis</code> date ranges must correspond.
+</dd>
+</dl>
+</div>
+<div id="optional-arguments-3" class="section level4">
+<h4>Optional Arguments</h4>
+<dl>
+<dt><code>exposure</code></dt>
+<dd>is a standardized exposure data frame (<code>class()</code> contains <code>&quot;mds_e&quot;</code>). It is typically the same data frame used to generate <code>analysis</code>. Like <code>deviceevents</code>, another data frame may be used, but the <code>analysis</code> instructions must correspond.
+</dd>
+<dt><code>use_hierarchy</code></dt>
+<dd>is a logical value for whether device and event hierarchies should be used for the calculation of disproportionality analysis (DPA) counts. Submit <code>?time_series.mds_da</code> for more details.
+</dd>
+</dl>
+</div>
+<div id="how-to-modify-counts-exposures" class="section level3">
+<h3>How to Modify Counts &amp; Exposures</h3>
+<p>It is not uncommon to adjust event and exposure counts, such as with applications of rolling or moving averages. These adjustments should be applied <strong>after</strong> generating time series data frames from <code>time_series()</code>.</p>
+</div>
+</div>
+<div id="po" class="section level2">
+<h2><code>plot()</code>ing a Time Series</h2>
+<p>Plotting an individual time series generated by <code>time_series()</code> is simple. Simply call <code>plot()</code> on the time series object:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(ts[[<span class="dv">1</span>]])</code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>There are a few custom parameters, including:</p>
+<dl>
+<dt><code>mode</code></dt>
+<dd>with common values of <code>&quot;nA&quot;</code> (representing the device-event of interest), <code>&quot;exposure&quot;</code>, and <code>&quot;rate&quot;</code> (simply <code>&quot;nA&quot;/&quot;exposure&quot;</code>). Less common are <code>&quot;nB&quot;</code>, <code>&quot;nC&quot;</code>, and <code>&quot;nD&quot;</code> representing the cell counts of the disproportionality analysis (DPA) contingency table.
+</dd>
+<dt><code>xlab</code>, <code>ylab</code>, <code>main</code></dt>
+<dd>representing default <code>plot()</code> behavior. By default, axes and title labels are inferred directly from the time series.
+</dd>
+</dl>
+<p>All other parameters are from <code>plot.default()</code>.</p>
+</div>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
