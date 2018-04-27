@@ -4,7 +4,10 @@
 * win-builder
 
 ## R CMD check results
-There were no ERRORs, WARNINGs, or NOTEs.
+There were no ERRORs or WARNINGs. 
+
+There was 1 NOTE.
+I am sending a new submission.
 
 ## Downstream dependencies
 There are no downstream dependencies.
