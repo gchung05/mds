@@ -39,4 +39,4 @@ build$region <- as.character(factor(as.numeric(cut(runif(nrow(build)), 3)),
 # Done
 maude <- build
 
-# devtools::use_data(maude, overwrite=T)
+devtools::use_data(maude, overwrite=T)

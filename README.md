@@ -1,5 +1,6 @@
-[![Travis-CI Build Status](https://travis-ci.org/gchung05/mds.svg?branch=master)](https://travis-ci.org/gchung05/mds)
-<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+[![Travis-CI Build Status](https://travis-ci.org/gchung05/mds.svg?branch=master)](https://travis-ci.org/gchung05/mds) <!-- README.md is generated from README.Rmd. Please edit that file -->
+
 Why Use `mds`?
 --------------
 
@@ -47,6 +48,11 @@ The general workflow to go from data to trending over time is as follows:
 
 ``` r
 library(mds)
+#> 
+#> Attaching package: 'mds'
+#> The following objects are masked _by_ '.GlobalEnv':
+#> 
+#>     maude, sales
 
 # Step 1 - Device Events
 de <- deviceevent(

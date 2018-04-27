@@ -13,6 +13,9 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+load(file="../data/maude.rda")
+load(file="../data/sales.rda")
+library(mds)
 ```
 
 **Why?**
@@ -383,7 +386,7 @@ knitr::kable(head(define_analyses_dataframe(da), 3))
 Aggregated level analysis is easily recognized by the `"All"` and `"Data"` values in `device_level`, `event_level`, `covariate`, and `covariate_level`.
 
 ```{r, echo=FALSE, results='asis'}
-knitr::kable(define_analyses_dataframe(da)[c(24:25, 68:69), ])
+knitr::kable(define_analyses_dataframe(da)[c(11:12, 32), ])
 ```
 
 ### How to Customize Analyses
