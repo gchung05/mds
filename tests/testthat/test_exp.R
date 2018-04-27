@@ -38,11 +38,9 @@ test_that("parameter requirements as expected", {
 })
 # Attribute check
 test_that("attributes are fully described", {
-  expect_equal(names(attributes(a1)), c("names", "row.names", "class",
-                                        "time",
-                                        "device_hierarchy",
-                                        "match_levels",
-                                        "count"))
+  expect_equal(all(names(attributes(a1)) %in% c(
+    "names", "row.names", "class", "time", "device_hierarchy", "match_levels",
+    "count")), T)
   expect_equal(attributes(a1)$time, Ptime)
   expect_equal(attributes(a1)$device_hierarchy,
                setNames(Pdevice_hierarchy, c("device_1")))

@@ -97,12 +97,9 @@ test_that("times_to_calc accepts only legal values", {
 
 # Attribute check
 test_that("attributes are fully described and consistent", {
-  expect_equal(names(attributes(a1)), c("date_level",
-                                        "date_level_n",
-                                        "device_level",
-                                        "prior_used",
-                                        "timestamp",
-                                        "class"))
+  expect_equal(all(names(attributes(a1)) %in% c(
+    "date_level", "date_level_n", "device_level", "prior_used", "timestamp",
+    "class")), T)
   expect_equal(attributes(a1)$date_level, "months")
   expect_equal(attributes(a1)$date_level_n, 1)
   expect_equal(attributes(a1)$device_level, Pdevice_level)
@@ -144,12 +141,9 @@ test_that("barebones individual analysis is specified as expected", {
 
 # Attribute check
 test_that("barebones attributes are fully described and consistent", {
-  expect_equal(names(attributes(a1)), c("date_level",
-                                        "date_level_n",
-                                        "device_level",
-                                        "prior_used",
-                                        "timestamp",
-                                        "class"))
+  expect_equal(all(names(attributes(a1)) %in% c(
+    "date_level", "date_level_n", "device_level", "prior_used", "timestamp",
+    "class")), T)
   expect_equal(attributes(a1)$date_level, "months")
   expect_equal(attributes(a1)$date_level_n, 1)
   expect_equal(attributes(a1)$device_level, Pdevice_level)
@@ -198,8 +192,8 @@ test_that("output structure as expected", {
 a2 <- summary(a1)
 
 test_that("output groups as expected", {
-  expect_equal(names(a2), c("Analyses Timestamp", "Analyses Counts",
-                            "Date Ranges"))
+  expect_equal(all(names(a2) %in% c(
+    "Analyses Timestamp", "Analyses Counts", "Date Ranges")), T)
 })
 test_that("timestamp is equal to analyses", {
   expect_equal(a2$`Analyses Timestamp`, attributes(a1)$timestamp)

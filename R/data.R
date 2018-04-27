@@ -1,10 +1,10 @@
-#' Knee Prosthesis MAUDE Events in 2017
+#' Bone Cement MAUDE Events in 2017
 #'
-#' A dataset containing 627 events reported into the FDA MAUDE database on knee
-#' prostheses in 2017. Data were obtained via the openFDA API
+#' A dataset containing 535 events reported into the FDA MAUDE database on bone
+#' cement in 2017. Data were obtained via the openFDA API
 #' (\url{https://open.fda.gov/api/}).
 #'
-#' @format A data frame with 627 rows and 14 variables. Full variable
+#' @format A data frame with 535 rows and 15 variables. Full variable
 #' descriptions may be found on the FDA Device Reference Guide
 #' (\url{https://open.fda.gov/device/event/reference/}). Note that \code{region}
 #' is a simulated variable not present in MAUDE. Descriptions as follows:
@@ -46,7 +46,7 @@
 #' random normal distribution weighted by the number of reported events by
 #' device and country.
 #'
-#' @format A data frame with 2520 rows and 4 variables:
+#' @format A data frame with 360 rows and 4 variables:
 #' \describe{
 #'   \item{device_name}{Name of the device mapped from the \code{maude} dataset.}
 #'   \item{region}{Geographical region mapped from the \code{maude} dataset.}

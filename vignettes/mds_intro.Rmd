@@ -58,7 +58,7 @@ The `mds` package provides a standardized framework to address these challenges:
 
 ## Data: MAUDE and Simulated Sales
 
-Our example dataset `maude` was queried from the [FDA MAUDE API](https://open.fda.gov/api/) and contains 627 reported events on knee prostheses in 2017. Furthermore, a simulated exposure dataset `sales` was generated to provide denominator data for our knee implant events.
+Our example dataset `maude` was queried from the [FDA MAUDE API](https://open.fda.gov/api/) and contains 535 reported events on bone cement in 2017. Furthermore, a simulated exposure dataset `sales` was generated to provide denominator data for our bone cement events.
 
 ```{r}
 library(mds)

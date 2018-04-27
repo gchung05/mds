@@ -3,15 +3,19 @@ maude <- data.frame()
 myapikey <- "InABhsxonsLjbmvRxjevZ4jpyMNcYmaJf9vY5eHb"
 initst <- 20170101
 initend <- 20171231
+searchstring <- "knee+prosthesis"
+searchstring <- "bone+cement"
 while(initst <= initend){
   query <- paste0(
     "https://api.fda.gov/device/event.json?",
     "api_key=", myapikey,
-    "&search=device.generic_name:\"knee+prosthesis\"",
-    "+AND+date_received:[", initst, "+TO+", initend, "]",
+    "&search=device.generic_name:\"",
+    searchstring,
+    "\"+AND+date_received:[", initst, "+TO+", initend, "]",
     "&limit=100")
   this <- jsonlite::fromJSON(query)$results
   maude <- plyr::rbind.fill(maude, this)
+  range(as.numeric(maude$date_received))
   initst <- as.numeric(max(this$date_received)) + 1
 }
 

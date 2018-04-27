@@ -17,4 +17,4 @@ for (i in 1:nrow(wts)){
   }
 }
 
-# devtools::use_data(sales, overwrite=T)
+devtools::use_data(sales, overwrite=T)
