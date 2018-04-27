@@ -10,7 +10,7 @@ define_analyses_dataframe(inlist)
 \item{inlist}{Object of class \code{mds_das}}
 }
 \value{
-A data frame with each row repesenting an analysis.
+A data frame with each row representing an analysis.
 }
 \description{
 Returns a data frame summarizing all defined analyses from the
