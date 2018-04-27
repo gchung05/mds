@@ -330,7 +330,7 @@ define_analyses <- function(
 #' \code{mds_das} object.
 #'
 #' @param inlist Object of class \code{mds_das}
-#' @return A data frame with each row repesenting an analysis.
+#' @return A data frame with each row representing an analysis.
 #' @export
 define_analyses_dataframe <- function(
   inlist
