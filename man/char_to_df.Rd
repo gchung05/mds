@@ -21,3 +21,4 @@ Converts a character vector into the column names of an empty data frame.
 Used in conjunction with \code{check_names} parameter of
 \code{input_param_checker()}
 }
+\keyword{internal}

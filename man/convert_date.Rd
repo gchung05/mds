@@ -27,3 +27,4 @@ attributes \code{adder} (function that adds units),
 Converts a \code{Date} vector into its equivalent daily, monthly, yearly,
 etc... \code{Date} vector.
 }
+\keyword{internal}

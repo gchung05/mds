@@ -14,6 +14,7 @@
 #' If \code{NULL}, no max length check will occur.
 #'
 #' @return Stop error, if an error is found. Else nothing.
+#' @keywords internal
 input_param_checker <- function(
   x,
   check_class=NULL,
@@ -67,6 +68,7 @@ input_param_checker <- function(
 #' @return Converted \code{Date} vector of class \code{mdpms.Date} with
 #' attributes \code{adder} (function that adds units),
 #' \code{convert_to_n}, and \code{convert_type}.
+#' @keywords internal
 convert_date <- function(
   x,
   convert_type="months",
@@ -106,6 +108,7 @@ convert_date <- function(
 #'
 #' @param x Input character vector.
 #' @return Empty data frame where columns are named \code{x}.
+#' @keywords internal
 char_to_df <- function(
   x
 ){
@@ -120,6 +123,7 @@ char_to_df <- function(
 #' @param x Numeric input vector
 #' @param f Either \code{min} or \code{max}
 #' @return Numeric value corresponding to \code{min} or \code{max}, or \code{NA}
+#' @keywords internal
 fNA <- function(x, f){
   if (all(is.na(x))){
     NA
@@ -133,6 +137,7 @@ fNA <- function(x, f){
 #' @param x String input of device name, such as \code{"device_1"},
 #' \code{"device_2"}, etc.
 #' @return String representation of the next device level variable
+#' @keywords internal
 next_dev <- function(
   x
 ){
@@ -144,6 +149,7 @@ next_dev <- function(
 #' @param x String input of event name, such as \code{"event_1"},
 #' \code{"event_2"}, etc.
 #' @return String representation of the next event level variable
+#' @keywords internal
 next_ev <- function(
   x
 ){

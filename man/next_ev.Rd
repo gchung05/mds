@@ -18,3 +18,4 @@ String representation of the next event level variable
 Return next level up event
 Returns the variable name of the next level in the event hierarchy
 }
+\keyword{internal}

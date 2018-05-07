@@ -21,3 +21,4 @@ Min/Max With All NA's Allowed
 Min and Max functions that allows the vector \code{x} to be \code{NA}, where
 \code{f} is \code{min} or \code{max}
 }
+\keyword{internal}

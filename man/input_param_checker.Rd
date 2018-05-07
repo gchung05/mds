@@ -30,3 +30,4 @@ Stop error, if an error is found. Else nothing.
 \description{
 Verifies correct class and, optionally, verifies existence in a data frame
 }
+\keyword{internal}
