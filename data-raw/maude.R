@@ -1,6 +1,6 @@
 # Query MAUDE
 maude <- data.frame()
-myapikey <- "InABhsxonsLjbmvRxjevZ4jpyMNcYmaJf9vY5eHb"
+myapikey <- Sys.getenv("FDAapiKey")
 initst <- 20170101
 initend <- 20171231
 searchstring <- "knee+prosthesis"
