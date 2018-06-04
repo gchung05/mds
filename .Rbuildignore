@@ -1,10 +1,11 @@
-^packrat/
+^packrat/$
 ^\.Rprofile$
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^data-raw$
-^tests/tests.R
+^tests/tests\.R$
 ^README\.Rmd$
 ^README-.*\.png$
 ^\.travis\.yml$
 ^cran-comments\.md$
+^NEWS\.md$

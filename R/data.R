@@ -55,3 +55,14 @@
 #' }
 #' @source Random normal distribution using \code{rnorm()}.
 "sales"
+
+#' Example List of mds_ts Time Series Objects
+#'
+#' An example list of time series objects (class \code{mds_ts}) generated using
+#' the \code{mds} package.
+#'
+#' @format A list of 3 elements each of class \code{mds_ts}
+#' @source See \code{?maude} and \code{?sales} for source device-event and
+#' exposure data. See \code{?mds::time_series} for how to generate \code{mds_ts}
+#' time series.
+"mds_ts"
