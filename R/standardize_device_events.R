@@ -196,6 +196,20 @@ deviceevent <- function(
   if (!is.null(dscr)) dataset <- cbind.data.frame(dataset,
                                                   data.frame(v_dsc,
                                                              stringsAsFactors=F))
+  if (!is.null(dscr)){
+    for(i in 1:length(v_dsc)){
+      if ("list" %in% class(v_dsc[[i]])){
+        thiscol <- data.frame(I(v_dsc[[i]]))
+      } else{
+        thiscol <- data.frame(v_dsc[[i]], stringsAsFactors=F)
+      }
+      names(thiscol) <- names(v_dsc[i])
+      if (!exists("allcol")){
+        allcol <- thiscol
+      } else allcol <- cbind(allcol, thiscol)
+    }
+    dataset <- cbind.data.frame(dataset, allcol)
+  }
 
   # Cleanup
   # -------
