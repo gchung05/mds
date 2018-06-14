@@ -193,9 +193,6 @@ deviceevent <- function(
   if (!is.null(implant_days)) dataset <- cbind.data.frame(dataset,
                                                           data.frame(v_iday))
   if (!is.null(covs)) dataset <- cbind.data.frame(dataset, data.frame(v_cov))
-  if (!is.null(dscr)) dataset <- cbind.data.frame(dataset,
-                                                  data.frame(v_dsc,
-                                                             stringsAsFactors=F))
   if (!is.null(dscr)){
     for(i in 1:length(v_dsc)){
       if ("list" %in% class(v_dsc[[i]])){
