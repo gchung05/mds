@@ -96,7 +96,7 @@ exposure <- function(
                       check_names=data_frame)
   input_param_checker(match_levels, check_class="character",
                       check_names=data_frame)
-  input_param_checker(count, check_class="numeric",
+  input_param_checker(count, check_class=c("numeric", "integer"),
                       check_names=data_frame)
 
   # Address each variable

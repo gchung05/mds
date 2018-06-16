@@ -14,8 +14,7 @@ UNDER DEVELOPMENT
 - Feature allowing total events (concept of reporting fraction) as an exposure data frame
 
 **Bugfixes**
-
-- None yet
+- `exposure() total_events` parameter now accepts integer class
 
 `mds` 0.1.0
 ---------------------------------------
