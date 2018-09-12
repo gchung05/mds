@@ -12,8 +12,11 @@ UNDER DEVELOPMENT
 - Outputs of `define_analyses()` and `time_series()` are clearer about the device and event one-up hierarchy levels
 - Alongside more explicit references, corresponding updates to nLabels attribute of `time_series()`
 - Feature allowing total events (concept of reporting fraction) as an exposure data frame
+- Warning and/or option to drop in `define_analyses()` if device_level or event_level is missing.
+- Better cross-referenced and linked documentation
 
 **Bugfixes**
+
 - `exposure() total_events` parameter now accepts integer class
 
 `mds` 0.1.0
