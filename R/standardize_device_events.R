@@ -219,10 +219,31 @@ deviceevent <- function(
                   "rows with missing time."))
     dataset <- dataset[!is.na(dataset$time), ]
   }
-  if (sum(is.na(dataset$device_1)) > 0){
-    warning(paste("Dropping", sum(is.na(dataset$device_1)),
-                  "rows with missing lowest level device_hierarchy."))
-    dataset <- dataset[!is.na(dataset$device_1), ]
+  # Missing device levels
+  for (i in names(v_dev)){
+    if (sum(is.na(dataset[[i]])) > 0){
+      warning(paste("Dropping", sum(is.na(dataset[[i]])),
+                    "rows with missing", i, "device_hierarchy."))
+      dataset <- dataset[!is.na(dataset[[i]]), ]
+    }
+  }
+  # Missing event levels
+  for (i in names(v_ev)){
+    if (sum(is.na(dataset[[i]])) > 0){
+      warning(paste("Dropping", sum(is.na(dataset[[i]])),
+                    "rows with missing", i, "event_hierarchy."))
+      dataset <- dataset[!is.na(dataset[[i]]), ]
+    }
+  }
+  # Missing covariate levels
+  if (!is.null(covs)){
+    for (i in names(v_cov)){
+      if (sum(is.na(dataset[[i]])) > 0){
+        warning(paste("Dropping", sum(is.na(dataset[[i]])),
+                      "rows with missing", i, "covariate"))
+        dataset <- dataset[!is.na(dataset[[i]]), ]
+      }
+    }
   }
 
   # Save the output class

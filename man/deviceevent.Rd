@@ -4,8 +4,9 @@
 \alias{deviceevent}
 \title{MD-PMS Device Event Data Frame}
 \usage{
-deviceevent(data_frame, time, device_hierarchy, event_hierarchy, key = NULL,
-  covariates = NULL, descriptors = NULL, implant_days = NULL)
+deviceevent(data_frame, time, device_hierarchy, event_hierarchy,
+  key = NULL, covariates = NULL, descriptors = NULL,
+  implant_days = NULL)
 }
 \arguments{
 \item{data_frame}{The input data frame requiring components specified in the
