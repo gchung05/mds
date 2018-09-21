@@ -1,6 +1,17 @@
-`mds` 0.1.1
+`mds` 0.2.1
 ---------------------------------------
 UNDER DEVELOPMENT
+
+**Potential updates**
+
+- More descriptive `define_analyses()` and `time_series()` outputs, including explicit references to device, event, and covariate levels.
+- Alongside more explicit references, corresponding updates to nLabels attribute of `time_series()`
+- Outputs of `define_analyses()` and `time_series()` are clearer about the device and event one-up hierarchy levels
+- Feature allowing total events (concept of reporting fraction) as an exposure data frame
+- Facility for handling multiple events on the same actual occurrence (such as stroke and bleeding during the same operation)
+
+`mds` 0.2.0
+---------------------------------------
 
 **Implemented Updates**
 
@@ -17,14 +28,6 @@ UNDER DEVELOPMENT
 - `exposure()`: Drop records with missing `device_level`s at all hierarchy levels
 - `exposure()`: Drop records with missing `event_level`s
 - `exposure()`: Drop records with missing match levels
-
-**Potential updates**
-
-- More descriptive `define_analyses()` and `time_series()` outputs, including explicit references to device, event, and covariate levels.
-- Alongside more explicit references, corresponding updates to nLabels attribute of `time_series()`
-- Outputs of `define_analyses()` and `time_series()` are clearer about the device and event one-up hierarchy levels
-- Feature allowing total events (concept of reporting fraction) as an exposure data frame
-- Facility for handling multiple events on the same actual occurrence (such as stroke and bleeding during the same operation)
 
 `mds` 0.1.0
 ---------------------------------------
