@@ -7,4 +7,4 @@
 There were no ERRORs, WARNINGs, or NOTEs. 
 
 ## Downstream dependencies
-There are no downstream dependencies.
+I have run R CMD check on downstream dependency mdsstat and the package passed.

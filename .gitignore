@@ -6,3 +6,4 @@
 *.Rproj
 tests/tests.R
 inst/doc
+revdep

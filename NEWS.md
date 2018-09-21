@@ -10,7 +10,7 @@ UNDER DEVELOPMENT
 - Feature allowing total events (concept of reporting fraction) as an exposure data frame
 - Facility for handling multiple events on the same actual occurrence (such as stroke and bleeding during the same operation)
 
-`mds` 0.2.0
+# `mds` 0.2.0
 ---------------------------------------
 
 **Implemented Updates**
@@ -29,7 +29,7 @@ UNDER DEVELOPMENT
 - `exposure()`: Drop records with missing `event_level`s
 - `exposure()`: Drop records with missing match levels
 
-`mds` 0.1.0
+# `mds` 0.1.0
 ---------------------------------------
 
 - Initial Release. Yay!
