@@ -93,6 +93,6 @@ ts <- time_series(
 
 ## Plot Time Series of Counts and Rates
 
-```{r, fig.show='hold'}
+```{r, fig.show='hold', eval=F}
 plot(ts[[4]], "rate", type='l')
 ```

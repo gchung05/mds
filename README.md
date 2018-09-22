@@ -87,5 +87,3 @@ Plot Time Series of Counts and Rates
 ``` r
 plot(ts[[4]], "rate", type='l')
 ```
-
-![](README-unnamed-chunk-3-1.png)
