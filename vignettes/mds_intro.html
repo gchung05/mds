@@ -11,7 +11,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-<meta name="date" content="2018-04-27" />
+<meta name="date" content="2018-09-21" />
 
 <title>Standardizing Medical Devices Surveillance Data</title>
 
@@ -68,7 +68,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 
 <h1 class="title toc-ignore">Standardizing Medical Devices Surveillance Data</h1>
-<h4 class="date"><em>2018-04-27</em></h4>
+<h4 class="date"><em>2018-09-21</em></h4>
 
 
 
@@ -109,7 +109,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p><code>mds</code> data and analysis standards allow for seamless application of various statistical trending algorithms via the <code>mdsstat</code> package (under development).</p>
 <div id="data-maude-and-simulated-sales" class="section level2">
 <h2>Data: MAUDE and Simulated Sales</h2>
-<p>Our example dataset <code>maude</code> was queried from the <a href="https://open.fda.gov/api/">FDA MAUDE API</a> and contains 535 reported events on bone cement in 2017. Furthermore, a simulated exposure dataset <code>sales</code> was generated to provide denominator data for our bone cement events.</p>
+<p>Our example dataset <code>maude</code> was queried from the <a href="https://open.fda.gov">FDA MAUDE API</a> and contains 535 reported events on bone cement in 2017. Furthermore, a simulated exposure dataset <code>sales</code> was generated to provide denominator data for our bone cement events.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(mds)
 <span class="kw">dim</span>(maude)
 <span class="co">#&gt; [1] 535  15</span>
@@ -278,7 +278,7 @@ ts &lt;-<span class="st"> </span><span class="kw">time_series</span>(
 <h3>Summarize Defined Analyses</h3>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(da)
 <span class="co">#&gt; $`Analyses Timestamp`</span>
-<span class="co">#&gt; [1] &quot;2018-04-27 01:03:57 EDT&quot;</span>
+<span class="co">#&gt; [1] &quot;2018-09-21 21:49:55 PDT&quot;</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; $`Analyses Counts`</span>
 <span class="co">#&gt;         Total Analyses Analyses with Exposure          Device Levels </span>
@@ -673,7 +673,7 @@ ts &lt;-<span class="st"> </span><span class="kw">time_series</span>(
 <p>Note that <code>define_analyses()</code> returns a list of individual analyses. Each individual analysis contains a set of instructions. You can view an analysis by submitting <code>da[[1]]</code>, <code>da[[2]]</code>, etc., but a less cumbersome overview is possible using <code>summary()</code> and <code>define_analyses_dataframe()</code>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(da)
 <span class="co">#&gt; $`Analyses Timestamp`</span>
-<span class="co">#&gt; [1] &quot;2018-04-27 01:04:01 EDT&quot;</span>
+<span class="co">#&gt; [1] &quot;2018-09-21 21:50:00 PDT&quot;</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; $`Analyses Counts`</span>
 <span class="co">#&gt;         Total Analyses Analyses with Exposure          Device Levels </span>
@@ -765,7 +765,7 @@ ts &lt;-<span class="st"> </span><span class="kw">time_series</span>(
   <span class="dt">covariates=</span><span class="st">&quot;region&quot;</span>)</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(da)
 <span class="co">#&gt; $`Analyses Timestamp`</span>
-<span class="co">#&gt; [1] &quot;2018-04-27 01:04:01 EDT&quot;</span>
+<span class="co">#&gt; [1] &quot;2018-09-21 21:50:00 PDT&quot;</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; $`Analyses Counts`</span>
 <span class="co">#&gt;         Total Analyses Analyses with Exposure          Device Levels </span>
