@@ -182,9 +182,6 @@ define_analyses <- function(
   # Loop through every level of the current device variable
   i <- 1
   while (i <= length(uniq_devs)){
-    
-    cat("\nuniq_devs[i]=", uniq_devs[i])
-    
     devDE <- deviceevents
     # Filter for the current device
     # device is a holding variable
@@ -200,9 +197,6 @@ define_analyses <- function(
     } else uniq_dev_1up <- unique(as.character(devDE[[dev_1up]]))
     
     for (i1 in uniq_dev_1up){
-      
-      cat("\ni1=", i1)
-      
       if (!is.na(uniq_dev_1up[1])){
         devDE1up <- devDE[devDE[[dev_1up]] == i1, ]
       } else devDE1up <- devDE
@@ -228,9 +222,6 @@ define_analyses <- function(
       # Loop through every level of the current event variable
       j <- 1
       while (j <= length(uniq_evts)){
-        
-        cat("\nuniq_evts[j]=", uniq_evts[j])
-        
         devDEev <- devDE1up
         # Filter for the current event
         # event is a holding variable
