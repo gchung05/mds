@@ -25,7 +25,6 @@ a1 <- define_analyses(
   exposure=Pexp,
   covariates=Pcovariates)
 
-
 # Basic
 # -----
 
@@ -168,8 +167,119 @@ test_that("time change attributes are consistent", {
 })
 
 
+# Hierarchy Behavior
+# ------------------
+
+# Reference example (single level device, no event, covariate)
+Pdevice_level="device_name"
+Pcovariates="region"
+a1 <- define_analyses(
+  Pde, Pdevice_level,
+  exposure=Pexp,
+  covariates=Pcovariates)
+test_that("device hierarchy as expected for single-level device", {
+  expect_equal(names(a1[[1]]$device_level), "device_1")
+  expect_equal(names(a1[[1]]$device_1up), "device_1")
+})
+test_that("event hierarchy as expected for single-level device", {
+  expect_equal(names(a1[[1]]$event_level), "event_1")
+  expect_equal(names(a1[[1]]$event_1up), "event_1")
+})
+test_that("exposure hierarchy as expected for single-level device", {
+  expect_equal(names(a1[[1]]$exp_device_level), "device_1")
+  expect_equal(names(a1[[1]]$exp_device_1up), "device_1")
+})
+
+# Multi-level device
+Pdevice_level="device_class"
+a1 <- define_analyses(
+  Pde, 
+  device_level=Pdevice_level,
+  exposure=Pexp,
+  covariates=Pcovariates)
+test_that("device hierarchy as expected for multi-level device", {
+  expect_equal(names(a1[[1]]$device_level), "device_2")
+  expect_equal(names(a1[[1]]$device_1up), "device_1")
+})
+test_that("event hierarchy as expected for multi-level device", {
+  expect_equal(names(a1[[1]]$event_level), "event_1")
+  expect_equal(names(a1[[1]]$event_1up), "event_1")
+})
+test_that("exposure hierarchy as expected for multi-level device", {
+  expect_true(is.na(names(a1[[1]]$exp_device_level)))
+  expect_equal(names(a1[[1]]$exp_device_1up), "device_1")
+})
+
+# Single-level event
+Pdevice_level="device_name"
+Pcovariates="region"
+Pevent_level="event_type"
+a1 <- define_analyses(
+  Pde, 
+  device_level=Pdevice_level,
+  event_level=Pevent_level,
+  exposure=Pexp,
+  covariates=Pcovariates)
+test_that("device hierarchy as expected for single-level event", {
+  expect_equal(names(a1[[1]]$device_level), "device_1")
+  expect_equal(names(a1[[1]]$device_1up), "device_1")
+})
+test_that("event hierarchy as expected for single-level event", {
+  expect_equal(names(a1[[1]]$event_level), "event_1")
+  expect_equal(names(a1[[1]]$event_1up), "event_1")
+})
+test_that("exposure hierarchy as expected for single-level event", {
+  expect_equal(names(a1[[1]]$exp_device_level), "device_1")
+  expect_equal(names(a1[[1]]$exp_device_1up), "device_1")
+})
+
+# Multi-level event
+Pevent_level="medical_specialty_description"
+a1 <- define_analyses(
+  Pde, 
+  device_level=Pdevice_level,
+  event_level=Pevent_level,
+  exposure=Pexp,
+  covariates=Pcovariates)
+test_that("device hierarchy as expected for multi-level event", {
+  expect_equal(names(a1[[1]]$device_level), "device_1")
+  expect_equal(names(a1[[1]]$device_1up), "device_1")
+})
+test_that("event hierarchy as expected for multi-level event", {
+  expect_equal(names(a1[[1]]$event_level), "event_2")
+  expect_equal(names(a1[[1]]$event_1up), "event_1")
+})
+test_that("exposure hierarchy as expected for multi-level event", {
+  expect_equal(names(a1[[1]]$exp_device_level), "device_1")
+  expect_equal(names(a1[[1]]$exp_device_1up), "device_1")
+})
+
+# Multi-level device, multi-level event
+Pdevice_level="device_class"
+Pevent_level="medical_specialty_description"
+a1 <- define_analyses(
+  Pde, 
+  device_level=Pdevice_level,
+  event_level=Pevent_level,
+  exposure=Pexp,
+  covariates=Pcovariates)
+test_that("device hierarchy as expected for multi-level device & event", {
+  expect_equal(names(a1[[1]]$device_level), "device_2")
+  expect_equal(names(a1[[1]]$device_1up), "device_1")
+})
+test_that("event hierarchy as expected for multi-level device & event", {
+  expect_equal(names(a1[[1]]$event_level), "event_2")
+  expect_equal(names(a1[[1]]$event_1up), "event_1")
+})
+test_that("exposure hierarchy as expected for multi-level device & event", {
+  expect_true(is.na(names(a1[[1]]$exp_device_level)))
+  expect_equal(names(a1[[1]]$exp_device_1up), "device_1")
+})
+
+
+# ------------------------------------------------------------------------------
 # define_analyses_dataframe()
-# ---------------------------
+# ------------------------------------------------------------------------------
 
 # Reference example
 a1 <- define_analyses(
