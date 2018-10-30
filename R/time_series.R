@@ -148,20 +148,7 @@ time_series.mds_da <- function(
     thes <- thes[thes[[names(analysis$exp_device_level)]] %in%
                    analysis$exp_device_level, ]
   }
-  
-  # # Device - 1 Level Up
-  # if (!is.na(analysis$device_1up)){
-  #   dev1up <- analysis$device_1up
-  #   this$isdev <- factor(this[[names(analysis$device_level)]] %in% devlvl,
-  #                        levels=c(T, F))
-  #   if (nrow(thes) > 0 & !is.na(analysis$exp_device_level) &
-  #       analysis$exp_device_level != "All"){
-  #     thes <- thes[thes[[names(analysis$exp_device_level)]] %in%
-  #                    analysis$exp_device_level, ]
-  #   }
-  # }
-  
-  # Event
+  # Event - Primary
   if (analysis$event_level == "All"){
     evlvl <- unique(this[[names(analysis$event_level)]])
   } else evlvl <- analysis$event_level
@@ -205,35 +192,40 @@ time_series.mds_da <- function(
   }
   dpa <- length(atype) > 1
 
-  # Filter device-events to 1-level up hierarchy, if needed
-  # -------------------------------------------------------
+  # Filter to 1-level up hierarchy, if needed
+  # -----------------------------------------
   nextdev <- nextev <- NULL
   if (dpa & use_hierarchy){
     if ("isdev" %in% atype){
-      # Filter to 1-level up device hierarchy
+      # Filter device-events to 1-level up device hierarchy
       nextdev <- next_dev(names(analysis$device_level))
-      if (nextdev %in% names(this)){
+      if (nextdev %in% names(this) & !is.na(analysis$device_1up) &
+        nextdev == names(analysis$device_1up)){
         nmiss <- sum(is.na(this[[nextdev]]))
         if (nmiss > 0){
           warning(paste("Dropping", nmiss, "records with missing", nextdev))
           this <- this[!is.na(this[[nextdev]]), ]
         }
-        nextdev <- stats::setNames(this[this$isdev == T, ][[nextdev]][1],
-                                   nextdev)
-        this <- this[this[[names(nextdev)]] == nextdev, ]
+        this <- this[this[[nextdev]] %in% analysis$device_1up, ]
+        # Also filter exposures
+        if (nrow(thes) > 0 & !is.na(analysis$exp_device_1up) &
+            analysis$exp_device_1up != "All" &
+            nextdev == names(analysis$exp_device_1up)){
+          thes <- thes[thes[[nextdev]] %in% analysis$exp_device_1up, ]
+        }
       }
     }
     if ("isev" %in% atype){
-      # Filter to 1-level up event hierarchy
+      # Filter device-events to 1-level up event hierarchy
       nextev <- next_ev(names(analysis$event_level))
-      if (nextev %in% names(this)){
+      if (nextev %in% names(this) & !is.na(analysis$event_1up) &
+          nextev == names(analysis$event_1up)){
         nmiss <- sum(is.na(this[[nextev]]))
         if (nmiss > 0){
           warning(paste("Dropping", nmiss, "records with missing", nextev))
           this <- this[!is.na(this[[nextev]]), ]
         }
-        nextev <- stats::setNames(this[this$isev == T, ][[nextev]][1], nextev)
-        this <- this[this[[names(nextev)]] == nextev, ]
+        this <- this[this[[nextev]] %in% analysis$event_1up]
       }
     }
   }
@@ -297,8 +289,12 @@ time_series.mds_da <- function(
       analysis$event_level
     } else if (x == "iscov"){
       stats::setNames(analysis$covariate_level, analysis$covariate)
+      # And then in here!!!
+      # Why not just name the nA level all levels? dev, ev, cov, and dev1up ev1up?
     }
   })
+  # How about levels of nB, nC, nD???
+
   # Level of the entire contingency table
   if (dpa){
     nABCD <- lapply(atype, function(x){
@@ -321,6 +317,9 @@ time_series.mds_da <- function(
     nLabels$rows <- paste0(names(nABCD[[1]]), ":", nABCD[[1]])
     nLabels$cols <- paste0(names(nABCD[[2]]), ":", nABCD[[2]])
   }
+
+  # I am here!!!
+  # Fix labels nA, nABCD, nLabels (why is nABCd cols not showing the right level?)
 
   # Save the output class
   # ---------------------
