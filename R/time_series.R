@@ -148,17 +148,19 @@ time_series.mds_da <- function(
     thes <- thes[thes[[names(analysis$exp_device_level)]] %in%
                    analysis$exp_device_level, ]
   }
-  # Device - 1 Level Up
-  if (!is.na(analysis$device_1up)){
-    dev1up <- analysis$device_1up
-    this$isdev <- factor(this[[names(analysis$device_level)]] %in% devlvl,
-                         levels=c(T, F))
-    if (nrow(thes) > 0 & !is.na(analysis$exp_device_level) &
-        analysis$exp_device_level != "All"){
-      thes <- thes[thes[[names(analysis$exp_device_level)]] %in%
-                     analysis$exp_device_level, ]
-    }
-  }
+  
+  # # Device - 1 Level Up
+  # if (!is.na(analysis$device_1up)){
+  #   dev1up <- analysis$device_1up
+  #   this$isdev <- factor(this[[names(analysis$device_level)]] %in% devlvl,
+  #                        levels=c(T, F))
+  #   if (nrow(thes) > 0 & !is.na(analysis$exp_device_level) &
+  #       analysis$exp_device_level != "All"){
+  #     thes <- thes[thes[[names(analysis$exp_device_level)]] %in%
+  #                    analysis$exp_device_level, ]
+  #   }
+  # }
+  
   # Event
   if (analysis$event_level == "All"){
     evlvl <- unique(this[[names(analysis$event_level)]])
