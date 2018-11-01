@@ -168,26 +168,28 @@ time_series.mds_da <- function(
 
   # Identify the type of analysis
   # -----------------------------
+  # Note: In the future for covariate by device by event level analysis (3D),
+  # atype may be modified to return a vector of c("iscov", "isdev", "isev")
   if (analysis$covariate_level != "All"){
     # Covariate level analysis
     if (analysis$event_level != "All"){
       # Covariate by event level analysis
-      atype <- c("iscov", "isev")
+      atype <- stats::setNames(c("iscov", "isev"), c("Covariate", "Event"))
     } else if (analysis$device_level != "All"){
       # Covariate by device level analysis
-      atype <- c("iscov", "isdev")
+      atype <-  stats::setNames(c("iscov", "isdev"), c("Covariate", "Device"))
     } else{
       # Covariate only analysis
-      atype <- "iscov"
+      atype <-  stats::setNames("iscov", c("Covariate"))
     }
   } else{
     # Non-covariate level analysis
     if (analysis$event_level != "All"){
       # Device by event level analysis
-      atype <- c("isdev", "isev")
+      atype <-  stats::setNames(c("isdev", "isev"), c("Device", "Event"))
     } else{
       # Device only analysis
-      atype <- "isdev"
+      atype <- stats::setNames("isdev", c("Device"))
     }
   }
   dpa <- length(atype) > 1
@@ -281,54 +283,73 @@ time_series.mds_da <- function(
 
   # Define output class attributes
   # ------------------------------
-  # Level of nA
-  nA <- lapply(atype, function(x){
-    if (x == "isdev"){
-      analysis$device_level
-    } else if (x == "isev"){
-      analysis$event_level
-    } else if (x == "iscov"){
-      stats::setNames(analysis$covariate_level, analysis$covariate)
-      # And then in here!!!
-      # Why not just name the nA level all levels? dev, ev, cov, and dev1up ev1up?
-    }
-  })
-  # How about levels of nB, nC, nD???
-
-  # Level of the entire contingency table
-  if (dpa){
-    nABCD <- lapply(atype, function(x){
-      if (x == "isdev"){
-        if (is.null(nextdev)){
-          stats::setNames("All", names(analysis$device_level))
-        } else nextdev
-      } else if (x == "isev"){
-        if (is.null(nextev)){
-          stats::setNames("All", names(analysis$event_level))
-        } else nextev
-      } else if (x == "iscov"){
-        stats::setNames("All", analysis$covariate)
+  # Determine if 1-Ups exist semantically
+  dev_diff <- !is.na(analysis$device_1up) & names(analysis$device_level) !=
+    names(analysis$device_1up)
+  ev_diff <- !is.na(analysis$event_1up) & names(analysis$event_level) !=
+    names(analysis$event_1up)
+  # Construct the labels for the analysis levels and (if dpa) contingency table
+  for (i in c(1:length(atype))){
+    if (names(atype)[i] == "Covariate"){
+      nhere <- analysis$covariate
+      lab <- paste(nhere, analysis$covariate_level)
+      notlab <- paste(nhere, "NOT", analysis$covariate_level)
+    } else if (names(atype)[i] == "Device"){
+      nhere <- analysis$device_level_source
+      lab <- paste(nhere, analysis$device_level)
+      notlab <- paste(nhere, "NOT", analysis$device_level)
+      # 1 up device presence
+      if (dev_diff){
+        lab1up <- paste("WITHIN", analysis$device_1up_source,
+                        analysis$device_1up)
+        nhere <- paste(nhere, lab1up)
+        lab <- paste(lab, lab1up)
+        notlab <- paste(notlab, lab1up)
       }
-    })
-  } else nABCD <- NULL
-  # nA-nD English labels
-  nLabels <- list(nA=sapply(nA, function(x) paste0(names(x), ":", x)))
-  if (dpa){
-    nLabels$rows <- paste0(names(nABCD[[1]]), ":", nABCD[[1]])
-    nLabels$cols <- paste0(names(nABCD[[2]]), ":", nABCD[[2]])
+    } else if (names(atype)[i] == "Event"){
+      nhere <- analysis$event_level_source
+      lab <- paste(nhere, analysis$event_level)
+      notlab <- paste(nhere, "NOT", analysis$event_level)
+      # 1 up event presence
+      if (ev_diff){
+        lab1up <- paste("WITHIN", analysis$event_1up_source,
+                        analysis$event_1up)
+        nhere <- paste(nhere, lab1up)
+        lab <- paste(lab, lab1up)
+        notlab <- paste(notlab, lab1up)
+      }
+    }
+    # Assign row and columns (only 2D analysis support so far)
+    if (i == 1){
+      nRow <- nhere
+      nA <- lab
+      nB <- lab
+      nC <- notlab
+      nD <- notlab
+    } else if (i == 2){
+      nCol <- nhere
+      nA <- paste0(nA, ":", lab)
+      nB <- paste0(nB, ":", lab)
+      nC <- paste0(nC, ":", notlab)
+      nD <- paste0(nD, ":", notlab)
+    }
   }
-
-  # I am here!!!
-  # Fix labels nA, nABCD, nLabels (why is nABCd cols not showing the right level?)
-
+  nABCD <- paste(nRow, "by", nCol)
+  # Save DPA details
+  if (dpa){
+    dpa_dtl <- list(nA=nA, nB=nB, nC=nC, nD=nD, nRow=nRow, nCol=nCol,
+                    nABCD=nABCD)
+  } else{
+    dpa_dtl <- NULL
+  }
   # Save the output class
   # ---------------------
   out <- structure(ts,
+                   analysis=analysis,
                    nA=nA,
-                   nABCD=nABCD,
-                   nLabels=nLabels,
                    exposure=exposure,
-                   dpa=dpa)
+                   dpa=dpa,
+                   dpa_detail=dpa_dtl)
   class(out) <- append("mds_ts", class(out))
 
   return(out)
