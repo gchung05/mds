@@ -326,27 +326,28 @@ time_series.mds_da <- function(
       nB <- lab
       nC <- notlab
       nD <- notlab
+      title <- nRow
     } else if (i == 2){
       nCol <- nhere
       nA <- paste0(nA, ":", lab)
-      nB <- paste0(nB, ":", lab)
-      nC <- paste0(nC, ":", notlab)
+      nB <- paste0(nB, ":", notlab)
+      nC <- paste0(nC, ":", lab)
       nD <- paste0(nD, ":", notlab)
+      title <- paste(title, "by", nCol)
     }
   }
-  nABCD <- paste(nRow, "by", nCol)
   # Save DPA details
   if (dpa){
     dpa_dtl <- list(nA=nA, nB=nB, nC=nC, nD=nD, nRow=nRow, nCol=nCol,
-                    nABCD=nABCD)
+                    nABCD=title)
   } else{
     dpa_dtl <- NULL
   }
   # Save the output class
   # ---------------------
   out <- structure(ts,
+                   title=title,
                    analysis=analysis,
-                   nA=nA,
                    exposure=exposure,
                    dpa=dpa,
                    dpa_detail=dpa_dtl)

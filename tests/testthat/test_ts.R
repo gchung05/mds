@@ -25,7 +25,6 @@ Pda <- define_analyses(
 a1 <- time_series(Pda[1:3], Pde, Pexp)
 a2 <- time_series(Pda[[1]], Pde, Pexp)
 
-
 # Basic
 # -----
 

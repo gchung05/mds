@@ -175,7 +175,7 @@ define_analyses <- function(
   dev_index <- which(attributes(deviceevents)$device_hierarchy == device_level)
   dev_lvl <- names(dev_index)
   # 1-level up hierarchy device variable
-  dev_1up <- names(attributes(deviceevents)$device_hierarchy)[dev_index - 1]
+  dev_1up <- names(attributes(deviceevents)$device_hierarchy)[dev_index + 1]
   dev_1up <- ifelse(length(dev_1up) == 0, dev_lvl, dev_1up)
   # Calculate the rollup level for the last loop
   uniq_devs <- c(unique(as.character(deviceevents[[dev_lvl]])), "All")
@@ -195,7 +195,7 @@ define_analyses <- function(
     if (devDE$device[1] == "All" & dev_1up == dev_lvl){
       uniq_dev_1up <- NA
     } else uniq_dev_1up <- unique(as.character(devDE[[dev_1up]]))
-    
+
     for (i1 in uniq_dev_1up){
       if (!is.na(uniq_dev_1up[1])){
         devDE1up <- devDE[devDE[[dev_1up]] == i1, ]
@@ -210,7 +210,7 @@ define_analyses <- function(
       ev_1up <- attributes(deviceevents)$event_hierarchy[ev_index - 1]
       ev_1up <- ifelse(length(ev_1up) == 0, "<>", names(ev_1up))
       ev_1up_lab <- ifelse(
-        ev_1up == "<>", 
+        ev_1up == "<>",
         as.character(attributes(deviceevents)$event_hierarchy[1]),
         as.character(attributes(deviceevents)$event_hierarchy[ev_index - 1]))
       # Calculate the rollup level for the last loop
@@ -252,7 +252,7 @@ define_analyses <- function(
             names(uniq_covs) <- covariates
             uniq_covs$Data <- "All" # Set rollup level
           }
-          
+
           # Save analysis instructions for each level of device, event, covariate
           # ---------------------------------------------------------------------
           for (k in names(uniq_covs)){
@@ -261,7 +261,7 @@ define_analyses <- function(
               if (paste(k, l) != "Data All"){
                 devCO <- devDEev1up[devDEev1up[[k]] == l, ]
               } else devCO <- devDEev1up
-              
+
               # Non-Exposure Case
               # -----------------
               # Establish date range
@@ -273,7 +273,7 @@ define_analyses <- function(
                            stats::setNames(devCO$device[1], dev_lvl),
                            attributes(deviceevents)$device_hierarchy[[dev_1up]],
                            stats::setNames(i1, dev_1up),
-                           ifelse(is.null(ev_lvl), 
+                           ifelse(is.null(ev_lvl),
                                   attributes(deviceevents)$event_hierarchy[[1]],
                                   event_level),
                            stats::setNames(devCO$event[1], ifelse(
@@ -293,7 +293,7 @@ define_analyses <- function(
                                "event_1up_source", "event_1up",
                                "covariate", "covariate_level",
                                "date_range_de")
-              
+
               # Exposure Case
               # -------------
               if (is.null(exposure)){ thes <- data.frame() } else thes <- exposure
@@ -357,7 +357,7 @@ define_analyses <- function(
               dt_range <- convert_date(dt_range, date_level, date_level_n)
               names(dt_range) <- c("start", "end")
               this$date_range_de_exp <- dt_range
-              
+
               # Finally, save the analysis
               # --------------------------
               class(this) <- append(class(this), "mds_da")

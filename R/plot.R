@@ -49,7 +49,7 @@ plot.mds_ts <- function(
     obj$y <- x[[mode]]
     # Set the default title
     if (is.null(main)){
-      main <- paste(attributes(x)$nLabels$nA, collapse=" & ")
+      main <- attributes(x)$title
     }
   } else if (mode %in% c('nB', 'nC', 'nD', 'exposure')){
     if (!mode %in% names(x)){
@@ -60,18 +60,11 @@ plot.mds_ts <- function(
     if (is.null(main)){
       if (mode != 'exposure'){
         if (mode == 'nB'){
-          main <- paste(attributes(x)$nLabels$rows, 'excluding',
-                        attributes(x)$nLabels$nA[1], '&',
-                        attributes(x)$nLabels$nA[2])
+          main <- attributes(x)$dpa_detail$nB
         } else if (mode == 'nC'){
-          main <- paste(attributes(x)$nLabels$nA[1], '&',
-                        attributes(x)$nLabels$cols, 'excluding',
-                        attributes(x)$nLabels$nA[2])
+          main <- attributes(x)$dpa_detail$nC
         } else if (mode == 'nD'){
-          main <- paste(attributes(x)$nLabels$rows, 'excluding',
-                        attributes(x)$nLabels$nA[1], '&',
-                        attributes(x)$nLabels$cols, 'excluding',
-                        attributes(x)$nLabels$nA[2])
+          main <- attributes(x)$dpa_detail$nD
         }
       } else main <- 'Exposure'
     }
@@ -83,8 +76,7 @@ plot.mds_ts <- function(
     if (ylab == 'Count') ylab <- 'Rate'
     # Set the default title
     if (is.null(main)){
-      main <- paste(paste(attributes(x)$nLabels$nA, collapse=" & "),
-                    '/ Exposure')
+      main <- paste(attributes(x)$title, 'RATE')
     }
   } else{
     stop(paste(mode, 'is not a valid mode'))
