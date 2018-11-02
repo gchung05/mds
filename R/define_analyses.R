@@ -175,8 +175,12 @@ define_analyses <- function(
   dev_index <- which(attributes(deviceevents)$device_hierarchy == device_level)
   dev_lvl <- names(dev_index)
   # 1-level up hierarchy device variable
-  dev_1up <- names(attributes(deviceevents)$device_hierarchy)[dev_index + 1]
-  dev_1up <- ifelse(length(dev_1up) == 0, dev_lvl, dev_1up)
+  if (length(attributes(deviceevents)$device_hierarchy) == dev_index){
+    dev_1up <- dev_lvl
+  } else{
+    dev_1up <- names(attributes(deviceevents)$device_hierarchy)[dev_index + 1]
+    dev_1up <- ifelse(length(dev_1up) == 0, dev_lvl, dev_1up)
+  }
   # Calculate the rollup level for the last loop
   uniq_devs <- c(unique(as.character(deviceevents[[dev_lvl]])), "All")
   # Loop through every level of the current device variable
@@ -192,7 +196,7 @@ define_analyses <- function(
       devDE$device <- devDE[[dev_lvl]]
     }
     # Loop through every level of the 1-up device variable
-    if (devDE$device[1] == "All" & dev_1up == dev_lvl){
+    if (is.na(dev_1up) | (devDE$device[1] == "All" & dev_1up == dev_lvl)){
       uniq_dev_1up <- NA
     } else uniq_dev_1up <- unique(as.character(devDE[[dev_1up]]))
 
@@ -207,12 +211,20 @@ define_analyses <- function(
       ev_index <- which(attributes(deviceevents)$event_hierarchy == event_level)
       ev_lvl <- names(ev_index)
       # 1-level up hierarchy event variable
-      ev_1up <- attributes(deviceevents)$event_hierarchy[ev_index - 1]
-      ev_1up <- ifelse(length(ev_1up) == 0, "<>", names(ev_1up))
+      if (is.null(ev_lvl)){
+        ev_1up <- "<>"
+      } else{
+        if (length(attributes(deviceevents)$event_hierarchy) == ev_index){
+          ev_1up <- "<>"
+        } else{
+          ev_1up <- attributes(deviceevents)$event_hierarchy[ev_index + 1]
+          ev_1up <- ifelse(length(ev_1up) == 0, "<>", names(ev_1up))
+        }
+      }
       ev_1up_lab <- ifelse(
         ev_1up == "<>",
-        as.character(attributes(deviceevents)$event_hierarchy[1]),
-        as.character(attributes(deviceevents)$event_hierarchy[ev_index - 1]))
+        as.character(attributes(deviceevents)$event_hierarchy[ev_index]),
+        as.character(attributes(deviceevents)$event_hierarchy[ev_index + 1]))
       # Calculate the rollup level for the last loop
       if (is.null(ev_lvl)){
         uniq_evts <- c("All")
@@ -284,7 +296,7 @@ define_analyses <- function(
                            stats::setNames(
                              ifelse(j1 != "<>", j1, NA),
                              ifelse(ev_1up == "<>",
-                                    names(attributes(deviceevents)$event_hierarchy)[1],
+                                    names(attributes(deviceevents)$event_hierarchy)[ev_index],
                                     ev_1up)),
                            k, l, dt_range)
               names(this) <- c("device_level_source", "device_level",

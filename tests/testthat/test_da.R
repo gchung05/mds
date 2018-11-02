@@ -171,6 +171,14 @@ test_that("time change attributes are consistent", {
 # ------------------
 
 # Reference example (single level device, no event, covariate)
+Pde <- deviceevent(
+  maude,
+  time="date_received",
+  device_hierarchy=c("device_name"),
+  event_hierarchy=c("event_type", "medical_specialty_description"),
+  key="report_number",
+  covariates="region",
+  descriptors="_all_")
 Pdevice_level="device_name"
 Pcovariates="region"
 a1 <- define_analyses(
@@ -183,39 +191,82 @@ test_that("device hierarchy as expected for single-level device", {
 })
 test_that("event hierarchy as expected for single-level device", {
   expect_equal(names(a1[[1]]$event_level), "event_1")
-  expect_equal(names(a1[[1]]$event_1up), "event_1")
+  expect_true(is.na(a1[[1]]$event_1up))
 })
 test_that("exposure hierarchy as expected for single-level device", {
   expect_equal(names(a1[[1]]$exp_device_level), "device_1")
   expect_equal(names(a1[[1]]$exp_device_1up), "device_1")
 })
+# Variant with last level of hierarchy
+Pde <- deviceevent(
+  maude,
+  time="date_received",
+  device_hierarchy=c("device_name", "device_class"),
+  event_hierarchy=c("event_type", "medical_specialty_description"),
+  key="report_number",
+  covariates="region",
+  descriptors="_all_")
+Pdevice_level="device_class"
+Pcovariates="region"
+a1 <- define_analyses(
+  Pde, Pdevice_level,
+  exposure=Pexp,
+  covariates=Pcovariates)
+test_that("device hierarchy as expected for single-level device", {
+  expect_equal(names(a1[[1]]$device_level), "device_2")
+  expect_equal(names(a1[[1]]$device_1up), "device_2")
+})
+test_that("event hierarchy as expected for single-level device", {
+  expect_equal(names(a1[[1]]$event_level), "event_1")
+  expect_true(is.na(a1[[1]]$event_1up))
+})
+test_that("exposure hierarchy as expected for single-level device", {
+  expect_true(is.na(names(a1[[1]]$exp_device_level)))
+  expect_true(is.na(names(a1[[1]]$exp_device_1up)))
+})
 
 # Multi-level device
-Pdevice_level="device_class"
+Pde <- deviceevent(
+  maude,
+  time="date_received",
+  device_hierarchy=c("device_name", "device_class"),
+  event_hierarchy=c("event_type", "medical_specialty_description"),
+  key="report_number",
+  covariates="region",
+  descriptors="_all_")
+Pdevice_level="device_name"
 a1 <- define_analyses(
-  Pde, 
+  Pde,
   device_level=Pdevice_level,
   exposure=Pexp,
   covariates=Pcovariates)
 test_that("device hierarchy as expected for multi-level device", {
-  expect_equal(names(a1[[1]]$device_level), "device_2")
-  expect_equal(names(a1[[1]]$device_1up), "device_1")
+  expect_equal(names(a1[[1]]$device_level), "device_1")
+  expect_equal(names(a1[[1]]$device_1up), "device_2")
 })
 test_that("event hierarchy as expected for multi-level device", {
   expect_equal(names(a1[[1]]$event_level), "event_1")
-  expect_equal(names(a1[[1]]$event_1up), "event_1")
+  expect_true(is.na(a1[[1]]$event_1up))
 })
 test_that("exposure hierarchy as expected for multi-level device", {
-  expect_true(is.na(names(a1[[1]]$exp_device_level)))
-  expect_equal(names(a1[[1]]$exp_device_1up), "device_1")
+  expect_equal(names(a1[[1]]$exp_device_level), "device_1")
+  expect_true(is.na(names(a1[[1]]$exp_device_1up)))
 })
 
 # Single-level event
+Pde <- deviceevent(
+  maude,
+  time="date_received",
+  device_hierarchy=c("device_name"),
+  event_hierarchy=c("event_type"),
+  key="report_number",
+  covariates="region",
+  descriptors="_all_")
 Pdevice_level="device_name"
 Pcovariates="region"
 Pevent_level="event_type"
 a1 <- define_analyses(
-  Pde, 
+  Pde,
   device_level=Pdevice_level,
   event_level=Pevent_level,
   exposure=Pexp,
@@ -226,7 +277,37 @@ test_that("device hierarchy as expected for single-level event", {
 })
 test_that("event hierarchy as expected for single-level event", {
   expect_equal(names(a1[[1]]$event_level), "event_1")
-  expect_equal(names(a1[[1]]$event_1up), "event_1")
+  expect_true(is.na(a1[[1]]$event_1up))
+})
+test_that("exposure hierarchy as expected for single-level event", {
+  expect_equal(names(a1[[1]]$exp_device_level), "device_1")
+  expect_equal(names(a1[[1]]$exp_device_1up), "device_1")
+})
+# Variant with last level of hierarchy
+Pde <- deviceevent(
+  maude,
+  time="date_received",
+  device_hierarchy=c("device_name"),
+  event_hierarchy=c("event_type", "medical_specialty_description"),
+  key="report_number",
+  covariates="region",
+  descriptors="_all_")
+Pdevice_level="device_name"
+Pcovariates="region"
+Pevent_level="medical_specialty_description"
+a1 <- define_analyses(
+  Pde,
+  device_level=Pdevice_level,
+  event_level=Pevent_level,
+  exposure=Pexp,
+  covariates=Pcovariates)
+test_that("device hierarchy as expected for single-level event", {
+  expect_equal(names(a1[[1]]$device_level), "device_1")
+  expect_equal(names(a1[[1]]$device_1up), "device_1")
+})
+test_that("event hierarchy as expected for single-level event", {
+  expect_equal(names(a1[[1]]$event_level), "event_2")
+  expect_true(is.na(a1[[1]]$event_1up))
 })
 test_that("exposure hierarchy as expected for single-level event", {
   expect_equal(names(a1[[1]]$exp_device_level), "device_1")
@@ -234,9 +315,17 @@ test_that("exposure hierarchy as expected for single-level event", {
 })
 
 # Multi-level event
-Pevent_level="medical_specialty_description"
+Pde <- deviceevent(
+  maude,
+  time="date_received",
+  device_hierarchy=c("device_name"),
+  event_hierarchy=c("event_type", "medical_specialty_description"),
+  key="report_number",
+  covariates="region",
+  descriptors="_all_")
+Pevent_level="event_type"
 a1 <- define_analyses(
-  Pde, 
+  Pde,
   device_level=Pdevice_level,
   event_level=Pevent_level,
   exposure=Pexp,
@@ -246,8 +335,8 @@ test_that("device hierarchy as expected for multi-level event", {
   expect_equal(names(a1[[1]]$device_1up), "device_1")
 })
 test_that("event hierarchy as expected for multi-level event", {
-  expect_equal(names(a1[[1]]$event_level), "event_2")
-  expect_equal(names(a1[[1]]$event_1up), "event_1")
+  expect_equal(names(a1[[1]]$event_level), "event_1")
+  expect_equal(names(a1[[1]]$event_1up), "event_2")
 })
 test_that("exposure hierarchy as expected for multi-level event", {
   expect_equal(names(a1[[1]]$exp_device_level), "device_1")
@@ -255,25 +344,33 @@ test_that("exposure hierarchy as expected for multi-level event", {
 })
 
 # Multi-level device, multi-level event
-Pdevice_level="device_class"
-Pevent_level="medical_specialty_description"
+Pde <- deviceevent(
+  maude,
+  time="date_received",
+  device_hierarchy=c("device_name", "device_class"),
+  event_hierarchy=c("event_type", "medical_specialty_description"),
+  key="report_number",
+  covariates="region",
+  descriptors="_all_")
+Pdevice_level="device_name"
+Pevent_level="event_type"
 a1 <- define_analyses(
-  Pde, 
+  Pde,
   device_level=Pdevice_level,
   event_level=Pevent_level,
   exposure=Pexp,
   covariates=Pcovariates)
 test_that("device hierarchy as expected for multi-level device & event", {
-  expect_equal(names(a1[[1]]$device_level), "device_2")
-  expect_equal(names(a1[[1]]$device_1up), "device_1")
+  expect_equal(names(a1[[1]]$device_level), "device_1")
+  expect_equal(names(a1[[1]]$device_1up), "device_2")
 })
 test_that("event hierarchy as expected for multi-level device & event", {
-  expect_equal(names(a1[[1]]$event_level), "event_2")
-  expect_equal(names(a1[[1]]$event_1up), "event_1")
+  expect_equal(names(a1[[1]]$event_level), "event_1")
+  expect_equal(names(a1[[1]]$event_1up), "event_2")
 })
 test_that("exposure hierarchy as expected for multi-level device & event", {
-  expect_true(is.na(names(a1[[1]]$exp_device_level)))
-  expect_equal(names(a1[[1]]$exp_device_1up), "device_1")
+  expect_equal(names(a1[[1]]$exp_device_level), "device_1")
+  expect_true(is.na(names(a1[[1]]$exp_device_1up)))
 })
 
 
