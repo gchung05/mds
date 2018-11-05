@@ -53,12 +53,12 @@ test_that("parameter requirements as expected", {
 # Attribute check
 test_that("attributes are fully described", {
   expect_equal(all(names(attributes(a2)) %in% c(
-    "names", "row.names", "class", "nA", "nABCD", "nLabels", "exposure", "dpa")),
+    "names", "row.names", "class", "title", "analysis", "exposure", "dpa",
+    "dpa_detail")),
     T)
-  expect_equal(length(attributes(a2)$nA), 2)
-  expect_equal(length(attributes(a2)$nABCD), 2)
-  expect_equal(names(attributes(a2)$nLabels), c("nA", "rows", "cols"))
-  expect_equal(length(attributes(a2)$nLabels$nA), 2)
+  expect_equal(length(attributes(a2)$title), 1)
+  expect_equal(length(attributes(a2)$analysis), 16)
+  expect_equal(length(attributes(a2)$dpa_detail), 7)
   expect_is(attributes(a2)$exposure, "logical")
   expect_is(attributes(a2)$dpa, "logical")
 })
@@ -87,12 +87,11 @@ a2 <- time_series(Pda[[1]], Pde)
 # Attribute check
 test_that("attributes are fully described", {
   expect_equal(all(names(attributes(a2)) %in% c(
-    "names", "row.names", "class", "nA", "nABCD", "nLabels", "exposure", "dpa")),
-    T)
-  expect_equal(length(attributes(a2)$nA), 2)
-  expect_equal(length(attributes(a2)$nABCD), 2)
-  expect_equal(names(attributes(a2)$nLabels), c("nA", "rows", "cols"))
-  expect_equal(length(attributes(a2)$nLabels$nA), 2)
+    "names", "row.names", "class", "title", "analysis", "exposure", "dpa",
+    "dpa_detail")), T)
+  expect_equal(length(attributes(a2)$title), 1)
+  expect_equal(length(attributes(a2)$analysis), 16)
+  expect_equal(length(attributes(a2)$dpa_detail), 7)
   expect_is(attributes(a2)$exposure, "logical")
   expect_is(attributes(a2)$dpa, "logical")
 })
