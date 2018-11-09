@@ -4,11 +4,16 @@ UNDER DEVELOPMENT
 
 **Potential updates**
 
+- Feature allowing total events (concept of reporting fraction) as an exposure data frame
+- Facility for handling multiple events on the same actual occurrence (such as stroke and bleeding during the same operation)
+- Calculation of implant length (and improved handling of implantables overall)
+
+**Implemented Updates**
+
 - More descriptive `define_analyses()` and `time_series()` outputs, including explicit references to device, event, and covariate levels.
 - Alongside more explicit references, corresponding updates to nLabels attribute of `time_series()`
 - Outputs of `define_analyses()` and `time_series()` are clearer about the device and event one-up hierarchy levels
-- Feature allowing total events (concept of reporting fraction) as an exposure data frame
-- Facility for handling multiple events on the same actual occurrence (such as stroke and bleeding during the same operation)
+- Updated `plot()` method to support updates to `define_analyses()` and `time_series()`
 
 # `mds` 0.2.0
 ---------------------------------------
