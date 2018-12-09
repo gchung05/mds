@@ -1,4 +1,4 @@
-`mds` 0.2.1
+`mds` 0.2.2
 ---------------------------------------
 UNDER DEVELOPMENT
 
@@ -7,6 +7,10 @@ UNDER DEVELOPMENT
 - Feature allowing total events (concept of reporting fraction) as an exposure data frame
 - Facility for handling multiple events on the same actual occurrence (such as stroke and bleeding during the same operation)
 - Calculation of implant length (and improved handling of implantables overall)
+- Explicit implementation of the Unique Device Identifier (UDI)
+
+`mds` 0.2.1
+---------------------------------------
 
 **Implemented Updates**
 
