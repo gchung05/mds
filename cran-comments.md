@@ -9,7 +9,7 @@ NOTE: Non-standard directory 'revdep' found at top level. Auto-created by the re
 
 ## R CRAN web check results
 There was 1 NOTE: 2 marked UTF-8 strings in data.
-The strings in question are unimportant and serve the greater purpose of a context-releveant, open-source sample dataset.
+The strings in question are unimportant and serve the greater purpose of a context-relevant, open-source sample dataset.
 
 ## Downstream dependencies
 I have run R CMD check on downstream dependency mdsstat and the package passed.
