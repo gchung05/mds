@@ -267,6 +267,7 @@ define_analyses <- function(
 
           # Save analysis instructions for each level of device, event, covariate
           # ---------------------------------------------------------------------
+          m <- 1 # Analysis ID
           for (k in names(uniq_covs)){
             for (l in uniq_covs[[k]]){
               # Filter for the current covariate level
@@ -281,7 +282,8 @@ define_analyses <- function(
                                        date_level, date_level_n)
               names(dt_range) <- c("start", "end")
               # Build list of instructions
-              this <- list(device_level,
+              this <- list(m,
+                           device_level,
                            stats::setNames(devCO$device[1], dev_lvl),
                            attributes(deviceevents)$device_hierarchy[[dev_1up]],
                            stats::setNames(i1, dev_1up),
@@ -299,7 +301,8 @@ define_analyses <- function(
                                     names(attributes(deviceevents)$event_hierarchy)[ev_index],
                                     ev_1up)),
                            k, l, dt_range)
-              names(this) <- c("device_level_source", "device_level",
+              names(this) <- c("id",
+                               "device_level_source", "device_level",
                                "device_1up_source", "device_1up",
                                "event_level_source", "event_level",
                                "event_1up_source", "event_1up",
@@ -375,6 +378,7 @@ define_analyses <- function(
               class(this) <- append(class(this), "mds_da")
               out[[z]] <- this
               z <- z + 1
+              m <- m + 1
             }
           }
         }
@@ -439,7 +443,8 @@ define_analyses_dataframe <- function(
       if (exists("out")){
         out <- cbind.data.frame(out, this)
       } else{
-        out <- cbind.data.frame(id=j, this)
+        # out <- cbind.data.frame(id=j, this)
+        out <- this
       }
     }
     # If column names are not equal, use the more descriptive set of names
