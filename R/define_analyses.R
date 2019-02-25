@@ -267,7 +267,6 @@ define_analyses <- function(
 
           # Save analysis instructions for each level of device, event, covariate
           # ---------------------------------------------------------------------
-          m <- 1 # Analysis ID
           for (k in names(uniq_covs)){
             for (l in uniq_covs[[k]]){
               # Filter for the current covariate level
@@ -282,7 +281,7 @@ define_analyses <- function(
                                        date_level, date_level_n)
               names(dt_range) <- c("start", "end")
               # Build list of instructions
-              this <- list(m,
+              this <- list(z,
                            device_level,
                            stats::setNames(devCO$device[1], dev_lvl),
                            attributes(deviceevents)$device_hierarchy[[dev_1up]],
@@ -378,7 +377,6 @@ define_analyses <- function(
               class(this) <- append(class(this), "mds_da")
               out[[z]] <- this
               z <- z + 1
-              m <- m + 1
             }
           }
         }
