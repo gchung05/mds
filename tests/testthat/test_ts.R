@@ -57,7 +57,7 @@ test_that("attributes are fully described", {
     "dpa_detail")),
     T)
   expect_equal(length(attributes(a2)$title), 1)
-  expect_equal(length(attributes(a2)$analysis), 16)
+  expect_equal(length(attributes(a2)$analysis), 17)
   expect_equal(length(attributes(a2)$dpa_detail), 7)
   expect_is(attributes(a2)$exposure, "logical")
   expect_is(attributes(a2)$dpa, "logical")
@@ -90,7 +90,7 @@ test_that("attributes are fully described", {
     "names", "row.names", "class", "title", "analysis", "exposure", "dpa",
     "dpa_detail")), T)
   expect_equal(length(attributes(a2)$title), 1)
-  expect_equal(length(attributes(a2)$analysis), 16)
+  expect_equal(length(attributes(a2)$analysis), 17)
   expect_equal(length(attributes(a2)$dpa_detail), 7)
   expect_is(attributes(a2)$exposure, "logical")
   expect_is(attributes(a2)$dpa, "logical")

@@ -40,9 +40,10 @@ test_that("parameter requirements as expected", {
             "mds_de")
   expect_error(deviceevent(maude, Ptime, Pdevice_hierarchy[1], Pevent_hierarchy[1],
                            key="foo"))
-  expect_is(deviceevent(maude, Ptime, Pdevice_hierarchy[1], Pevent_hierarchy[1],
-                        covariates="_all_"),
-            "mds_de")
+  expect_is(suppressWarnings(
+    deviceevent(maude, Ptime, Pdevice_hierarchy[1], Pevent_hierarchy[1],
+                covariates="_all_")),
+    "mds_de")
   expect_error(deviceevent(maude, Ptime, Pdevice_hierarchy[1], Pevent_hierarchy[1],
                            covariates="foo"))
   expect_error(deviceevent(maude, Ptime, Pdevice_hierarchy[1], Pevent_hierarchy[1],
