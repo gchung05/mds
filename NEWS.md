@@ -2,6 +2,10 @@
 ---------------------------------------
 UNDER DEVELOPMENT
 
+**Implemented Updates**
+
+- Explicit carry-forward of define_analysis id
+
 **Potential updates**
 
 - Feature allowing total events (concept of reporting fraction) as an exposure data frame
