@@ -1,14 +1,22 @@
 context("Define Analyses")
 
+# Set data
+data <- maude
+invivo <- round(250 * runif(nrow(data)))
+invivo <- ifelse(invivo <= 30, NA, invivo)
+data$invivo <- invivo
+rm(invivo)
+
 # Set params
 Pde <- deviceevent(
-  maude,
+  data,
   time="date_received",
   device_hierarchy=c("device_name", "device_class"),
   event_hierarchy=c("event_type", "medical_specialty_description"),
   key="report_number",
   covariates="region",
-  descriptors="_all_")
+  descriptors="_all_",
+  implant_days="invivo")
 Pexp <- exposure(
   sales,
   time="sales_month",
@@ -172,7 +180,7 @@ test_that("time change attributes are consistent", {
 
 # Reference example (single level device, no event, covariate)
 Pde <- deviceevent(
-  maude,
+  data,
   time="date_received",
   device_hierarchy=c("device_name"),
   event_hierarchy=c("event_type", "medical_specialty_description"),
@@ -199,7 +207,7 @@ test_that("exposure hierarchy as expected for single-level device", {
 })
 # Variant with last level of hierarchy
 Pde <- deviceevent(
-  maude,
+  data,
   time="date_received",
   device_hierarchy=c("device_name", "device_class"),
   event_hierarchy=c("event_type", "medical_specialty_description"),
@@ -227,7 +235,7 @@ test_that("exposure hierarchy as expected for single-level device", {
 
 # Multi-level device
 Pde <- deviceevent(
-  maude,
+  data,
   time="date_received",
   device_hierarchy=c("device_name", "device_class"),
   event_hierarchy=c("event_type", "medical_specialty_description"),
@@ -255,7 +263,7 @@ test_that("exposure hierarchy as expected for multi-level device", {
 
 # Single-level event
 Pde <- deviceevent(
-  maude,
+  data,
   time="date_received",
   device_hierarchy=c("device_name"),
   event_hierarchy=c("event_type"),
@@ -285,7 +293,7 @@ test_that("exposure hierarchy as expected for single-level event", {
 })
 # Variant with last level of hierarchy
 Pde <- deviceevent(
-  maude,
+  data,
   time="date_received",
   device_hierarchy=c("device_name"),
   event_hierarchy=c("event_type", "medical_specialty_description"),
@@ -316,7 +324,7 @@ test_that("exposure hierarchy as expected for single-level event", {
 
 # Multi-level event
 Pde <- deviceevent(
-  maude,
+  data,
   time="date_received",
   device_hierarchy=c("device_name"),
   event_hierarchy=c("event_type", "medical_specialty_description"),
@@ -345,7 +353,7 @@ test_that("exposure hierarchy as expected for multi-level event", {
 
 # Multi-level device, multi-level event
 Pde <- deviceevent(
-  maude,
+  data,
   time="date_received",
   device_hierarchy=c("device_name", "device_class"),
   event_hierarchy=c("event_type", "medical_specialty_description"),

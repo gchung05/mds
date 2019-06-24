@@ -37,12 +37,13 @@ Example: \code{"key_ID"}
 Default: \code{NULL} will create a key variable.}
 
 \item{covariates}{Vector of character variable names representing the
-desired covariates to retain \code{"_all_"} includes all covariates, assumed
+desired covariates to retain, all of which must be of class \code{numeric}
+or \code{factor}.  \code{"_all_"} includes all covariates, assumed
 to be remaining variables in \code{data_frame} not already specified in
 \code{key}, \code{time}, \code{device_hierarchy}, or \code{event_hierarchy}.
-It is recommended that covariates are categorical.
+Covariates must be numeric, categorical, or binary in nature.
 
-Example: \code{c("Reporter", "City", "Country")}
+Example: \code{c("Reporter", "Operation Time", "Country")}
 
 Default: \code{NULL} includes no covariates.}
 
@@ -61,7 +62,7 @@ Default: \code{NULL} includes no descriptors.}
 \item{implant_days}{Character name of integer variable in \code{data_frame}
 representing the days in vivo of the device at the time of the event
 (\code{time}). More generally, this represents days of exposure of the device
-at the time of the event.
+to the subject at the time of the event.
 
 Example: \code{"Implant Days"}. For example, a value of \code{45} indicates
 that the implant was in vivo for 45 days at the time of the event.

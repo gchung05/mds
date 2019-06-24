@@ -251,24 +251,37 @@ define_analyses <- function(
           if (j1 != "<>"){
             devDEev1up <- devDEev[devDEev[[ev_1up]] == j1, ]
           } else devDEev1up <- devDEev
-          # Covariates - Enumerate (calculate the rollup level for the last loop)
-          # ---------------------------------------------------------------------
-          # Enumerate each level of each covariate
+          
+          # Covariates - Enumerate
+          # ----------------------
+          # Entire analysis requires:
+          # 1. Data All level: covariates not considered (the rollup level as the last loop)
+          # Each covariate requires:
+          # 2. Marginal level: analyze for effects of the covariate as a whole
+          # 3. Nominal level (optional): subset by each nominal/binary type variable
           if (is.null(covariates)){
             uniq_covs <- list("Data"="All")
           } else{
             uniq_covs <- lapply(covariates, function(x){
-              this <- unique(as.character(devDEev1up[[x]]))
-              this <- this[!is.na(this)]
+              if (is.factor(devDEev1up[[x]])){
+                this <- c(unique(as.character(devDEev1up[[x]])), "All")
+              } else if (is.numeric(devDEev1up[[x]])){
+                this <- "All"
+              }
+              # REMINDER! NA's will remain as a level, must handle explicitly downstream!!!
+              this
             })
             names(uniq_covs) <- covariates
             uniq_covs$Data <- "All" # Set rollup level
           }
-
+          
           # Save analysis instructions for each level of device, event, covariate
           # ---------------------------------------------------------------------
           for (k in names(uniq_covs)){
             for (l in uniq_covs[[k]]){
+              
+              # I AM HERE!!!! MUST CONSIDER HOW TO HANDLE THE NUMERIC COVARIATE & MARGINAL LEVEL ANALYSIS
+              
               # Filter for the current covariate level
               if (paste(k, l) != "Data All"){
                 devCO <- devDEev1up[devDEev1up[[k]] == l, ]

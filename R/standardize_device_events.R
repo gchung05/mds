@@ -30,12 +30,13 @@
 #' Default: \code{NULL} will create a key variable.
 #'
 #' @param covariates Vector of character variable names representing the
-#' desired covariates to retain \code{"_all_"} includes all covariates, assumed
+#' desired covariates to retain, all of which must be of class \code{numeric}
+#' or \code{factor}.  \code{"_all_"} includes all covariates, assumed
 #' to be remaining variables in \code{data_frame} not already specified in
 #' \code{key}, \code{time}, \code{device_hierarchy}, or \code{event_hierarchy}.
-#' It is recommended that covariates are categorical.
+#' Covariates must be numeric, categorical, or binary in nature.
 #'
-#' Example: \code{c("Reporter", "City", "Country")}
+#' Example: \code{c("Reporter", "Operation Time", "Country")}
 #'
 #' Default: \code{NULL} includes no covariates.
 #'
@@ -54,7 +55,7 @@
 #' @param implant_days Character name of integer variable in \code{data_frame}
 #' representing the days in vivo of the device at the time of the event
 #' (\code{time}). More generally, this represents days of exposure of the device
-#' at the time of the event.
+#' to the subject at the time of the event.
 #'
 #' Example: \code{"Implant Days"}. For example, a value of \code{45} indicates
 #' that the implant was in vivo for 45 days at the time of the event.
@@ -119,8 +120,10 @@ deviceevent <- function(
                       check_names=data_frame, exclusions="_all_")
   input_param_checker(descriptors, check_class="character",
                       check_names=data_frame, exclusions="_all_")
-  input_param_checker(implant_days, check_class="numeric",
-                      check_names=data_frame, max_length=1)
+  if (!is.null(implant_days)){
+    input_param_checker(implant_days, check_class="numeric",
+                        check_names=data_frame, max_length=1)
+  }
 
   # Address each variable
   # ---------------------
@@ -157,14 +160,26 @@ deviceevent <- function(
   }
   if (!is.null(covs)){
     v_cov <- list()
-    for (i in c(1:length(covs))){
-      v_cov[[names(covs)[i]]] <- data_frame[[covs[i]]]
+    # Must drop any covariates that are not numeric or factors
+    a <- unlist(lapply(data_frame[, as.character(covs), drop=F], is.numeric))
+    b <- unlist(lapply(data_frame[, as.character(covs), drop=F], is.factor))
+    if (any(!(a | b))){
+      bad_covs <- names(a)[!(a | b)]
+      warning(paste0("Non-numeric and non-factor covariates moved to descriptors: ",
+                     paste(bad_covs, collapse=", ")))
+      covs <- covs[!as.character(covs) %in% bad_covs]
     }
+    if (length(covs) > 0){
+      for (i in c(1:length(covs))){
+        v_cov[[names(covs)[i]]] <- data_frame[[covs[i]]]
+      }
+    } else covs <- NULL
   }
-  # Descriptors
+  # Descriptors 
   key_vars <- c(time, device_hierarchy, event_hierarchy)
   if (!is.null(key)) key_vars <- c(key, key_vars)
   if (!is.null(covs)) key_vars <- c(covs, key_vars)
+  if (!is.null(implant_days)) key_vars <- c(implant_days, key_vars)
   if (is.null(descriptors)){
     dscr <- NULL
   } else if (all(descriptors == "_all_")){

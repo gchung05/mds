@@ -2,6 +2,10 @@
 ---------------------------------------
 UNDER DEVELOPMENT
 
+- Explicit handling of covariate level analysis in `deviceevent()`, `define_analyses()`, and `time_series()`
+- Restriction of covariates to `factor` and `numeric` types only in `deviceevent()`
+- More explicit handling of implant days by `define_analyses()` and `time_series()`
+
 **Implemented Updates**
 
 - Explicit carry-forward of define_analysis id
