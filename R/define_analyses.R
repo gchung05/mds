@@ -251,7 +251,7 @@ define_analyses <- function(
           if (j1 != "<>"){
             devDEev1up <- devDEev[devDEev[[ev_1up]] == j1, ]
           } else devDEev1up <- devDEev
-          
+
           # Covariates - Enumerate
           # ----------------------
           # Entire analysis requires:
@@ -274,14 +274,22 @@ define_analyses <- function(
             names(uniq_covs) <- covariates
             uniq_covs$Data <- "All" # Set rollup level
           }
-          
+
           # Save analysis instructions for each level of device, event, covariate
           # ---------------------------------------------------------------------
           for (k in names(uniq_covs)){
             for (l in uniq_covs[[k]]){
-              
+
+              ################################
               # I AM HERE!!!! MUST CONSIDER HOW TO HANDLE THE NUMERIC COVARIATE & MARGINAL LEVEL ANALYSIS
-              
+              ################################
+
+              ############################
+              # MUST DO! - handle carryover of implantable covariate status
+              # Should require a by level analysis of whether data exists in the
+              # time_invivo variable. If not, this is not implantable analysis
+              ############################
+
               # Filter for the current covariate level
               if (paste(k, l) != "Data All"){
                 devCO <- devDEev1up[devDEev1up[[k]] == l, ]
