@@ -160,6 +160,12 @@ time_series.mds_da <- function(
                          levels=c(T, F))
   } else this$iscov <- factor(T, levels=c(T, F))
   if (nrow(thes) > 0 & analysis$covariate_level != "All"){
+
+
+    ###########################
+    # MUST FIX - define how to handle filtering marginal and rollup of exposure covariates
+    ###########################
+
     if (!is.na(analysis$exp_covariate_level)){
       thes <- thes[thes[[names(analysis$exp_covariate_level)]] %in%
                      analysis$exp_covariate_level, ]
@@ -263,6 +269,11 @@ time_series.mds_da <- function(
   # -------------------------------------------------
   tr <- analysis$date_range_exposure
   if (!all(is.na(tr)) & nrow(thes) > 0){
+
+    ###########################
+    # MUST FIX - verify that the right groups are being created for the count
+    ###########################
+
     ts_e <- data.frame()
     i <- tr[1]
     while (i <= tr[2]){
@@ -283,6 +294,11 @@ time_series.mds_da <- function(
 
   # Define output class attributes
   # ------------------------------
+
+  ###########################
+  # MUST FIX - ADD FACILITY FOR 3D ANALYSIS NAMING
+  ###########################
+
   # Determine if 1-Ups exist semantically
   dev_diff <- !is.na(analysis$device_1up) & names(analysis$device_level) !=
     names(analysis$device_1up)
@@ -320,6 +336,11 @@ time_series.mds_da <- function(
       }
     }
     # Assign row and columns (only 2D analysis support so far)
+
+    ###########################
+    # MUST FIX - ADD FACILITY FOR 3D ANALYSIS NAMING
+    ###########################
+
     if (i == 1){
       nRow <- nhere
       nA <- lab

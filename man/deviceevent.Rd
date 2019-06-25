@@ -6,7 +6,7 @@
 \usage{
 deviceevent(data_frame, time, device_hierarchy, event_hierarchy,
   key = NULL, covariates = NULL, descriptors = NULL,
-  implant_days = NULL)
+  time_invivo = NULL)
 }
 \arguments{
 \item{data_frame}{The input data frame requiring components specified in the
@@ -59,13 +59,19 @@ Example: \code{c("Description", "Unique Device Identifier")}
 
 Default: \code{NULL} includes no descriptors.}
 
-\item{implant_days}{Character name of integer variable in \code{data_frame}
-representing the days in vivo of the device at the time of the event
-(\code{time}). More generally, this represents days of exposure of the device
-to the subject at the time of the event.
+\item{time_invivo}{Character name of numeric variable in \code{data_frame}
+representing the time in vivo of the device at the time of the event
+\code{time}. See details for more.
 
-Example: \code{"Implant Days"}. For example, a value of \code{45} indicates
-that the implant was in vivo for 45 days at the time of the event.
+IMPORTANT: If a call to \code{define_analyses()} is planned,
+\code{time_invivo} must be in the time units specified collectively by its
+parameters \code{date_level} and \code{date_level_n}.
+
+Example: \code{"Implanted Months"}. A value of \code{45} in the
+variable \code{data_frame$'Implanted Months'} would indicate 45 units of time
+elapsed since the device was first in vivo. If \code{date_level="months"} and
+\code{date_level_n=1}, this will be interpreted by \code{define_analyses()}
+as 45 months.
 
 Default: \code{NULL} indicates this variable will not be used.}
 }
@@ -91,6 +97,12 @@ Rows are deduplicated. Attributes are as follows:
 }
 \description{
 Converts a data frame into a MD-PMS Device Event data frame.
+}
+\details{
+\code{time_invivo} can be thought of more generally as the time of
+exposure of the device to the subject at the time of the event. The common
+usage is duration of the implant in the patient at time of event, for an
+implantable medical device.
 }
 \examples{
 # A barebones dataset

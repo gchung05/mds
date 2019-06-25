@@ -52,13 +52,19 @@
 #'
 #' Default: \code{NULL} includes no descriptors.
 #'
-#' @param implant_days Character name of integer variable in \code{data_frame}
-#' representing the days in vivo of the device at the time of the event
-#' (\code{time}). More generally, this represents days of exposure of the device
-#' to the subject at the time of the event.
+#' @param time_invivo Character name of numeric variable in \code{data_frame}
+#' representing the time in vivo of the device at the time of the event
+#' \code{time}. See details for more.
 #'
-#' Example: \code{"Implant Days"}. For example, a value of \code{45} indicates
-#' that the implant was in vivo for 45 days at the time of the event.
+#' IMPORTANT: If a call to \code{define_analyses()} is planned,
+#' \code{time_invivo} must be in the time units specified collectively by its
+#' parameters \code{date_level} and \code{date_level_n}.
+#'
+#' Example: \code{"Implanted Months"}. A value of \code{45} in the
+#' variable \code{data_frame$'Implanted Months'} would indicate 45 units of time
+#' elapsed since the device was first in vivo. If \code{date_level="months"} and
+#' \code{date_level_n=1}, this will be interpreted by \code{define_analyses()}
+#' as 45 months.
 #'
 #' Default: \code{NULL} indicates this variable will not be used.
 #'
@@ -80,6 +86,12 @@
 #'   \code{descriptors} with converted variable names correspondingly
 #'   named.}
 #' }
+#'
+#' @details
+#' \code{time_invivo} can be thought of more generally as the time of
+#' exposure of the device to the subject at the time of the event. The common
+#' usage is duration of the implant in the patient at time of event, for an
+#' implantable medical device.
 #'
 #' @examples
 #' # A barebones dataset
@@ -103,7 +115,7 @@ deviceevent <- function(
   key=NULL,
   covariates=NULL,
   descriptors=NULL,
-  implant_days=NULL
+  time_invivo=NULL
 ){
   # Check parameters
   # ----------------
@@ -120,8 +132,8 @@ deviceevent <- function(
                       check_names=data_frame, exclusions="_all_")
   input_param_checker(descriptors, check_class="character",
                       check_names=data_frame, exclusions="_all_")
-  if (!is.null(implant_days)){
-    input_param_checker(implant_days, check_class="numeric",
+  if (!is.null(time_invivo)){
+    input_param_checker(time_invivo, check_class="numeric",
                         check_names=data_frame, max_length=1)
   }
 
@@ -175,11 +187,11 @@ deviceevent <- function(
       }
     } else covs <- NULL
   }
-  # Descriptors 
+  # Descriptors
   key_vars <- c(time, device_hierarchy, event_hierarchy)
   if (!is.null(key)) key_vars <- c(key, key_vars)
   if (!is.null(covs)) key_vars <- c(covs, key_vars)
-  if (!is.null(implant_days)) key_vars <- c(implant_days, key_vars)
+  if (!is.null(time_invivo)) key_vars <- c(time_invivo, key_vars)
   if (is.null(descriptors)){
     dscr <- NULL
   } else if (all(descriptors == "_all_")){
@@ -195,8 +207,8 @@ deviceevent <- function(
     }
   }
   # Implant Days
-  if (!is.null(implant_days)){
-    v_iday <- list(implant_days=data_frame[[implant_days]])
+  if (!is.null(time_invivo)){
+    v_iday <- list(time_invivo=data_frame[[time_invivo]])
   }
 
   # Assemble data frame
@@ -205,7 +217,7 @@ deviceevent <- function(
     data.frame(key=v_key, time=v_time, stringsAsFactors=F),
     data.frame(v_dev),
     data.frame(v_ev))
-  if (!is.null(implant_days)) dataset <- cbind.data.frame(dataset,
+  if (!is.null(time_invivo)) dataset <- cbind.data.frame(dataset,
                                                           data.frame(v_iday))
   if (!is.null(covs)) dataset <- cbind.data.frame(dataset, data.frame(v_cov))
   if (!is.null(dscr)){
@@ -270,7 +282,7 @@ deviceevent <- function(
                    key=key,
                    covariates=covs,
                    descriptors=dscr,
-                   implant_days=implant_days)
+                   time_invivo=time_invivo)
   class(out) <- append("mds_de", class(out))
 
   return(out)

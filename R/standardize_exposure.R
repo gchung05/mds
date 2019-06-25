@@ -94,7 +94,7 @@ exposure <- function(
                       check_names=data_frame)
   input_param_checker(key, check_class=c("character", "numeric"),
                       check_names=data_frame)
-  input_param_checker(match_levels, check_class="character",
+  input_param_checker(match_levels, check_class="factor",
                       check_names=data_frame)
   input_param_checker(count, check_class=c("numeric", "integer"),
                       check_names=data_frame)
@@ -126,9 +126,19 @@ exposure <- function(
   # Match Levels
   if (!is.null(match_levels)){
     v_ml <- list()
-    for (i in c(1:length(match_levels))){
-      v_ml[[match_levels[i]]] <- data_frame[[match_levels[i]]]
+    # Must drop any covariates that are not factors
+    b <- unlist(lapply(data_frame[, as.character(match_levels), drop=F], is.factor))
+    if (any(!b)){
+      bad_covs <- names(b)[!b]
+      warning(paste0("Non-factor specified in match_levels dropped:",
+                     paste(bad_covs, collapse=", ")))
+      match_levels <- match_levels[!as.character(match_levels) %in% bad_covs]
     }
+    if (length(match_levels) > 0){
+      for (i in c(1:length(match_levels))){
+        v_ml[[match_levels[i]]] <- data_frame[[match_levels[i]]]
+      }
+    } else stop("Variable(s) specified by match_levels must be factor(s).")
   }
   # Count
   if (is.null(count)){

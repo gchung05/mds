@@ -2,6 +2,9 @@
 ---------------------------------------
 UNDER DEVELOPMENT
 
+- More explicit handling of implantable devices, 
+- CHANGED PARAMETER `deviceevent(implant_days)` to `deviceevent(time_invivo)` and make all downstream changes.
+- Restructured `exposure()` to handle factors only in `match_levels`.
 - Explicit handling of covariate level analysis in `deviceevent()`, `define_analyses()`, and `time_series()`
 - Restriction of covariates to `factor` and `numeric` types only in `deviceevent()`
 - More explicit handling of implant days by `define_analyses()` and `time_series()`

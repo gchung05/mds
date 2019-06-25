@@ -29,7 +29,7 @@ a1 <- deviceevent(
   key=Pkey,
   covariates=Pcovariates,
   descriptors=Pdescriptors,
-  implant_days=Pvivo)
+  time_invivo=Pvivo)
 
 
 # Basic
@@ -58,15 +58,15 @@ test_that("parameter requirements as expected", {
   expect_error(deviceevent(data, Ptime, Pdevice_hierarchy[1], Pevent_hierarchy[1],
                            descriptors="foo"))
   expect_error(deviceevent(data, Ptime, Pdevice_hierarchy[1], Pevent_hierarchy[1],
-                           implant_days="foo"))
+                           time_invivo="foo"))
   expect_error(deviceevent(data, Ptime, Pdevice_hierarchy[1], Pevent_hierarchy[1],
-                           implant_days="brand_name"))
+                           time_invivo="brand_name"))
 })
 # Attribute check
 test_that("attributes are fully described", {
   expect_equal(all(names(attributes(a1)) %in% c(
     "names", "row.names", "class", "time", "device_hierarchy",
-    "event_hierarchy", "key", "covariates", "descriptors", "implant_days")), T)
+    "event_hierarchy", "key", "covariates", "descriptors", "time_invivo")), T)
   expect_equal(attributes(a1)$time, Ptime)
   expect_equal(attributes(a1)$device_hierarchy,
                setNames(Pdevice_hierarchy, c("device_1", "device_2")))
@@ -138,9 +138,9 @@ test_that("descriptors were kept in source format", {
   expect_equal(class(a1$brand_name), class(data$brand_name))
 })
 
-test_that("implant_days is correctly formatted", {
-  expect_is(a1$implant_days, "numeric")
-  expect_equal(a1$implant_days, data$invivo)
+test_that("time_invivo is correctly formatted", {
+  expect_is(a1$time_invivo, "numeric")
+  expect_equal(a1$time_invivo, data$invivo)
 })
 
 # Barebones behavior
