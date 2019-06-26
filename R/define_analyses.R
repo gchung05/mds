@@ -337,19 +337,14 @@ define_analyses <- function(
               # 2. Marginal level: analyze for effects of the covariate as a whole
               # 3. Nominal level (optional): subset by each nominal/binary type
               #    variable
-              nospread <- F
-              if (k == "Data" & l == "All"){ # Data All level
-                devCO <- devDEev1up
-              } else{
-                if (is.factor(devDEev1up[[k]]) & l != "All"){ # Nominal level
-                  devCO <- devDEev1up[devDEev1up[[k]] == l, ]
-                } else{ # Marginal level
-                  devCO <- devDEev1up
-                  # Detect if covariate data has no spread
-                  nospread <- all(duplicated(devCO[[k]]) |
-                                    duplicated(devCO[[k]], fromLast=T))
-                }
-              }
+              if (is.factor(devDEev1up[[k]]) & is.na(l)){ # NA Nominal level
+                devCO <- devDEev1up[is.na(devDEev1up[[k]]), ]
+              } else if (is.factor(devDEev1up[[k]]) & l != "All"){ # Nominal level
+                devCO <- devDEev1up[devDEev1up[[k]] == l, ]
+              } else devCO <- devDEev1up # Marginal & Data All level
+              # Detect if covariate data has no spread
+              nospread <- all(duplicated(devCO[[k]]) |
+                                duplicated(devCO[[k]], fromLast=T))
 
               # Proceed for Data All level and Nominal level
               # If Marginal level analysis, proceed only if covariate has spread
@@ -448,22 +443,16 @@ define_analyses <- function(
                 # Filter by event
                 # NOT IMPLEMENTED <A possible future feature, if requested.>
                 # Filter for the current covariate level
-
-                # I AM HERE! HOW TO ACCOUNT FOR MARGINAL AND INDIVIDUAL LEVEL
-                # CASES
-                # DONT FORGET FACTOR CHARACTERIZATION ISSUE
-
                 if (nrow(thes) > 0 &
                     this$covariate %in% attributes(exposure)$match_levels){
-                  cov_level_e <- stats::setNames(
-                    as.character(this$covariate_level), this$covariate)
-                  if (cov_level_e != "All"){
-                    thes <- thes[thes[[names(cov_level_e)]] == cov_level_e, ]
-                    if (nrow(thes) == 0) cov_level_e <- stats::setNames(
-                      NA, this$covariate)
-                  }
-                } else if (paste(k, l) != "Data All") thes <- data.frame()
-                this$exp_covariate_level <- cov_level_e
+                  cov_level_e <- stats::setNames(l, k)
+                  if (is.na(l)){ # covariate level is NA case
+                    thes <- thes[is.na(thes[[k]]), ]
+                  } else if (l != "All"){ # covariate level is nominal, non-NA
+                    thes <- thes[as.character(thes[[k]]) == l, ]
+                  } # marginal & Data All levels implied by not filtering
+                  if (nrow(thes) > 0) this$exp_covariate_level <- cov_level_e
+                }
                 # Establish exposure date range, if exposure data exists
                 if (nrow(thes) > 0){
                   dt_range <- convert_date(range(thes$time, na.rm=T),

@@ -6,10 +6,12 @@
 \usage{
 define_analyses(deviceevents, device_level, event_level = NULL,
   exposure = NULL, date_level = "months", date_level_n = 1,
-  covariates = "_none_", times_to_calc = NULL, prior = NULL)
+  covariates = "_none_", times_to_calc = NULL, invivo = FALSE,
+  prior = NULL)
 }
 \arguments{
-\item{deviceevents}{A device-events object of class \code{mds_de}}
+\item{deviceevents}{A device-events object of class \code{mds_de}, created by
+a call to \code{deviceevent()}.}
 
 \item{device_level}{String value indicating the source device variable name
 to analyze by.
@@ -21,11 +23,11 @@ the source variable name for \code{device_1} is \code{'Device Code'}, specify
 \item{event_level}{String value indicating the source event variable name to
 analyze by. Note that \code{event_level} is not matched to \code{exposure}.
 
-Default: \code{NULL} will not analyze by event.
-
 Example: If the \code{deviceevents} variable column is \code{event_1} where
 the source variable name for \code{event_1} is \code{'Event Code'}, specify
-\code{event_level='Event Code'}.}
+\code{event_level='Event Code'}.
+
+Default: \code{NULL} will not analyze by event.}
 
 \item{exposure}{Optional exposure object of class \code{mds_e}. See details
 for how exposure analyses definitions are handled.
@@ -40,32 +42,39 @@ Default: \code{'months'}}
 \item{date_level_n}{Numeric value indicating the number of \code{date_level}s
 to analyze by.
 
-Default: \code{1}
-
 Example: \code{date_level='months'} and \code{date_level_n=3} indicates
-analysis on a quarterly level.}
+analysis on a quarterly level.
+
+Default: \code{1}}
 
 \item{covariates}{Character vector specifying names of covariates to also
-define analyses for. Acceptable names are covariate variable names from
-\code{deviceevents}. Analyses will be defined for each unique level of each
-covariate. \code{"_none_"} specifies no covariates, while \code{"_all_"}
-specifies all covariates from \code{deviceevents}.
+define analyses for. Acceptable names are covariate variables specified
+in \code{deviceevents}. If the covariate is a factor, additional subgroup
+analyses will be defined at each level of the factor. \code{"_none_"}
+specifies no covariates, while \code{"_all_"} are all covariates specified in
+\code{deviceevents}. See details for more.
 
-Default: \code{"_none_"} specifies no covariates.
+Example: \code{c("Country", "Region")}
 
-Example: \code{"Country"}}
+Default: \code{"_none_"} specifies no covariates.}
 
 \item{times_to_calc}{Integer value indicating the number of date units
 counting backwards from the latest date to define analyses for. If
 \code{prior} is specified, \code{times_to_calc} will be ignored.
 
-Default: \code{NULL} will define analyses across all available time.
-
 Example 1: \code{times_to_calc=12} with \code{date_level="months"} and
 \code{date_level_n=1} defines analyses for the last year by month.
 
 Example 2: \code{times_to_calc=8} with \code{date_level="months"} and
-\code{date_level_n=3} defines analyses for the 2 years by quarter.}
+\code{date_level_n=3} defines analyses for the 2 years by quarter.
+
+Default: \code{NULL} will define analyses across all available time.}
+
+\item{invivo}{Logical value indicating whether to include \code{time_invivo}
+from \code{deviceevents} in the analysis definition. See details for more.
+
+Default: \code{FALSE} will not include \code{time_invivo} in the analysis
+definition.}
 
 \item{prior}{Future placeholder, currently not used.}
 }
@@ -74,7 +83,7 @@ A list of defined analyses of class \code{mds_das}.
 Each list item, indexed by a numeric key, defines a set of analyses for a
 unique combination of device, event, and covariate level. Each list item is
 of the class \code{mds_da}.
-Attributes are as follows:
+Attributes of class \code{mds_das} are as follows:
 \describe{
   \item{date_level}{Defined value for \code{date_level}}
   \item{date_level_n}{Defined value for \code{date_level_n}}
@@ -93,11 +102,32 @@ an MD-PMS exposure data frame.
 The analyses definitions will always include rollup levels for each
 of \code{device_level}, \code{event_level} (if specified), and
 \code{covariates}. These rollup analyses will be indicated by the keyword
-'All', while the rollup of all covariates will be called 'Data'.
+'All' in the analysis definition.
 
 If \code{exposure} is specified, any available \code{match_levels} will be
 used to calculate the appropriate timeframe for analyses. The exception are
 the special rollup analyses (see prior paragraph).
+
+When \code{covariates} are specified, a special rollup analysis definition
+will always be defined that does not consider the covariates at all. This
+analysis can be identified by \code{covariate='Data'} and
+\code{covariate_level='All'} in the output \code{mds_da} object.
+
+When \code{covariates} are specified and there is no variation in the
+distribution of covariate values (e.g. all males, all 10, all missing) in the
+device- and event-specific dataset, these specific analyses will be dropped.
+
+When factor \code{covariates} are specified, covariate-level analyses may be
+defined two ways: 1) detect an overall covariate level effect,
+also known as a 3-dimensional analysis, and 2) subset the data by each
+level of the covariate, also known as a subgroup analysis. 1) will be
+denoted as \code{covariate_level='All'} in the output \code{mds_da} object,
+while 2) will specify the factor level in \code{covariate_level}.
+
+If \code{invivo=TRUE}, \code{define_analyses()} will first verify if data
+exists in the \code{time_invivo} variable for the given \code{device_level},
+\code{event_level}, and, if applicable, \code{covariates} level. If no data
+exists, \code{invivo} will be implicitly assigned to \code{FALSE}.
 }
 \examples{
 # Device-Events
