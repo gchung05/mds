@@ -164,6 +164,7 @@ time_series.mds_da <- function(
 
     ###########################
     # MUST FIX - define how to handle filtering marginal and rollup of exposure covariates
+    # Don't forget how to handle NA-level covariates
     ###########################
 
     if (!is.na(analysis$exp_covariate_level)){
@@ -284,6 +285,15 @@ time_series.mds_da <- function(
       ts_e <- rbind(ts_e, trow)
       i <- j
     }
+
+    ###########################
+    # MUST FIX - cannot merge on any factors (covariates) if the factor
+    # levels are inconsistent. Convert to character, merge, then reconvert to
+    # factor. Also need to consider how to merge the Marginal (Region=All)
+    # and Data All cases (Data=All)
+    # Also, verify how merges of NA-value covariate levels are handled.
+    ###########################
+
     # Merge device-events and exposure time series
     ts <- merge(ts_de, ts_e, all=T)
     exposure <- T

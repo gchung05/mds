@@ -2,6 +2,7 @@
 ---------------------------------------
 UNDER DEVELOPMENT
 
+- Add to output of `define_analyses()` a function for adding dates in the units specified by `date_level` and `date_level_n`
 - More explicit handling of implantable devices, 
 - CHANGED PARAMETER `deviceevent(implant_days)` to `deviceevent(time_invivo)` and make all downstream changes.
 - Restructured `exposure()` to handle factors only in `match_levels`.

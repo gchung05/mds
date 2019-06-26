@@ -2,10 +2,14 @@ context("Define Analyses")
 
 # Set data
 data <- maude
+data$region <- as.factor(data$region)
 invivo <- round(250 * runif(nrow(data)))
 invivo <- ifelse(invivo <= 30, NA, invivo)
 data$invivo <- invivo
 rm(invivo)
+exposures <- sales
+exposures$region <- as.factor(exposures$region)
+
 
 # Set params
 Pde <- deviceevent(
@@ -16,9 +20,9 @@ Pde <- deviceevent(
   key="report_number",
   covariates="region",
   descriptors="_all_",
-  implant_days="invivo")
+  time_invivo="invivo")
 Pexp <- exposure(
-  sales,
+  exposures,
   time="sales_month",
   device_hierarchy="device_name",
   match_levels="region",
