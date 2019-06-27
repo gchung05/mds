@@ -368,7 +368,7 @@ define_analyses <- function(
                 this <- list(
                   z,
                   device_level,
-                  stats::setNames(devCO$device[1], dev_lvl),
+                  stats::setNames(as.character(devCO$device[1]), dev_lvl),
                   attributes(deviceevents)$device_hierarchy[[dev_1up]],
                   stats::setNames(i1, dev_1up),
                   ifelse(is.null(ev_lvl),

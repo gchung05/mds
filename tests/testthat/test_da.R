@@ -35,7 +35,8 @@ Pcovariates="region"
 a1 <- define_analyses(
   Pde, Pdevice_level,
   exposure=Pexp,
-  covariates=Pcovariates)
+  covariates=Pcovariates,
+  invivo=T)
 
 # Basic
 # -----
@@ -105,9 +106,26 @@ test_that("times_to_calc accepts only legal values", {
   expect_is(define_analyses(Pde, Pdevice_level, times_to_calc=2),
             "mds_das")
 })
+test_that("invivo accepts only legal values", {
+  expect_error(define_analyses(Pde, Pdevice_level, invivo="foo"))
+  expect_error(define_analyses(Pde, Pdevice_level, invivo=1.5))
+  expect_error(define_analyses(Pde, Pdevice_level, invivo=as.Date("1971-01-01")))
+  expect_is(define_analyses(Pde, Pdevice_level, invivo=F),
+            "mds_das")
+})
 
 # Attribute check
-test_that("attributes are fully described and consistent", {
+test_that("mds_das attributes are fully described and consistent", {
+  expect_equal(all(names(attributes(a1)) %in% c(
+    "date_level", "date_level_n", "device_level", "prior_used", "timestamp",
+    "class")), T)
+  expect_equal(attributes(a1)$date_level, "months")
+  expect_equal(attributes(a1)$date_level_n, 1)
+  expect_equal(attributes(a1)$device_level, Pdevice_level)
+  expect_equal(attributes(a1)$prior_used, F)
+  expect_is(attributes(a1)$timestamp, "POSIXct")
+})
+test_that("mds_das attributes are fully described and consistent", {
   expect_equal(all(names(attributes(a1)) %in% c(
     "date_level", "date_level_n", "device_level", "prior_used", "timestamp",
     "class")), T)
@@ -124,15 +142,32 @@ test_that("attributes are fully described and consistent", {
 
 test_that("individual analysis is specified as expected", {
   expect_is(a1[[1]], "mds_da")
+  expect_is(a1[[1]]$id, "numeric")
   expect_equal(a1[[1]]$device_level_source, Pdevice_level)
-  expect_equal(a1[[1]]$covariate, Pcovariates)
-  expect_equal(sum(is.na(a1[[1]]$date_range_exposure)), 0)
-  expect_equal(length(a1[[1]]$exp_covariate_level), 1)
-  expect_is(a1[[length(a1)]], "mds_da")
   expect_equal(a1[[length(a1)]]$device_level_source, Pdevice_level)
-  expect_equal(a1[[length(a1)]]$covariate, "Data")
-  expect_equal(sum(is.na(a1[[length(a1)]]$date_range_exposure)), 0)
+  expect_is(a1[[1]]$device_level, "character")
+  expect_equal(a1[[1]]$device_1up_source, "device_class")
+  expect_is(a1[[1]]$device_1up, "character")
+  expect_equal(a1[[1]]$event_level_source, "event_type")
+  expect_is(a1[[1]]$event_level, "character")
+  expect_true(is.na(a1[[1]]$event_1up_source))
+  expect_true(is.na(a1[[1]]$event_1up))
+  expect_equal(a1[[1]]$covariate, Pcovariates)
+  expect_is(a1[[1]]$covariate_level, "character")
+  expect_is(a1[[1]]$invivo, "logical")
+  expect_is(a1[[1]]$date_adder, "function")
+  expect_is(a1[[1]]$date_range_de, "Date")
+  expect_equal(length(a1[[1]]$date_range_de), 2)
+  expect_is(a1[[1]]$exp_device_level, "character")
+  expect_true(is.na(a1[[1]]$exp_device_1up))
   expect_equal(length(a1[[length(a1)]]$exp_covariate_level), 1)
+  expect_equal(length(a1[[1]]$exp_covariate_level), 1)
+  expect_equal(sum(is.na(a1[[1]]$date_range_exposure)), 0)
+  expect_equal(sum(is.na(a1[[length(a1)]]$date_range_exposure)), 0)
+  expect_is(a1[[1]]$date_range_de_exp, "Date")
+  expect_equal(length(a1[[1]]$date_range_de_exp), 2)
+  expect_is(a1[[length(a1)]], "mds_da")
+  expect_equal(a1[[length(a1)]]$covariate, "Data")
 })
 
 
