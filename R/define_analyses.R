@@ -303,66 +303,63 @@ define_analyses <- function(
           if (j1 != "<>"){
             devDEev1up <- devDEev[devDEev[[ev_1up]] == j1, ]
           } else devDEev1up <- devDEev
-          # If only 1 row of data remains, skip
-          if (nrow(devDEev1up) > 1){
-            
-            # Covariates - Enumerate
-            # ----------------------
-            if (is.null(covariates)){
-              uniq_covs <- list("Data"="All")
-            } else{
-              uniq_covs <- lapply(covariates, function(x){
-                if (is.factor(devDEev1up[[x]])){
-                  this <- c(unique(as.character(devDEev1up[[x]])), "All")
-                  # Identify no variance cases
-                  if (length(this) == 2) this <- "_novar_"
-                } else if (is.numeric(devDEev1up[[x]])){
-                  this <- "All"
-                  # Identify no variance cases
-                  if (length(unique(devDEev1up[[x]])) == 1) this <- "_novar_"
-                }
-                # WARNING! If ever the upstream restriction of no NA's in the
-                # covariates is removed, this will produce NA's as a unique 
-                # level. Subsequent handling of NAs is present but untested.
-                this
-              })
-              names(uniq_covs) <- covariates
-              uniq_covs$Data <- "All" # Set rollup level
-            }
-            
-            # Save analysis instructions by each level of device, event, covariate
-            # --------------------------------------------------------------------
-            for (k in names(uniq_covs)){
-              for (l in uniq_covs[[k]]){
-                # If no variance for this covariate, skip
-                skip <- F
-                if (!is.na(l)){
-                  if (l == "_novar_") skip <- T
-                }
-                if (!skip){
-                  # Entire analysis requires:
-                  # 1. Data All level: covariates not considered (the rollup level as
-                  #    the last loop)
-                  # Each covariate requires:
-                  # 2. Marginal level: analyze for effects of the covariate as a whole
-                  # 3. Nominal level (optional): subset by each nominal/binary type
-                  #    variable
-                  if (is.na(l) & is.factor(devDEev1up[[k]])){ # NA Nominal level
-                    devCO <- devDEev1up[is.na(devDEev1up[[k]]), ]
-                  } else if (l %in% c("All")){ # Marginal/Data All level
-                    devCO <- devDEev1up 
-                  } else if (is.factor(devDEev1up[[k]])){ # Nominal level
-                    devCO <- devDEev1up[devDEev1up[[k]] == l, ]
-                  } else stop("Unknown covariate filtering specification")
+          # Covariates - Enumerate
+          # ----------------------
+          if (is.null(covariates)){
+            uniq_covs <- list("Data"="All")
+          } else{
+            uniq_covs <- lapply(covariates, function(x){
+              if (is.factor(devDEev1up[[x]])){
+                this <- c(unique(as.character(devDEev1up[[x]])), "All")
+                # Identify no variance cases
+                if (length(this) == 2) this <- "_novar_"
+              } else if (is.numeric(devDEev1up[[x]])){
+                this <- "All"
+                # Identify no variance cases
+                if (length(unique(devDEev1up[[x]])) == 1) this <- "_novar_"
+              }
+              # WARNING! If ever the upstream restriction of no NA's in the
+              # covariates is removed, this will produce NA's as a unique 
+              # level. Subsequent handling of NAs is present but untested.
+              this
+            })
+            names(uniq_covs) <- covariates
+            uniq_covs$Data <- "All" # Set rollup level
+          }
+          
+          # Save analysis instructions by each level of device, event, covariate
+          # --------------------------------------------------------------------
+          for (k in names(uniq_covs)){
+            for (l in uniq_covs[[k]]){
+              # If no variance for this covariate, skip
+              skip <- F
+              if (!is.na(l)){
+                if (l == "_novar_") skip <- T
+              }
+              if (!skip){
+                # Entire analysis requires:
+                # 1. Data All level: covariates not considered (the rollup level as
+                #    the last loop)
+                # Each covariate requires:
+                # 2. Marginal level: analyze for effects of the covariate as a whole
+                # 3. Nominal level (optional): subset by each nominal/binary type
+                #    variable
+                if (is.na(l) & is.factor(devDEev1up[[k]])){ # NA Nominal level
+                  devCO <- devDEev1up[is.na(devDEev1up[[k]]), ]
+                } else if (l %in% c("All")){ # Marginal/Data All level
+                  devCO <- devDEev1up 
+                } else if (is.factor(devDEev1up[[k]])){ # Nominal level
+                  devCO <- devDEev1up[devDEev1up[[k]] == l, ]
+                } else stop("Unknown covariate filtering specification")
+                
+                # If only 1 row of data remains, skip
+                if (nrow(devCO) > 1){
                   # Verify time in-vivo variable has variance
                   vivovar <- F
                   if (!is.null(attributes(deviceevents)$time_invivo)){
-                    tvivo <- devCO[[attributes(deviceevents)$time_invivo]]
-                    if (invivo &
-                        !all(duplicated(tvivo) | duplicated(tvivo, fromLast=T))){
+                    if (invivo & length(unique(devCO$time_invivo)) > 1){
                       vivovar <- T
                     }
-                    rm(tvivo)
                   }
                   
                   # Assemble output starting with non-exposure data
