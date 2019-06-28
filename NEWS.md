@@ -1,9 +1,10 @@
-`mds` 0.2.2
+`mds` 0.3.0
 ---------------------------------------
 UNDER DEVELOPMENT
 
 *General*
 - Add to output of `define_analyses()` a function for adding dates in the units specified by `date_level` and `date_level_n`
+- Overall improvement of documentation & detailed descriptions of functions
 
 *Covariate Handling*
 - Explicit handling of covariate level analysis in `deviceevent()`, `define_analyses()`, and `time_series()`
@@ -12,7 +13,7 @@ UNDER DEVELOPMENT
 - Covariate analysis is exempt if there is zero variation in the data of the covariate
 - Restructured `exposure()` to handle factors only in `match_levels`.
 
-*Implant / Time In-Vivo Handling*
+*Implantable Devices / Time In-Vivo Handling*
 - More explicit handling of implantable devices (in-vivo time)
 - More explicit handling of implant days by `define_analyses()` and `time_series()`
 - CHANGED PARAMETER `deviceevent(implant_days)` to `deviceevent(time_invivo)` and make all downstream changes.
@@ -25,7 +26,6 @@ UNDER DEVELOPMENT
 
 - Feature allowing total events (concept of reporting fraction) as an exposure data frame
 - Facility for handling multiple events on the same actual occurrence (such as stroke and bleeding during the same operation)
-- Calculation of implant length (and improved handling of implantables overall)
 - Explicit implementation of the Unique Device Identifier (UDI)
 
 `mds` 0.2.1
