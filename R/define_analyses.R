@@ -7,7 +7,9 @@
 #' a call to \code{deviceevent()}.
 #'
 #' @param device_level String value indicating the source device variable name
-#' to analyze by.
+#' to analyze by. If \code{exposure} is specified, \code{exposure} data will be
+#' matched by \code{device_level}. If a hierarchy of 2 or more are present,
+#' see Details for important information.
 #'
 #' Example: If the \code{deviceevents} variable column is \code{device_1} where
 #' the source variable name for \code{device_1} is \code{'Device Code'}, specify
@@ -15,6 +17,8 @@
 #'
 #' @param event_level String value indicating the source event variable name to
 #' analyze by. Note that \code{event_level} is not matched to \code{exposure}.
+#' If a hierarchy of 2 or more are present, see Details for important 
+#' information.
 #'
 #' Example: If the \code{deviceevents} variable column is \code{event_1} where
 #' the source variable name for \code{event_1} is \code{'Event Code'}, specify
@@ -88,8 +92,17 @@
 #'
 #' @details The analyses definitions will always include rollup levels for each
 #' of \code{device_level}, \code{event_level} (if specified), and
-#' \code{covariates}. These rollup analyses will be indicated by the keyword
+#' \code{covariates}. Rollups are analyses at all device, event, and/or
+#' covariate levels. These rollup analyses will be indicated by the keyword
 #' 'All' in the analysis definition.
+#' 
+#' When a hierarchy of 2 or more variables for either \code{device_level} or
+#' \code{event_level} are present in \code{deviceevents}, 
+#' \code{define_analyses()} will enforce the 1-level-up parent level ONLY.
+#' Additional higher parent levels are not currently enforced, thus the user is 
+#' advised to uniquely name the 1-level-up parent level. The parent level
+#' DOES NOT ROLLUP currently because the parent level is intended to separate
+#' disparate data and devices. This may change in the future.
 #'
 #' If \code{exposure} is specified, any available \code{match_levels} will be
 #' used to calculate the appropriate timeframe for analyses. The exception are
@@ -290,193 +303,188 @@ define_analyses <- function(
           if (j1 != "<>"){
             devDEev1up <- devDEev[devDEev[[ev_1up]] == j1, ]
           } else devDEev1up <- devDEev
-
-          # Covariates - Enumerate
-          # ----------------------
-          if (is.null(covariates)){
-            uniq_covs <- list("Data"="All")
-          } else{
-            uniq_covs <- lapply(covariates, function(x){
-              if (is.factor(devDEev1up[[x]])){
-                this <- c(unique(as.character(devDEev1up[[x]])), "All")
-              } else if (is.numeric(devDEev1up[[x]])){
-                this <- "All"
-              }
-              # REMINDER! NA's will remain as a level, must handle explicitly
-              # downstream!!!
-              this
-            })
-            names(uniq_covs) <- covariates
-            uniq_covs$Data <- "All" # Set rollup level
-          }
-
-          # Save analysis instructions by each level of device, event, covariate
-          # --------------------------------------------------------------------
-          for (k in names(uniq_covs)){
-            for (l in uniq_covs[[k]]){
-
-              ################################
-              # DEBUG:::: MUST CONSIDER HOW TO HANDLE THE NUMERIC COVARIATE & MARGINAL LEVEL ANALYSIS
-              # Debug conditions
-              # browser()
-              # uniq_covs <- list("region"=c("Central", "East", "West", "All"),
-              #                   "optime"=c("All"),
-              #                   "Data"="All")
-              # k="region"
-              # k="optime"
-              # k="Data"
-              # l="Central"
-              # l="All"
-              ################################
-
-
-              # Entire analysis requires:
-              # 1. Data All level: covariates not considered (the rollup level as
-              #    the last loop)
-              # Each covariate requires:
-              # 2. Marginal level: analyze for effects of the covariate as a whole
-              # 3. Nominal level (optional): subset by each nominal/binary type
-              #    variable
-              if (is.factor(devDEev1up[[k]]) & is.na(l)){ # NA Nominal level
-                devCO <- devDEev1up[is.na(devDEev1up[[k]]), ]
-              } else if (is.factor(devDEev1up[[k]]) & l != "All"){ # Nominal level
-                devCO <- devDEev1up[devDEev1up[[k]] == l, ]
-              } else devCO <- devDEev1up # Marginal & Data All level
-              # Detect if covariate data has no spread
-              nospread <- all(duplicated(devCO[[k]]) |
-                                duplicated(devCO[[k]], fromLast=T))
-
-              # Proceed for Data All level and Nominal level
-              # If Marginal level analysis, proceed only if covariate has spread
-              if (!nospread){
-
-                # Verify time in-vivo variable has variance
-                vivovar <- F
-                tvivo <- devCO[[attributes(deviceevents)$time_invivo]]
-                if (invivo &
-                    !all(duplicated(tvivo) | duplicated(tvivo, fromLast=T))){
-                  vivovar <- T
+          # If only 1 row of data remains, skip
+          if (nrow(devDEev1up) > 1){
+            
+            # Covariates - Enumerate
+            # ----------------------
+            if (is.null(covariates)){
+              uniq_covs <- list("Data"="All")
+            } else{
+              uniq_covs <- lapply(covariates, function(x){
+                if (is.factor(devDEev1up[[x]])){
+                  this <- c(unique(as.character(devDEev1up[[x]])), "All")
+                  # Identify no variance cases
+                  if (length(this) == 2) this <- "_novar_"
+                } else if (is.numeric(devDEev1up[[x]])){
+                  this <- "All"
+                  # Identify no variance cases
+                  if (length(unique(devDEev1up[[x]])) == 1) this <- "_novar_"
                 }
-
-                # Assemble output starting with non-exposure data
-                # -----------------------------------------------
-                # Establish date range
-                dt_range <- convert_date(range(devCO$time, na.rm=T),
-                                         date_level, date_level_n)
-                names(dt_range) <- c("start", "end")
-                # Build list of instructions
-                this <- list(
-                  z,
-                  device_level,
-                  stats::setNames(as.character(devCO$device[1]), dev_lvl),
-                  attributes(deviceevents)$device_hierarchy[[dev_1up]],
-                  stats::setNames(i1, dev_1up),
-                  ifelse(is.null(ev_lvl),
-                         attributes(deviceevents)$event_hierarchy[[1]],
-                         event_level),
-                  stats::setNames(devCO$event[1], ifelse(
-                    is.null(ev_lvl),
-                    names(attributes(deviceevents)$event_hierarchy)[1],
-                    ev_lvl)),
-                  ev_1up_lab,
-                  stats::setNames(
-                    ifelse(j1 != "<>", j1, NA),
-                    ifelse(ev_1up == "<>",
-                           names(attributes(
-                             deviceevents)$event_hierarchy)[ev_index],
-                           ev_1up)),
-                  k, l,
-                  vivovar,
-                  attributes(dt_range)$adder,
-                  dt_range)
-                names(this) <- c("id",
-                                 "device_level_source", "device_level",
-                                 "device_1up_source", "device_1up",
-                                 "event_level_source", "event_level",
-                                 "event_1up_source", "event_1up",
-                                 "covariate", "covariate_level",
-                                 "invivo",
-                                 "date_adder",
-                                 "date_range_de")
-
-                # Exposure Case
-                # -------------
-                if (is.null(exposure)){
-                  thes <- data.frame()
-                } else thes <- exposure
-                dev_level_e <- dev_1up_e <- cov_level_e <- stats::setNames(NA,
-                                                                           NA)
-                # Filter by current device level
-                if (nrow(thes) > 0 &
-                    this$device_level_source %in%
-                    attributes(exposure)$device_hierarchy){
-                  dev_label <- names(which(attributes(
-                    exposure)$device_hierarchy == this$device_level_source))
-                  dev_level_e <- stats::setNames(
-                    as.character(this$device_level), dev_label)
-                  if (dev_level_e != "All"){
-                    thes <- thes[thes[[names(dev_level_e)]] == dev_level_e, ]
-                    if (nrow(thes) == 0){
-                      dev_level_e <- stats::setNames(NA, dev_label)
+                # WARNING! If ever the upstream restriction of no NA's in the
+                # covariates is removed, this will produce NA's as a unique 
+                # level. Subsequent handling of NAs is present but untested.
+                this
+              })
+              names(uniq_covs) <- covariates
+              uniq_covs$Data <- "All" # Set rollup level
+            }
+            
+            # Save analysis instructions by each level of device, event, covariate
+            # --------------------------------------------------------------------
+            for (k in names(uniq_covs)){
+              for (l in uniq_covs[[k]]){
+                # If no variance for this covariate, skip
+                skip <- F
+                if (!is.na(l)){
+                  if (l == "_novar_") skip <- T
+                }
+                if (!skip){
+                  # Entire analysis requires:
+                  # 1. Data All level: covariates not considered (the rollup level as
+                  #    the last loop)
+                  # Each covariate requires:
+                  # 2. Marginal level: analyze for effects of the covariate as a whole
+                  # 3. Nominal level (optional): subset by each nominal/binary type
+                  #    variable
+                  if (is.na(l) & is.factor(devDEev1up[[k]])){ # NA Nominal level
+                    devCO <- devDEev1up[is.na(devDEev1up[[k]]), ]
+                  } else if (l %in% c("All")){ # Marginal/Data All level
+                    devCO <- devDEev1up 
+                  } else if (is.factor(devDEev1up[[k]])){ # Nominal level
+                    devCO <- devDEev1up[devDEev1up[[k]] == l, ]
+                  } else stop("Unknown covariate filtering specification")
+                  # Verify time in-vivo variable has variance
+                  vivovar <- F
+                  if (!is.null(attributes(deviceevents)$time_invivo)){
+                    tvivo <- devCO[[attributes(deviceevents)$time_invivo]]
+                    if (invivo &
+                        !all(duplicated(tvivo) | duplicated(tvivo, fromLast=T))){
+                      vivovar <- T
                     }
+                    rm(tvivo)
                   }
-                }
-                this$exp_device_level <- dev_level_e
-                # Filter by 1-up device level
-                if (nrow(thes) > 0 &
-                    this$device_1up_source %in%
-                    attributes(exposure)$device_hierarchy){
-                  dev_label <- names(which(attributes(
-                    exposure)$device_hierarchy == this$device_1up_source))
-                  dev_1up_e <- stats::setNames(as.character(this$device_1up),
-                                               dev_label)
-                  if (!is.na(dev_1up_e)){
-                    if (dev_1up_e != "All"){
-                      thes <- thes[thes[[names(dev_1up_e)]] == dev_1up_e, ]
+                  
+                  # Assemble output starting with non-exposure data
+                  # -----------------------------------------------
+                  # Establish date range
+                  dt_range <- convert_date(range(devCO$time, na.rm=T),
+                                           date_level, date_level_n)
+                  names(dt_range) <- c("start", "end")
+                  # Build list of instructions
+                  this <- list(
+                    z,
+                    device_level,
+                    stats::setNames(as.character(devCO$device[1]), dev_lvl),
+                    attributes(deviceevents)$device_hierarchy[[dev_1up]],
+                    stats::setNames(i1, dev_1up),
+                    ifelse(is.null(ev_lvl),
+                           attributes(deviceevents)$event_hierarchy[[1]],
+                           event_level),
+                    stats::setNames(devCO$event[1], ifelse(
+                      is.null(ev_lvl),
+                      names(attributes(deviceevents)$event_hierarchy)[1],
+                      ev_lvl)),
+                    ev_1up_lab,
+                    stats::setNames(
+                      ifelse(j1 != "<>", j1, NA),
+                      ifelse(ev_1up == "<>",
+                             names(attributes(
+                               deviceevents)$event_hierarchy)[ev_index],
+                             ev_1up)),
+                    k, l,
+                    vivovar,
+                    attributes(dt_range)$adder,
+                    dt_range)
+                  names(this) <- c("id",
+                                   "device_level_source", "device_level",
+                                   "device_1up_source", "device_1up",
+                                   "event_level_source", "event_level",
+                                   "event_1up_source", "event_1up",
+                                   "covariate", "covariate_level",
+                                   "invivo",
+                                   "date_adder",
+                                   "date_range_de")
+                  
+                  # Exposure Case
+                  # -------------
+                  if (is.null(exposure)){
+                    thes <- data.frame()
+                  } else thes <- exposure
+                  dev_level_e <- dev_1up_e <- cov_level_e <- stats::setNames(NA,
+                                                                             NA)
+                  # Filter by current device level
+                  if (nrow(thes) > 0 &
+                      this$device_level_source %in%
+                      attributes(exposure)$device_hierarchy){
+                    dev_label <- names(which(attributes(
+                      exposure)$device_hierarchy == this$device_level_source))
+                    dev_level_e <- stats::setNames(
+                      as.character(this$device_level), dev_label)
+                    if (dev_level_e != "All"){
+                      thes <- thes[thes[[names(dev_level_e)]] == dev_level_e, ]
                       if (nrow(thes) == 0){
-                        dev_1up_e <- stats::setNames(NA, dev_label)
+                        dev_level_e <- stats::setNames(NA, dev_label)
                       }
                     }
                   }
-                }
-                this$exp_device_1up <- dev_1up_e
-                # Filter by event
-                # NOT IMPLEMENTED <A possible future feature, if requested.>
-                # Filter for the current covariate level
-                if (nrow(thes) > 0 &
-                    this$covariate %in% attributes(exposure)$match_levels){
-                  cov_level_e <- stats::setNames(l, k)
-                  if (is.na(l)){ # covariate level is NA case
-                    thes <- thes[is.na(thes[[k]]), ]
-                  } else if (l != "All"){ # covariate level is nominal, non-NA
-                    thes <- thes[as.character(thes[[k]]) == l, ]
-                  } # marginal & Data All levels implied by not filtering
-                  if (nrow(thes) > 0) this$exp_covariate_level <- cov_level_e
-                }
-                # Establish exposure date range, if exposure data exists
-                if (nrow(thes) > 0){
-                  dt_range <- convert_date(range(thes$time, na.rm=T),
-                                           date_level, date_level_n)
+                  this$exp_device_level <- dev_level_e
+                  # Filter by 1-up device level
+                  if (nrow(thes) > 0 &
+                      this$device_1up_source %in%
+                      attributes(exposure)$device_hierarchy){
+                    dev_label <- names(which(attributes(
+                      exposure)$device_hierarchy == this$device_1up_source))
+                    dev_1up_e <- stats::setNames(as.character(this$device_1up),
+                                                 dev_label)
+                    if (!is.na(dev_1up_e)){
+                      if (dev_1up_e != "All"){
+                        thes <- thes[thes[[names(dev_1up_e)]] == dev_1up_e, ]
+                        if (nrow(thes) == 0){
+                          dev_1up_e <- stats::setNames(NA, dev_label)
+                        }
+                      }
+                    }
+                  }
+                  this$exp_device_1up <- dev_1up_e
+                  # Filter by event
+                  # NOT IMPLEMENTED <A possible future feature, if requested.>
+                  # Filter for the current covariate level
+                  if (nrow(thes) > 0 &
+                      this$covariate %in% attributes(exposure)$match_levels){
+                    cov_level_e <- stats::setNames(l, k)
+                    if (is.na(l)){ # covariate level is NA case
+                      thes <- thes[is.na(thes[[k]]), ]
+                    } else if (l != "All"){ # covariate level is nominal, non-NA
+                      thes <- thes[as.character(thes[[k]]) == l, ]
+                    } # marginal & Data All levels implied by not filtering
+                    if (nrow(thes) > 0) this$exp_covariate_level <- cov_level_e
+                  }
+                  # Establish exposure date range, if exposure data exists
+                  if (nrow(thes) > 0){
+                    dt_range <- convert_date(range(thes$time, na.rm=T),
+                                             date_level, date_level_n)
+                    names(dt_range) <- c("start", "end")
+                    this$date_range_exposure <- dt_range
+                  } else this$date_range_exposure <- c(as.Date(NA), as.Date(NA))
+                  # Establish date range if exposure is to be used in analysis
+                  # If exposure is not used, date range is the same as
+                  # device-events
+                  dt_range <- c(
+                    max(c(this$date_range_de[1], this$date_range_exposure[1]),
+                        na.rm=T),
+                    min(c(this$date_range_de[2], this$date_range_exposure[2]),
+                        na.rm=T))
+                  dt_range <- convert_date(dt_range, date_level, date_level_n)
                   names(dt_range) <- c("start", "end")
-                  this$date_range_exposure <- dt_range
-                } else this$date_range_exposure <- c(as.Date(NA), as.Date(NA))
-                # Establish date range if exposure is to be used in analysis
-                # If exposure is not used, date range is the same as
-                # device-events
-                dt_range <- c(
-                  max(c(this$date_range_de[1], this$date_range_exposure[1]),
-                      na.rm=T),
-                  min(c(this$date_range_de[2], this$date_range_exposure[2]),
-                      na.rm=T))
-                dt_range <- convert_date(dt_range, date_level, date_level_n)
-                names(dt_range) <- c("start", "end")
-                this$date_range_de_exp <- dt_range
-
-                # Finally, save the analysis
-                # --------------------------
-                class(this) <- append(class(this), "mds_da")
-                out[[z]] <- this
-                z <- z + 1
+                  this$date_range_de_exp <- dt_range
+                  
+                  # Finally, save the analysis
+                  # --------------------------
+                  class(this) <- append(class(this), "mds_da")
+                  out[[z]] <- this
+                  z <- z + 1
+                }
               }
             }
           }
@@ -519,11 +527,13 @@ define_analyses_dataframe <- function(
   for(j in 1:length(inlist)){
     x <- inlist[[j]]
     for(i in 1:length(x)){
-      date_flag <- F
+      date_flag <- func_flag <- F
       if ("factor" %in% class(x[[i]])){
         x[[i]] <- as.character(x[[i]])
       } else if ("Date" %in% class(x[[i]])){
         date_flag <- T
+      } else if ("function" %in% class(x[[i]])){
+        func_flag <- T
       }
       if (length(x[[i]]) > 1){
         this <- data.frame(t(data.frame(x[i])), stringsAsFactors=F)
@@ -533,27 +543,37 @@ define_analyses_dataframe <- function(
         colnames(this) <- paste0(rownames(this), "_", coln)
       } else if (length(x[[i]]) == 0){
         x[[i]] <- NA
+      } else if (func_flag){
+        x[[i]] <- NA
       } else{
         this <- as.data.frame(x[i], stringsAsFactors=F, row.names="")
       }
       if (date_flag){
         this <- do.call("cbind.data.frame", lapply(this, as.Date))
       }
-      if (exists("out")){
-        out <- cbind.data.frame(out, this)
-      } else{
-        # out <- cbind.data.frame(id=j, this)
-        out <- this
+      if (all(!is.na(x[[i]]))){
+        if (exists("out")){
+          out <- cbind.data.frame(out, this)
+        } else{
+          # out <- cbind.data.frame(id=j, this)
+          out <- this
+        }
       }
     }
     # If column names are not equal, use the more descriptive set of names
     ncall <- nchar(paste(names(all), collapse=""))
     ncout <- nchar(paste(names(out), collapse=""))
+    
     if (nrow(all) > 0){
       if (ncall > ncout){
-        names(out) <- names(all)
+        # browser()#########################
+
+        out[setdiff(names(all), names(out))] <- NA
+        # names(out) <- names(all)
       } else if (ncout > ncall){
-        names(all) <- names(out)
+        all[setdiff(names(out), names(all))] <- NA
+        
+        # names(all) <- names(out)
       }
     }
     # Combine

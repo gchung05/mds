@@ -14,7 +14,9 @@ define_analyses(deviceevents, device_level, event_level = NULL,
 a call to \code{deviceevent()}.}
 
 \item{device_level}{String value indicating the source device variable name
-to analyze by.
+to analyze by. If \code{exposure} is specified, \code{exposure} data will be
+matched by \code{device_level}. If a hierarchy of 2 or more are present,
+see Details for important information.
 
 Example: If the \code{deviceevents} variable column is \code{device_1} where
 the source variable name for \code{device_1} is \code{'Device Code'}, specify
@@ -22,6 +24,8 @@ the source variable name for \code{device_1} is \code{'Device Code'}, specify
 
 \item{event_level}{String value indicating the source event variable name to
 analyze by. Note that \code{event_level} is not matched to \code{exposure}.
+If a hierarchy of 2 or more are present, see Details for important 
+information.
 
 Example: If the \code{deviceevents} variable column is \code{event_1} where
 the source variable name for \code{event_1} is \code{'Event Code'}, specify
@@ -101,8 +105,17 @@ an MD-PMS exposure data frame.
 \details{
 The analyses definitions will always include rollup levels for each
 of \code{device_level}, \code{event_level} (if specified), and
-\code{covariates}. These rollup analyses will be indicated by the keyword
+\code{covariates}. Rollups are analyses at all device, event, and/or
+covariate levels. These rollup analyses will be indicated by the keyword
 'All' in the analysis definition.
+
+When a hierarchy of 2 or more variables for either \code{device_level} or
+\code{event_level} are present in \code{deviceevents}, 
+\code{define_analyses()} will enforce the 1-level-up parent level ONLY.
+Additional higher parent levels are not currently enforced, thus the user is 
+advised to uniquely name the 1-level-up parent level. The parent level
+DOES NOT ROLLUP currently because the parent level is intended to separate
+disparate data and devices. This may change in the future.
 
 If \code{exposure} is specified, any available \code{match_levels} will be
 used to calculate the appropriate timeframe for analyses. The exception are

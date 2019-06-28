@@ -12,13 +12,15 @@
 #'
 #' @param device_hierarchy Vector of character variable names representing the
 #' device hierarchy in \code{data_frame}. Vector ordering is lowest level first,
-#' most general level last.
+#' most general level last. If more than 2 variables, see important note in 
+#' Details.
 #'
 #' Example: \code{c("Version", "Device", "ProductLine")}
 #'
 #' @param event_hierarchy Vector of character variable names representing the
 #' event hierarchy in \code{data_frame}. Vector ordering is most specific event
-#' category first, most broad event category last.
+#' category first, most broad event category last. If more than 2 variables,
+#' see important note in Details.
 #'
 #' Example: \code{c("Event Code", "Event Group")}
 #'
@@ -88,6 +90,13 @@
 #' }
 #'
 #' @details
+#' When more than 2 variables are specified in either \code{device_hierarchy} 
+#' or \code{event_hierarchy}, it is important to note that a subsequent call to
+#' \code{define_analyses()} currently only utilizes a maximum of 2 variables: 
+#' the lowest level and the 1-level-up parent. The user may enforce full
+#' hierarchy in >2 variable cases by ensuring that the parent values are
+#' uniquely named.
+#' 
 #' \code{time_invivo} can be thought of more generally as the time of
 #' exposure of the device to the subject at the time of the event. The common
 #' usage is duration of the implant in the patient at time of event, for an
@@ -132,11 +141,9 @@ deviceevent <- function(
                       check_names=data_frame, exclusions="_all_")
   input_param_checker(descriptors, check_class="character",
                       check_names=data_frame, exclusions="_all_")
-  if (!is.null(time_invivo)){
-    input_param_checker(time_invivo, check_class="numeric",
-                        check_names=data_frame, max_length=1)
-  }
-
+  input_param_checker(time_invivo, check_class="numeric",
+                      check_names=data_frame, max_length=1)
+  
   # Address each variable
   # ---------------------
   # Key

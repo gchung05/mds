@@ -2,13 +2,20 @@
 ---------------------------------------
 UNDER DEVELOPMENT
 
+*General*
 - Add to output of `define_analyses()` a function for adding dates in the units specified by `date_level` and `date_level_n`
-- More explicit handling of implantable devices, 
-- CHANGED PARAMETER `deviceevent(implant_days)` to `deviceevent(time_invivo)` and make all downstream changes.
-- Restructured `exposure()` to handle factors only in `match_levels`.
+
+*Covariate Handling*
 - Explicit handling of covariate level analysis in `deviceevent()`, `define_analyses()`, and `time_series()`
 - Restriction of covariates to `factor` and `numeric` types only in `deviceevent()`
+- Covariate analysis definitions include as a whole (marginal effect) or as a subset by a `factor` covariate level
+- Covariate analysis is exempt if there is zero variation in the data of the covariate
+- Restructured `exposure()` to handle factors only in `match_levels`.
+
+*Implant / Time In-Vivo Handling*
+- More explicit handling of implantable devices (in-vivo time)
 - More explicit handling of implant days by `define_analyses()` and `time_series()`
+- CHANGED PARAMETER `deviceevent(implant_days)` to `deviceevent(time_invivo)` and make all downstream changes.
 
 **Implemented Updates**
 

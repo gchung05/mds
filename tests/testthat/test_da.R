@@ -3,6 +3,7 @@ context("Define Analyses")
 # Set data
 data <- maude
 data$region <- as.factor(data$region)
+data$novariance <- c(1, 1, rep(0, nrow(data) - 2))
 invivo <- round(250 * runif(nrow(data)))
 invivo <- ifelse(invivo <= 30, NA, invivo)
 data$invivo <- invivo
@@ -18,7 +19,7 @@ Pde <- deviceevent(
   device_hierarchy=c("device_name", "device_class"),
   event_hierarchy=c("event_type", "medical_specialty_description"),
   key="report_number",
-  covariates="region",
+  covariates=c("region", "novariance"),
   descriptors="_all_",
   time_invivo="invivo")
 Pexp <- exposure(
@@ -29,7 +30,7 @@ Pexp <- exposure(
   count="sales_volume"
 )
 Pdevice_level="device_name"
-Pcovariates="region"
+Pcovariates=c("region", "novariance")
 
 # Reference example
 a1 <- define_analyses(
@@ -37,6 +38,7 @@ a1 <- define_analyses(
   exposure=Pexp,
   covariates=Pcovariates,
   invivo=T)
+# temp <- define_analyses_dataframe(a1)
 
 # Basic
 # -----
@@ -152,7 +154,7 @@ test_that("individual analysis is specified as expected", {
   expect_is(a1[[1]]$event_level, "character")
   expect_true(is.na(a1[[1]]$event_1up_source))
   expect_true(is.na(a1[[1]]$event_1up))
-  expect_equal(a1[[1]]$covariate, Pcovariates)
+  expect_equal(a1[[1]]$covariate, "region")
   expect_is(a1[[1]]$covariate_level, "character")
   expect_is(a1[[1]]$invivo, "logical")
   expect_is(a1[[1]]$date_adder, "function")
@@ -160,7 +162,7 @@ test_that("individual analysis is specified as expected", {
   expect_equal(length(a1[[1]]$date_range_de), 2)
   expect_is(a1[[1]]$exp_device_level, "character")
   expect_true(is.na(a1[[1]]$exp_device_1up))
-  expect_equal(length(a1[[length(a1)]]$exp_covariate_level), 1)
+  expect_null(a1[[length(a1)]]$exp_covariate_level)
   expect_equal(length(a1[[1]]$exp_covariate_level), 1)
   expect_equal(sum(is.na(a1[[1]]$date_range_exposure)), 0)
   expect_equal(sum(is.na(a1[[length(a1)]]$date_range_exposure)), 0)
@@ -182,7 +184,7 @@ test_that("barebones individual analysis is specified as expected", {
   expect_equal(a1[[1]]$device_level_source, Pdevice_level)
   expect_equal(a1[[1]]$covariate, "Data")
   expect_equal(a1[[1]]$date_range_exposure, as.Date(c(NA, NA)))
-  expect_equal(a1[[1]]$exp_covariate_level, setNames(NA, NA))
+  expect_null(a1[[1]]$exp_covariate_level)
 })
 
 # Attribute check
@@ -229,7 +231,8 @@ Pde <- deviceevent(
 Pdevice_level="device_name"
 Pcovariates="region"
 a1 <- define_analyses(
-  Pde, Pdevice_level,
+  Pde, 
+  Pdevice_level,
   exposure=Pexp,
   covariates=Pcovariates)
 test_that("device hierarchy as expected for single-level device", {
@@ -466,3 +469,4 @@ test_that("Date ranges are populated", {
   expect_is(a2$`Date Ranges`$Start, "Date")
   expect_is(a2$`Date Ranges`$End, "Date")
 })
+
