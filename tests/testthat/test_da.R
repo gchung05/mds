@@ -2,15 +2,12 @@ context("Define Analyses")
 
 # Set data
 data <- maude
-data$region <- as.factor(data$region)
 data$novariance <- c(1, 1, rep(0, nrow(data) - 2))
 invivo <- round(250 * runif(nrow(data)))
 invivo <- ifelse(invivo <= 30, NA, invivo)
 data$invivo <- invivo
 rm(invivo)
 exposures <- sales
-exposures$region <- as.factor(exposures$region)
-
 
 # Set params
 Pde <- deviceevent(

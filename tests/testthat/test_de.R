@@ -2,7 +2,6 @@ context("Device Events")
 
 # Set params
 data <- maude
-data$region <- as.factor(data$region)
 invivo <- round(250 * runif(nrow(data)))
 invivo <- ifelse(invivo <= 30, NA, invivo)
 data$invivo <- invivo

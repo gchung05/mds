@@ -36,6 +36,7 @@ for (i in cols_dev_openfda){
 # Simulate a reporting geographical region
 build$region <- as.character(factor(as.numeric(cut(runif(nrow(build)), 3)),
                                     labels=c("West", "Central", "East")))
+build$region <- as.factor(build$region)
 # Done
 maude <- build
 

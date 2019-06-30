@@ -4,6 +4,8 @@ UNDER DEVELOPMENT
 
 *General*
 - Add to output of `define_analyses()` a function for adding dates in the units specified by `date_level` and `date_level_n`
+- Input parameter `covariates` specified in `deviceevent()` must be either `factor` or `numeric`, no longer `character`.
+- Input parameter `match_levels` specified in `time_series()` must be `factor`, no longer `character`.
 - Overall improvement of documentation & detailed descriptions of functions
 
 *Covariate Handling*

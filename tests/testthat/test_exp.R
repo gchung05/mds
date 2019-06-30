@@ -2,7 +2,6 @@ context("Exposure")
 
 # Set params
 data <- sales
-data$region <- as.factor(data$region)
 Ptime <- "sales_month"
 Pdevice_hierarchy <- "device_name"
 Pevent_hierarchy <- NULL

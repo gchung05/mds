@@ -16,5 +16,6 @@ for (i in 1:nrow(wts)){
     sales <- rbind(sales, ij)
   }
 }
+sales$region <- as.factor(sales$region)
 
-devtools::use_data(sales, overwrite=T)
+usethis::use_data(sales, overwrite=T)

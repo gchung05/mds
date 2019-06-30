@@ -18,16 +18,18 @@ time_series(analysis, ...)
 }
 \arguments{
 \item{analysis}{A defined analysis object of class \code{mds_da}, list of
-class \code{mds_das}, or a list of objects each of class \code{mds_da}.}
+class \code{mds_das}, or a list of objects each of class \code{mds_da},
+usually created by \code{define_analyses()}.}
 
 \item{...}{Further arguments for future work.}
 
-\item{deviceevents}{A device-events object of class \code{mds_de}. Typically,
-this will be the same \code{mds_de} object used to generate \code{analysis}.}
+\item{deviceevents}{A device-event data frame of class \code{mds_de}, usually
+created by \code{deviceevent()}. This should be the same data frame used to 
+generate \code{analysis}.}
 
-\item{exposure}{Optional exposure object of class \code{mds_e}. Typically,
-this will be the same \code{mds_e} object used to generate \code{analysis},
-if an exposure was used.
+\item{exposure}{Optional exposure data frame of class \code{mds_e}, usually
+created by \code{exposure()}. This should be the same data frame used to 
+generate \code{analysis}, if exposure data was used.
 
 Default: \code{NULL} will not consider exposure data.}
 
@@ -37,6 +39,7 @@ disproportionality analysis. See details for more.}
 }
 \value{
 A standardized MD-PMS time series data frame of class \code{mds_ts}.
+
 The data frame contains, by defined date levels, the following:
 \describe{
   \item{nA}{Count of the device & event level of interest. If covariate
@@ -62,22 +65,22 @@ The data frame contains, by defined date levels, the following:
   applicable to \code{nA}.}
 }
 
-Attributes are as follows:
+The \code{mds_ts} class attributes are as follows:
 \describe{
-  \item{nA}{Variable name(s) and level(s) (key-value) pair(s) for \code{nA}.}
-  \item{nABCD}{Variable names and levels (key-value) pairs for the entire
-  2x2 contingency table, if applicable to the analysis.}
-  \item{nLabels}{Plain language labels for \code{nA} and, if applicable, the
-  rows and columns of the 2x2 contingency table.}
+  \item{title}{Short description of the analysis.}
+  \item{analysis}{The analysis definition of class \code{mds_da}.}
   \item{exposure}{Boolean of whether exposure counts are present.}
   \item{dpa}{Boolean of whether 2x2 contingency table counts are present
   (presumably for disproportionality analysis or 'DPA').}
+  \item{dpa_detail}{\code{list} object containing labels for the DPA
+  contingency table.}
 }
 }
 \description{
-Converts defined analysis (class \code{mds_da}) to a time series object or a
-list of defined analyses (class \code{mds_das} or \code{list}) to a list of
-time series objects.
+Creates time series object(s) from defined analysis/analyses created by
+\code{define_analyses()}, device-event data frame created by 
+\code{deviceevent()}, and optionally, exposure data frame created by
+\code{exposure()}.
 }
 \details{
 When \code{use_hierarchy=T}, the B, C, and D cells of the 2x2
