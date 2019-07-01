@@ -10,7 +10,7 @@ UNDER DEVELOPMENT
 
 *Covariate Handling*
 - Explicit handling of covariate level analysis in `deviceevent()`, `define_analyses()`, and `time_series()`
-- Restriction of covariates to `factor` and `numeric` types only in `deviceevent()`
+- Covariates can now be EITHER `factor` OR `numeric` types when defined in `deviceevent()`. Previously only characters (inferred as factors) werea allowed.
 - Covariate analysis definitions include as a whole (marginal effect) or as a subset by a `factor` covariate level
 - Covariate analysis is exempt if there is zero variation in the data of the covariate
 - Restructured `exposure()` to handle factors only in `match_levels`.

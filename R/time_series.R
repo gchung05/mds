@@ -145,8 +145,8 @@ time_series.mds_da <- function(
     thes <- data.frame()
   } else thes <- exposure
 
-  # Filter device-events and exposure to the relevant levels
-  # --------------------------------------------------------
+  # Filter/flag device-events and exposure to the relevant levels
+  # -------------------------------------------------------------
   # Device - Primary
   if (analysis$device_level == "All"){
     devlvl <- unique(deviceevents[[names(analysis$device_level)]])
@@ -162,29 +162,33 @@ time_series.mds_da <- function(
   if (analysis$event_level == "All"){
     evlvl <- unique(this[[names(analysis$event_level)]])
   } else evlvl <- analysis$event_level
-  this$isev <- factor(this[[names(analysis$event_level)]] %in% evlvl,
+  this$isev <- factor(this[[names(analysis$event_level)]] %in% evlvl, 
                       levels=c(T, F))
   # Covariate
-  if (analysis$covariate_level != "All"){
-    this$iscov <- factor(this[[analysis$covariate]] %in% analysis$covariate_level,
-                         levels=c(T, F))
-  } else this$iscov <- factor(T, levels=c(T, F))
-  if (nrow(thes) > 0 & analysis$covariate_level != "All"){
-
-
-    ###########################
-    # MUST FIX - define how to handle filtering marginal and rollup of exposure covariates
-    # Don't forget how to handle NA-level covariates
-    ###########################
-
-    if (!is.na(analysis$exp_covariate_level)){
+  if (is.na(analysis$covariate_level)){ # NA nominal level
+    this$iscov <- factor(is.na(this[[analysis$covariate]]), levels=c(T, F)) 
+  } else if (analysis$covariate_level != "All"){ # Nominal level
+    this$iscov <- factor(this[[analysis$covariate]] %in% 
+                           analysis$covariate_level, levels=c(T, F))
+  } else this$iscov <- factor(T, levels=c(T, F)) # Marginal, Data All level & numeric
+  if (nrow(thes) > 0){
+    if (is.na(analysis$exp_covariate_level)){ # NA nominal level
+      thes <- thes[is.na(thes[[names(analysis$exp_covariate_level)]]), ]
+    } else if (analysis$exp_covariate_level != "All"){ # Nominal level
       thes <- thes[thes[[names(analysis$exp_covariate_level)]] %in%
                      analysis$exp_covariate_level, ]
-    } else thes <- data.frame()
+    } # Marginal, Data All, numeric do not filter
   }
 
   # Identify the type of analysis
   # -----------------------------
+  
+  ################
+  # need to restructure this altogether. cannot do a paired analysis at all
+  # especially not a X by covariate analysis now that numeric covariates are allowed
+  # DPA should be inferred from the levels available in device and event only
+  # Thus DPA is not possible at either All level of device or event
+  
   # Note: In the future for covariate by device by event level analysis (3D),
   # atype may be modified to return a vector of c("iscov", "isdev", "isev")
   if (analysis$covariate_level != "All"){
@@ -210,7 +214,9 @@ time_series.mds_da <- function(
     }
   }
   dpa <- length(atype) > 1
-
+  ################
+  # Dpa should now be isdev and isev? How?
+  
   # Filter to 1-level up hierarchy, if needed
   # -----------------------------------------
   nextdev <- nextev <- NULL
@@ -249,6 +255,10 @@ time_series.mds_da <- function(
     }
   }
 
+  # CAN SAVE THE RESULTANT DATASET FOR COVARIATE AND IMPLANTABLE INVIVO ANALYSIS
+  
+  # COUNTING FINALLY BEGINS AFTER ALL THE FILTERING
+  
   # Loop through every deviceevent date period and count
   # ----------------------------------------------------
   tr <- analysis$date_range_de

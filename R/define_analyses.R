@@ -346,7 +346,7 @@ define_analyses <- function(
                 #    variable
                 if (is.na(l) & is.factor(devDEev1up[[k]])){ # NA Nominal level
                   devCO <- devDEev1up[is.na(devDEev1up[[k]]), ]
-                } else if (l %in% c("All")){ # Marginal/Data All level
+                } else if (l %in% c("All")){ # Marginal/Data All level & numeric
                   devCO <- devDEev1up 
                 } else if (is.factor(devDEev1up[[k]])){ # Nominal level
                   devCO <- devDEev1up[devDEev1up[[k]] == l, ]
