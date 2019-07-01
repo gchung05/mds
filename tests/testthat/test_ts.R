@@ -2,18 +2,16 @@ context("Time Series")
 
 # Set data
 data <- maude
-data$region <- as.factor(data$region)
 data$novariance <- c(1, 1, rep(0, nrow(data) - 2))
 invivo <- round(250 * runif(nrow(data)))
 invivo <- ifelse(invivo <= 30, NA, invivo)
 data$invivo <- invivo
 rm(invivo)
 exposures <- sales
-exposures$region <- as.factor(exposures$region)
 
 # Set params
 Pde <- deviceevent(
-  maude,
+  data,
   time="date_received",
   device_hierarchy=c("device_name", "device_class"),
   event_hierarchy=c("event_type", "medical_specialty_description"),
@@ -21,7 +19,7 @@ Pde <- deviceevent(
   covariates="region",
   descriptors="_all_")
 Pexp <- exposure(
-  sales,
+  exposures,
   time="sales_month",
   device_hierarchy="device_name",
   match_levels="region",
@@ -31,6 +29,7 @@ Pda <- define_analyses(
   Pde, "device_name",
   exposure=Pexp,
   covariates="region")
+# temp <- define_analyses_dataframe(Pda)
 
 # Reference examples
 a1 <- time_series(Pda[1:3], Pde, Pexp)

@@ -1,9 +1,10 @@
 #' Generate Time Series from Defined Analysis or Analyses
 #' 
-#' Creates time series object(s) from defined analysis/analyses created by
-#' \code{define_analyses()}, device-event data frame created by 
-#' \code{deviceevent()}, and optionally, exposure data frame created by
-#' \code{exposure()}.
+#' Creates time series data frame(s) from defined analysis/analyses
+#' (\code{define_analyses()}), device-event data frame 
+#' (\code{deviceevent()}), and optionally, exposure data frame
+#' (\code{exposure()}). If analysis includes covariates or time in-vivo, creates
+#' the relevant supporting data frame.
 #'
 #' @param analysis A defined analysis object of class \code{mds_da}, list of
 #' class \code{mds_das}, or a list of objects each of class \code{mds_da},
@@ -20,11 +21,15 @@
 #' @param use_hierarchy Logical value indicating whether device and event
 #' hierarchies should be used in counting contingency tables for
 #' disproportionality analysis. See details for more.
+#' 
+#' Default: \code{TRUE} will utilize device and event hierarchies to subset the
+#' data.
+#' 
 #' @param ... Further arguments for future work.
 #'
 #' @return A standardized MD-PMS time series data frame of class \code{mds_ts}.
 #' 
-#' The data frame contains, by defined date levels, the following:
+#' The data frame contains, by defined date levels, the following columns:
 #' \describe{
 #'   \item{nA}{Count of the device & event level of interest. If covariate
 #'   analysis is indicated, this will be at the covariate & device level of
@@ -56,8 +61,10 @@
 #'   \item{exposure}{Boolean of whether exposure counts are present.}
 #'   \item{dpa}{Boolean of whether 2x2 contingency table counts are present
 #'   (presumably for disproportionality analysis or 'DPA').}
-#'   \item{dpa_detail}{\code{list} object containing labels for the DPA
-#'   contingency table.}
+#'   \item{dpa_detail}{Optional. If \code{dpa} is \code{TRUE}, \code{list} 
+#'   object containing labels for the DPA contingency table.}
+#'   \item{covar_data}{Optional. If analysis definition includes covariate level 
+#'   or time in-vivo, \code{data.frame} object containing the relevant data.}
 #' }
 #'
 #' @details When \code{use_hierarchy=T}, the B, C, and D cells of the 2x2
