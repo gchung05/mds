@@ -2,10 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{char_to_df}
 \alias{char_to_df}
-\title{Character Vector to Header of Empty Data Frame
-Converts a character vector into the column names of an empty data frame.
-Used in conjunction with \code{check_names} parameter of
-\code{input_param_checker()}}
+\title{Character Vector to Header of Empty Data Frame}
 \usage{
 char_to_df(x)
 }
@@ -16,7 +13,6 @@ char_to_df(x)
 Empty data frame where columns are named \code{x}.
 }
 \description{
-Character Vector to Header of Empty Data Frame
 Converts a character vector into the column names of an empty data frame.
 Used in conjunction with \code{check_names} parameter of
 \code{input_param_checker()}

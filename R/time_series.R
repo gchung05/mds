@@ -18,12 +18,9 @@
 #'
 #' Default: \code{NULL} will not consider exposure data.
 #'
-#' @param use_hierarchy Logical value indicating whether device and event
-#' hierarchies should be used in counting contingency tables for
-#' disproportionality analysis. See details for more.
-#' 
-#' Default: \code{TRUE} will utilize device and event hierarchies to subset the
-#' data.
+#' @param use_hierarchy Deprecated - do not use. Logical value indicating 
+#' whether device and event hierarchies should be used in counting contingency 
+#' tables for disproportionality analysis.
 #' 
 #' @param ... Further arguments for future work.
 #'
@@ -66,16 +63,6 @@
 #'   \item{covar_data}{Optional. If analysis definition includes covariate level 
 #'   or time in-vivo, \code{data.frame} object containing the relevant data.}
 #' }
-#'
-#' @details When \code{use_hierarchy=T}, the B, C, and D cells of the 2x2
-#' contingency table count at the next level up in the device and/or event
-#' hierarchies. For example, if the A cell is counting \code{device_1="Apple"}
-#' and \code{"Apple"} is the child of the parent \code{device_2="Fruits"}, the
-#' B cell counts all \code{"Fruits"} not equal to \code{"Apple"}.
-#'
-#' When \code{use_hierarchy=F}, the B, C, and D cells of the 2x2 contingency
-#' table simply count all devices/events/covariate levels not equal to the
-#' reference cell A.
 #'
 #' @examples
 #' de <- deviceevent(maude, "date_received", "device_name", "event_type")
@@ -180,83 +167,131 @@ time_series.mds_da <- function(
     } # Marginal, Data All, numeric do not filter
   }
 
-  # Identify the type of analysis
-  # -----------------------------
-  
-  ################
-  # need to restructure this altogether. cannot do a paired analysis at all
-  # especially not a X by covariate analysis now that numeric covariates are allowed
-  # DPA should be inferred from the levels available in device and event only
-  # Thus DPA is not possible at either All level of device or event
-  
-  # Note: In the future for covariate by device by event level analysis (3D),
-  # atype may be modified to return a vector of c("iscov", "isdev", "isev")
-  if (analysis$covariate_level != "All"){
-    # Covariate level analysis
-    if (analysis$event_level != "All"){
-      # Covariate by event level analysis
-      atype <- stats::setNames(c("iscov", "isev"), c("Covariate", "Event"))
-    } else if (analysis$device_level != "All"){
-      # Covariate by device level analysis
-      atype <-  stats::setNames(c("iscov", "isdev"), c("Covariate", "Device"))
-    } else{
-      # Covariate only analysis
-      atype <-  stats::setNames("iscov", c("Covariate"))
-    }
-  } else{
-    # Non-covariate level analysis
-    if (analysis$event_level != "All"){
-      # Device by event level analysis
-      atype <-  stats::setNames(c("isdev", "isev"), c("Device", "Event"))
-    } else{
-      # Device only analysis
-      atype <- stats::setNames("isdev", c("Device"))
-    }
-  }
-  dpa <- length(atype) > 1
-  ################
-  # Dpa should now be isdev and isev? How?
+  # # Identify the type of analysis
+  # # -----------------------------
+  # 
+  # ################
+  # # need to restructure this altogether. cannot do a paired analysis at all
+  # # especially not a X by covariate analysis now that numeric covariates are allowed
+  # # DPA should be inferred from the levels available in device and event only
+  # # Thus DPA is not possible at either All level of device or event
+  # 
+  # # Note: In the future for covariate by device by event level analysis (3D),
+  # # atype may be modified to return a vector of c("iscov", "isdev", "isev")
+  # if (analysis$covariate_level != "All"){
+  #   # Covariate level analysis
+  #   if (analysis$event_level != "All"){
+  #     # Covariate by event level analysis
+  #     atype <- stats::setNames(c("iscov", "isev"), c("Covariate", "Event"))
+  #   } else if (analysis$device_level != "All"){
+  #     # Covariate by device level analysis
+  #     atype <-  stats::setNames(c("iscov", "isdev"), c("Covariate", "Device"))
+  #   } else{
+  #     # Covariate only analysis
+  #     atype <-  stats::setNames("iscov", c("Covariate"))
+  #   }
+  # } else{
+  #   # Non-covariate level analysis
+  #   if (analysis$event_level != "All"){
+  #     # Device by event level analysis
+  #     atype <-  stats::setNames(c("isdev", "isev"), c("Device", "Event"))
+  #   } else{
+  #     # Device only analysis
+  #     atype <- stats::setNames("isdev", c("Device"))
+  #   }
+  # }
+  # dpa <- length(atype) > 1
+  # ################
+  # # Dpa should now be isdev and isev? How?
   
   # Filter to 1-level up hierarchy, if needed
   # -----------------------------------------
-  nextdev <- nextev <- NULL
-  if (dpa & use_hierarchy){
-    if ("isdev" %in% atype){
-      # Filter device-events to 1-level up device hierarchy
-      nextdev <- next_dev(names(analysis$device_level))
-      if (nextdev %in% names(this) & !is.na(analysis$device_1up) &
-        nextdev == names(analysis$device_1up)){
-        nmiss <- sum(is.na(this[[nextdev]]))
-        if (nmiss > 0){
-          warning(paste("Dropping", nmiss, "records with missing", nextdev))
-          this <- this[!is.na(this[[nextdev]]), ]
-        }
-        this <- this[this[[nextdev]] %in% analysis$device_1up, ]
-        # Also filter exposures
-        if (nrow(thes) > 0 & !is.na(analysis$exp_device_1up) &
-            analysis$exp_device_1up != "All" &
+  # Filter device-events to 1-level up device hierarchy
+  nextdev <- next_dev(names(analysis$device_level))
+  if (!is.na(analysis$device_1up)){
+    if (nextdev %in% names(this) & nextdev == names(analysis$device_1up)){
+      nmiss <- sum(is.na(this[[nextdev]]))
+      if (nmiss > 0){
+        warning(paste("Dropping", nmiss, "records with missing", nextdev))
+        this <- this[!is.na(this[[nextdev]]), ]
+      }
+      this <- this[this[[nextdev]] %in% analysis$device_1up, ]
+      # Filter exposures to 1-level up device hierarchy
+      if (!is.na(analysis$exp_device_1up)){
+        if (nrow(thes) > 0 & analysis$exp_device_1up != "All" &
             nextdev == names(analysis$exp_device_1up)){
           thes <- thes[thes[[nextdev]] %in% analysis$exp_device_1up, ]
         }
       }
     }
-    if ("isev" %in% atype){
-      # Filter device-events to 1-level up event hierarchy
-      nextev <- next_ev(names(analysis$event_level))
-      if (nextev %in% names(this) & !is.na(analysis$event_1up) &
-          nextev == names(analysis$event_1up)){
-        nmiss <- sum(is.na(this[[nextev]]))
-        if (nmiss > 0){
-          warning(paste("Dropping", nmiss, "records with missing", nextev))
-          this <- this[!is.na(this[[nextev]]), ]
-        }
-        this <- this[this[[nextev]] %in% analysis$event_1up]
+  }
+  # Filter device-events to 1-level up event hierarchy
+  nextev <- next_ev(names(analysis$event_level))
+  if (!is.na(analysis$event_1up)){
+    if (nextev %in% names(this) & nextev == names(analysis$event_1up)){
+      nmiss <- sum(is.na(this[[nextev]]))
+      if (nmiss > 0){
+        warning(paste("Dropping", nmiss, "records with missing", nextev))
+        this <- this[!is.na(this[[nextev]]), ]
       }
+      this <- this[this[[nextev]] %in% analysis$event_1up]
+    }
+    # Exposures are not currently filtered for events
+  }
+  
+  # Assess possibility for disproportionality
+  # Based on device and event level only
+  # -----------------------------------------
+  dpa <- F
+  if (analysis$device_level != "All" & analysis$event_level != "All"){
+    if (length(unique(this[[names(analysis$device_level)]])) >= 2 & 
+      length(unique(this[[names(analysis$event_level)]])) >= 2){
+      dpa <- T
     }
   }
-
-  # CAN SAVE THE RESULTANT DATASET FOR COVARIATE AND IMPLANTABLE INVIVO ANALYSIS
   
+  # nextdev <- nextev <- NULL
+  # if (dpa & use_hierarchy){
+  #   if ("isdev" %in% atype){
+  #     # Filter device-events to 1-level up device hierarchy
+  #     nextdev <- next_dev(names(analysis$device_level))
+  #     if (nextdev %in% names(this) & !is.na(analysis$device_1up) &
+  #       nextdev == names(analysis$device_1up)){
+  #       nmiss <- sum(is.na(this[[nextdev]]))
+  #       if (nmiss > 0){
+  #         warning(paste("Dropping", nmiss, "records with missing", nextdev))
+  #         this <- this[!is.na(this[[nextdev]]), ]
+  #       }
+  #       this <- this[this[[nextdev]] %in% analysis$device_1up, ]
+  #       # Also filter exposures
+  #       if (nrow(thes) > 0 & !is.na(analysis$exp_device_1up) &
+  #           analysis$exp_device_1up != "All" &
+  #           nextdev == names(analysis$exp_device_1up)){
+  #         thes <- thes[thes[[nextdev]] %in% analysis$exp_device_1up, ]
+  #       }
+  #     }
+  #   }
+  #   if ("isev" %in% atype){
+  #     # Filter device-events to 1-level up event hierarchy
+  #     nextev <- next_ev(names(analysis$event_level))
+  #     if (nextev %in% names(this) & !is.na(analysis$event_1up) &
+  #         nextev == names(analysis$event_1up)){
+  #       nmiss <- sum(is.na(this[[nextev]]))
+  #       if (nmiss > 0){
+  #         warning(paste("Dropping", nmiss, "records with missing", nextev))
+  #         this <- this[!is.na(this[[nextev]]), ]
+  #       }
+  #       this <- this[this[[nextev]] %in% analysis$event_1up]
+  #     }
+  #   }
+  # }
+
+  # Save the dataset if covariate or in-vivo analysis are defined
+  # -------------------------------------------------------------
+  if (analysis$invivo | analysis$covariate != "Data"){
+    covar_data <- this
+  } else covar_data <- NULL
+      
   # COUNTING FINALLY BEGINS AFTER ALL THE FILTERING
   
   # Loop through every deviceevent date period and count

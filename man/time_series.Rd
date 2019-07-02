@@ -33,12 +33,9 @@ generate \code{analysis}, if exposure data was used.
 
 Default: \code{NULL} will not consider exposure data.}
 
-\item{use_hierarchy}{Logical value indicating whether device and event
-hierarchies should be used in counting contingency tables for
-disproportionality analysis. See details for more.
-
-Default: \code{TRUE} will utilize device and event hierarchies to subset the
-data.}
+\item{use_hierarchy}{Deprecated - do not use. Logical value indicating 
+whether device and event hierarchies should be used in counting contingency 
+tables for disproportionality analysis.}
 }
 \value{
 A standardized MD-PMS time series data frame of class \code{mds_ts}.
@@ -87,17 +84,6 @@ Creates time series data frame(s) from defined analysis/analyses
 (\code{deviceevent()}), and optionally, exposure data frame
 (\code{exposure()}). If analysis includes covariates or time in-vivo, creates
 the relevant supporting data frame.
-}
-\details{
-When \code{use_hierarchy=T}, the B, C, and D cells of the 2x2
-contingency table count at the next level up in the device and/or event
-hierarchies. For example, if the A cell is counting \code{device_1="Apple"}
-and \code{"Apple"} is the child of the parent \code{device_2="Fruits"}, the
-B cell counts all \code{"Fruits"} not equal to \code{"Apple"}.
-
-When \code{use_hierarchy=F}, the B, C, and D cells of the 2x2 contingency
-table simply count all devices/events/covariate levels not equal to the
-reference cell A.
 }
 \section{Methods (by class)}{
 \itemize{

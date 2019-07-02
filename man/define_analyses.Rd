@@ -2,7 +2,7 @@
 % Please edit documentation in R/define_analyses.R
 \name{define_analyses}
 \alias{define_analyses}
-\title{Assess & Save MD-PMS Analyses Definitions}
+\title{Assess Analyses Definitions}
 \usage{
 define_analyses(deviceevents, device_level, event_level = NULL,
   exposure = NULL, date_level = "months", date_level_n = 1,
@@ -99,10 +99,23 @@ Attributes of class \code{mds_das} are as follows:
 }
 }
 \description{
-Define analyses based on an MD-PMS device-event data frame and (optionally)
-an MD-PMS exposure data frame.
+Define analyses based on an MD-PMS device-event data frame and, optionally,
+an MD-PMS exposure data frame. See Details for how to use.
 }
 \details{
+\code{define_analyses()} is a prerequisite to calling
+\code{time_series()}. This function enumerates all possible analyses based
+on input device-event (\code{deviceevent()}) and, optionally, 
+exposure (\code{exposure()}) data frames. An analysis is defined as a set of
+instructions specifying at minimum the device level, event level, the date
+range of analysis, and the date unit. Additional instructions include the
+covariate level, time in-vivo status, and exposure levels.
+
+By separating the analysis enumeration (\code{define_analyses()}) from the
+generation of the time series (\code{time_series()}), the user may rerun
+the analyses on different datasets and/or filter the analyses to only those
+of interest.
+
 The analyses definitions will always include rollup levels for each
 of \code{device_level}, \code{event_level} (if specified), and
 \code{covariates}. Rollups are analyses at all device, event, and/or

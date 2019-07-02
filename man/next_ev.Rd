@@ -2,8 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{next_ev}
 \alias{next_ev}
-\title{Return next level up event
-Returns the variable name of the next level in the event hierarchy}
+\title{Return next level up event}
 \usage{
 next_ev(x)
 }
@@ -15,7 +14,6 @@ next_ev(x)
 String representation of the next event level variable
 }
 \description{
-Return next level up event
 Returns the variable name of the next level in the event hierarchy
 }
 \keyword{internal}

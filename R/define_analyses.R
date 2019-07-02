@@ -1,7 +1,7 @@
-#' Assess & Save MD-PMS Analyses Definitions
+#' Assess Analyses Definitions
 #'
-#' Define analyses based on an MD-PMS device-event data frame and (optionally)
-#' an MD-PMS exposure data frame.
+#' Define analyses based on an MD-PMS device-event data frame and, optionally,
+#' an MD-PMS exposure data frame. See Details for how to use.
 #'
 #' @param deviceevents A device-events object of class \code{mds_de}, created by
 #' a call to \code{deviceevent()}.
@@ -90,7 +90,20 @@
 #'   \item{timestamp}{System time when the analyses were defined.}
 #' }
 #'
-#' @details The analyses definitions will always include rollup levels for each
+#' @details \code{define_analyses()} is a prerequisite to calling
+#' \code{time_series()}. This function enumerates all possible analyses based
+#' on input device-event (\code{deviceevent()}) and, optionally, 
+#' exposure (\code{exposure()}) data frames. An analysis is defined as a set of
+#' instructions specifying at minimum the device level, event level, the date
+#' range of analysis, and the date unit. Additional instructions include the
+#' covariate level, time in-vivo status, and exposure levels.
+#' 
+#' By separating the analysis enumeration (\code{define_analyses()}) from the
+#' generation of the time series (\code{time_series()}), the user may rerun
+#' the analyses on different datasets and/or filter the analyses to only those
+#' of interest.
+#' 
+#' The analyses definitions will always include rollup levels for each
 #' of \code{device_level}, \code{event_level} (if specified), and
 #' \code{covariates}. Rollups are analyses at all device, event, and/or
 #' covariate levels. These rollup analyses will be indicated by the keyword

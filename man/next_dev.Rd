@@ -2,8 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{next_dev}
 \alias{next_dev}
-\title{Return next level up device
-Returns the variable name of the next level in the device hierarchy}
+\title{Return next level up device}
 \usage{
 next_dev(x)
 }
@@ -15,7 +14,6 @@ next_dev(x)
 String representation of the next device level variable
 }
 \description{
-Return next level up device
 Returns the variable name of the next level in the device hierarchy
 }
 \keyword{internal}
