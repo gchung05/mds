@@ -117,14 +117,18 @@ time_series.mds_da <- function(
   analysis,
   deviceevents,
   exposure=NULL,
-  use_hierarchy=T,
+  use_hierarchy,
   ...
 ){
   # Check parameters
   # ----------------
   input_param_checker(deviceevents, check_class="mds_de")
   input_param_checker(exposure, check_class="mds_e")
-
+  if (!missing(use_hierarchy)) {
+    warning("argument use_hierarchy is deprecated, please discontinue use.", 
+            call. = FALSE)
+  }
+  
   # Set working device-event and exposure data frames
   # -------------------------------------------------
   this <- deviceevents
@@ -138,8 +142,7 @@ time_series.mds_da <- function(
   if (analysis$device_level == "All"){
     devlvl <- unique(deviceevents[[names(analysis$device_level)]])
   } else devlvl <- analysis$device_level
-  this$isdev <- factor(this[[names(analysis$device_level)]] %in% devlvl,
-                       levels=c(T, F))
+  this$isdev <- as.logical(this[[names(analysis$device_level)]] %in% devlvl)
   if (nrow(thes) > 0 & !is.na(analysis$exp_device_level) &
       analysis$exp_device_level != "All"){
     thes <- thes[thes[[names(analysis$exp_device_level)]] %in%
@@ -149,22 +152,23 @@ time_series.mds_da <- function(
   if (analysis$event_level == "All"){
     evlvl <- unique(this[[names(analysis$event_level)]])
   } else evlvl <- analysis$event_level
-  this$isev <- factor(this[[names(analysis$event_level)]] %in% evlvl, 
-                      levels=c(T, F))
+  this$isev <- as.logical(this[[names(analysis$event_level)]] %in% evlvl)
   # Covariate
   if (is.na(analysis$covariate_level)){ # NA nominal level
-    this$iscov <- factor(is.na(this[[analysis$covariate]]), levels=c(T, F)) 
+    this$iscov <- as.logical(is.na(this[[analysis$covariate]])) 
   } else if (analysis$covariate_level != "All"){ # Nominal level
-    this$iscov <- factor(this[[analysis$covariate]] %in% 
-                           analysis$covariate_level, levels=c(T, F))
-  } else this$iscov <- factor(T, levels=c(T, F)) # Marginal, Data All level & numeric
+    this$iscov <- as.logical(this[[analysis$covariate]] %in% 
+                           analysis$covariate_level)
+  } else this$iscov <- as.logical(T) # Marginal, Data All level & numeric
   if (nrow(thes) > 0){
-    if (is.na(analysis$exp_covariate_level)){ # NA nominal level
-      thes <- thes[is.na(thes[[names(analysis$exp_covariate_level)]]), ]
-    } else if (analysis$exp_covariate_level != "All"){ # Nominal level
-      thes <- thes[thes[[names(analysis$exp_covariate_level)]] %in%
-                     analysis$exp_covariate_level, ]
-    } # Marginal, Data All, numeric do not filter
+    if (!is.null(analysis$exp_covariate_level)){
+      if (is.na(analysis$exp_covariate_level)){ # NA nominal level
+        thes <- thes[is.na(thes[[names(analysis$exp_covariate_level)]]), ]
+      } else if (analysis$exp_covariate_level != "All"){ # Nominal level
+        thes <- thes[thes[[names(analysis$exp_covariate_level)]] %in%
+                       analysis$exp_covariate_level, ]
+      } # Non-covariate exposures or covariate Marginal, Data All, numeric: do not filter
+    }
   }
 
   # # Identify the type of analysis
@@ -234,7 +238,7 @@ time_series.mds_da <- function(
         warning(paste("Dropping", nmiss, "records with missing", nextev))
         this <- this[!is.na(this[[nextev]]), ]
       }
-      this <- this[this[[nextev]] %in% analysis$event_1up]
+      this <- this[this[[nextev]] %in% analysis$event_1up, ]
     }
     # Exposures are not currently filtered for events
   }
@@ -242,13 +246,7 @@ time_series.mds_da <- function(
   # Assess possibility for disproportionality
   # Based on device and event level only
   # -----------------------------------------
-  dpa <- F
-  if (analysis$device_level != "All" & analysis$event_level != "All"){
-    if (length(unique(this[[names(analysis$device_level)]])) >= 2 & 
-      length(unique(this[[names(analysis$event_level)]])) >= 2){
-      dpa <- T
-    }
-  }
+  dpa <- length(unique(this$isdev)) == 2 & length(unique(this$isev)) == 2
   
   # nextdev <- nextev <- NULL
   # if (dpa & use_hierarchy){
@@ -291,43 +289,97 @@ time_series.mds_da <- function(
   if (analysis$invivo | analysis$covariate != "Data"){
     covar_data <- this
   } else covar_data <- NULL
-      
-  # COUNTING FINALLY BEGINS AFTER ALL THE FILTERING
+
+  # Filter by the covariate level
+  # -----------------------------
+  this <- this[this$iscov, ]
   
   # Loop through every deviceevent date period and count
   # ----------------------------------------------------
+  
+  # Remember that this is not filtered (just statuses)
+  # While exposure thes is filtered already
+  # devlvl
+  # this$isdev 
+  # evlvl
+  # this$isev
+  # this$iscov
+  #' Must consider 4 covariate possibilities
+  #' 1. Data All
+  #' 2. Covar All
+  #' 3. Covar Level
+  #' 4. Covar NA
+  
   tr <- analysis$date_range_de
   ts_de <- data.frame()
   i <- tr[1]
   while (i <= tr[2]){
-    j <- attributes(tr)$adder(i, 1)
+    j <- analysis$date_adder(i, 1)
     thist <- this[this$time >= i & this$time < j, ]
-    if (length(atype) > 1){
-      # 2-Level Analysis - Populate contingency table
-      tbl2x2 <- list(t(stats::setNames(data.frame(table(thist[[atype[1]]],
-                                                        thist[[atype[2]]]))[, 3],
-                                       c("nA", "nC", "nB", "nD"))))
-      trow <- data.frame(time=i, tbl2x2)
-      trow$ids <- list(unique(
-        as.character(thist[thist[[atype[1]]] == T &
-                             thist[[atype[2]]] == T, ]$key)))
+    if (dpa){
+      # Populate contingency table
+      if (nrow(thist) > 0){
+        tbl2x2 <- list(t(stats::setNames(
+          data.frame(table(factor(thist$isdev, levels=c(T, F)), 
+                           factor(thist$isev, levels=c(T, F))))[, 3],
+          c("nA", "nC", "nB", "nD"))))
+        # tbl2x2 <- list(t(stats::setNames(data.frame(table(
+        #   thist[[names(analysis$device_level)]],
+        #   thist[[names(analysis$event_level)]]))[, 3],
+        #   c("nA", "nC", "nB", "nD"))))
+        trow <- data.frame(time=i, tbl2x2)
+        tkey <- unique(as.character(thist[thist$isdev & thist$isev, ]$key))
+        trow$ids <- list(ifelse(length(tkey) > 0, tkey, NA))
+      } else{
+        trow <- data.frame(time=i, nA=0, nB=0, nC=0, nD=0)
+        trow$ids <- list(c(NA))
+      }
     } else{
-      # 1-Level Analysis - No contingency table
-      trow <- data.frame(time=i, nA=table(thist[[atype[1]]])['TRUE'])
-      trow$ids <- list(unique(as.character(thist[thist[[atype[1]]] == T, ]$key)))
+      if (nrow(thist) > 0){
+        trow <- data.frame(
+          time=i, 
+          nA=sum(thist$isdev))
+        tkey <- unique(as.character(thist[thist$isdev, ]$key))
+        trow$ids <- list(ifelse(length(tkey) > 0, tkey, NA))
+      } else{
+        trow <- data.frame(time=i, nA=0)
+        trow$ids <- list(c(NA))
+      }
     }
+    
+    # if (length(atype) > 1){
+    #   # 2-Level Analysis - Populate contingency table
+    #   tbl2x2 <- list(t(stats::setNames(data.frame(table(thist[[atype[1]]],
+    #                                                     thist[[atype[2]]]))[, 3],
+    #                                    c("nA", "nC", "nB", "nD"))))
+    #   trow <- data.frame(time=i, tbl2x2)
+    #   trow$ids <- list(unique(
+    #     as.character(thist[thist[[atype[1]]] == T &
+    #                          thist[[atype[2]]] == T, ]$key)))
+    # } else{
+    #   # 1-Level Analysis - No contingency table
+    #   trow <- data.frame(time=i, nA=table(thist[[atype[1]]])['TRUE'])
+    #   trow$ids <- list(unique(as.character(thist[thist[[atype[1]]] == T, ]$key)))
+    # }
+
     ts_de <- rbind(ts_de, trow)
     i <- j
   }
   rownames(ts_de) <- c()
-
+ 
   # Loop through every exposure date period and count
   # -------------------------------------------------
   tr <- analysis$date_range_exposure
   if (!all(is.na(tr)) & nrow(thes) > 0){
 
+    
+    browser()
+    # I AM HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    
     ###########################
     # MUST FIX - verify that the right groups are being created for the count
+    # Currently allows filtering by device level and covariate level only
+    # Also don't forget to account for the 0 row filtered situation
     ###########################
 
     ts_e <- data.frame()

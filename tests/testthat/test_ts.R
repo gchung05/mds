@@ -26,10 +26,22 @@ Pexp <- exposure(
   count="sales_volume"
 )
 Pda <- define_analyses(
-  Pde, "device_name",
+  Pde, 
+  device_level="device_name",
+  event_level="event_type",
   exposure=Pexp,
   covariates="region")
-# temp <- define_analyses_dataframe(Pda)
+
+# Debug
+temp <- define_analyses_dataframe(Pda)
+tempda <- Pda[[1]]
+tempda <- Pda[[5]]
+tempda <- Pda[[74]]
+tempda <- Pda[[77]]
+tempda <- Pda[[79]]
+tempda <- Pda[[78]]
+tempda <- Pda[[80]]
+a1 <- time_series(tempda, Pde, Pexp)
 
 # Reference examples
 a1 <- time_series(Pda[1:3], Pde, Pexp)
