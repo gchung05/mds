@@ -31,23 +31,23 @@
 #'   \item{nA}{Count of the device & event level of interest. If covariate
 #'   analysis is indicated, this will be at the covariate & device level of
 #'   interest.}
-#'   \item{nB}{Count of the device & non-event, or if covariate analysis,
+#'   \item{nB}{Optional. Count of the device & non-event, or if covariate analysis,
 #'   covariate & non-device. \code{nB} will be missing if this is an
 #'   \code{'All'} level analysis.}
-#'   \item{nC}{Count of the non-device & event, or if covariate analysis,
+#'   \item{nC}{Optional. Count of the non-device & event, or if covariate analysis,
 #'   non-covariate & device. \code{nC} will be missing if this is an
 #'   \code{'All'} level analysis.}
-#'   \item{nD}{Count of the non-device & non-event, or if covariate analysis,
+#'   \item{nD}{Optional. Count of the non-device & non-event, or if covariate analysis,
 #'   non-covariate & non-device. \code{nD} will be missing if this is an
 #'   \code{'All'} level analysis.}
 #'   \item{ids}{List of all \code{key}s from \code{deviceevents} constituting
 #'   \code{nA}.}
-#'   \item{exposure}{Count of exposures applicable to \code{nA}. This counts at
+#'   \item{exposure}{Optional. Count of exposures applicable to \code{nA}. This counts at
 #'   the device and covariate levels but not at the event level. If a matching
 #'   device and/or covariate level is not found, then \code{exposure} will be
 #'   \code{NA}. The exception is an \code{'All'} level analysis, which counts
 #'   exposures across all levels.}
-#'   \item{ids_exposure}{List of all exposure keys from \code{exposure}
+#'   \item{ids_exposure}{Optional. List of all exposure keys from \code{exposure}
 #'   applicable to \code{nA}.}
 #' }
 #'
@@ -294,23 +294,12 @@ time_series.mds_da <- function(
   # -----------------------------
   this <- this[this$iscov, ]
   
+  # Overall analysis date range
+  # ---------------------------
+  tr <- analysis$date_range_de
+  
   # Loop through every deviceevent date period and count
   # ----------------------------------------------------
-  
-  # Remember that this is not filtered (just statuses)
-  # While exposure thes is filtered already
-  # devlvl
-  # this$isdev 
-  # evlvl
-  # this$isev
-  # this$iscov
-  #' Must consider 4 covariate possibilities
-  #' 1. Data All
-  #' 2. Covar All
-  #' 3. Covar Level
-  #' 4. Covar NA
-  
-  tr <- analysis$date_range_de
   ts_de <- data.frame()
   i <- tr[1]
   while (i <= tr[2]){
@@ -369,38 +358,18 @@ time_series.mds_da <- function(
  
   # Loop through every exposure date period and count
   # -------------------------------------------------
-  tr <- analysis$date_range_exposure
   if (!all(is.na(tr)) & nrow(thes) > 0){
-
-    
-    browser()
-    # I AM HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    
-    ###########################
-    # MUST FIX - verify that the right groups are being created for the count
-    # Currently allows filtering by device level and covariate level only
-    # Also don't forget to account for the 0 row filtered situation
-    ###########################
-
     ts_e <- data.frame()
     i <- tr[1]
     while (i <= tr[2]){
-      j <- attributes(tr)$adder(i, 1)
+      j <- analysis$date_adder(i, 1)
       thest <- thes[thes$time >= i & thes$time < j, ]
       trow <- data.frame(time=i, exposure=sum(thest$count))
-      trow$ids_exposure <- list(as.character(thest$key))
+      tkey <- unique(as.character(thest$key))
+      trow$ids_exposure <- list(ifelse(length(tkey) > 0, tkey, NA))
       ts_e <- rbind(ts_e, trow)
       i <- j
     }
-
-    ###########################
-    # MUST FIX - cannot merge on any factors (covariates) if the factor
-    # levels are inconsistent. Convert to character, merge, then reconvert to
-    # factor. Also need to consider how to merge the Marginal (Region=All)
-    # and Data All cases (Data=All)
-    # Also, verify how merges of NA-value covariate levels are handled.
-    ###########################
-
     # Merge device-events and exposure time series
     ts <- merge(ts_de, ts_e, all=T)
     exposure <- T
@@ -411,69 +380,109 @@ time_series.mds_da <- function(
 
   # Define output class attributes
   # ------------------------------
-
-  ###########################
-  # MUST FIX - ADD FACILITY FOR 3D ANALYSIS NAMING
-  ###########################
-
   # Determine if 1-Ups exist semantically
   dev_diff <- !is.na(analysis$device_1up) & names(analysis$device_level) !=
     names(analysis$device_1up)
   ev_diff <- !is.na(analysis$event_1up) & names(analysis$event_level) !=
     names(analysis$event_1up)
   # Construct the labels for the analysis levels and (if dpa) contingency table
-  for (i in c(1:length(atype))){
-    if (names(atype)[i] == "Covariate"){
-      nhere <- analysis$covariate
-      lab <- paste(nhere, analysis$covariate_level)
-      notlab <- paste(nhere, "NOT", analysis$covariate_level)
-    } else if (names(atype)[i] == "Device"){
-      nhere <- analysis$device_level_source
-      lab <- paste(nhere, analysis$device_level)
-      notlab <- paste(nhere, "NOT", analysis$device_level)
-      # 1 up device presence
-      if (dev_diff){
-        lab1up <- paste("WITHIN", analysis$device_1up_source,
-                        analysis$device_1up)
-        nhere <- paste(nhere, lab1up)
-        lab <- paste(lab, lab1up)
-        notlab <- paste(notlab, lab1up)
-      }
-    } else if (names(atype)[i] == "Event"){
-      nhere <- analysis$event_level_source
-      lab <- paste(nhere, analysis$event_level)
-      notlab <- paste(nhere, "NOT", analysis$event_level)
-      # 1 up event presence
-      if (ev_diff){
-        lab1up <- paste("WITHIN", analysis$event_1up_source,
-                        analysis$event_1up)
-        nhere <- paste(nhere, lab1up)
-        lab <- paste(lab, lab1up)
-        notlab <- paste(notlab, lab1up)
-      }
-    }
-    # Assign row and columns (only 2D analysis support so far)
-
-    ###########################
-    # MUST FIX - ADD FACILITY FOR 3D ANALYSIS NAMING
-    ###########################
-
-    if (i == 1){
-      nRow <- nhere
-      nA <- lab
-      nB <- lab
-      nC <- notlab
-      nD <- notlab
-      title <- nRow
-    } else if (i == 2){
-      nCol <- nhere
-      nA <- paste0(nA, ":", lab)
-      nB <- paste0(nB, ":", notlab)
-      nC <- paste0(nC, ":", lab)
-      nD <- paste0(nD, ":", notlab)
-      title <- paste(title, "by", nCol)
-    }
+  # Device level
+  nhere <- analysis$device_level_source
+  lab <- paste(nhere, analysis$device_level)
+  notlab <- paste(nhere, "NOT", analysis$device_level) 
+  devlab <- c(lab, notlab)
+  # 1 up device level
+  if (dev_diff){
+    lab1up <- paste("WITHIN", analysis$device_1up_source, analysis$device_1up)
+    nhere <- paste(nhere, lab1up)
+    lab <- paste(lab, lab1up)
+    notlab <- paste(notlab, lab1up)
   }
+  devlab <- c(lab, notlab, nhere)
+  # Event level
+  nhere <- analysis$event_level_source
+  lab <- paste(nhere, analysis$event_level)
+  notlab <- paste(nhere, "NOT", analysis$event_level)
+  # 1 up event level
+  if (ev_diff){
+    lab1up <- paste("WITHIN", analysis$event_1up_source, analysis$event_1up)
+    nhere <- paste(nhere, lab1up)
+    lab <- paste(lab, lab1up)
+    notlab <- paste(notlab, lab1up)
+  }
+  evlab <- c(lab, notlab, nhere)
+  # Covariate
+  covlab <- ifelse(is.na(analysis$covariate_level),
+                   paste(nhere, "Missing"), # Covar NA
+                   paste(nhere, analysis$covariate_level)) # Covar All, Covar level, Data All
+  # Assign row and columns
+  nRow <- devlab[3]
+  nA <- devlab[1]
+  nB <- devlab[1]
+  nC <- devlab[2]
+  nD <- devlab[2]
+  nCol <- evlab[3]
+  nA <- paste0(nA, ":", evlab[1])
+  nB <- paste0(nB, ":", evlab[2])
+  nC <- paste0(nC, ":", evlab[1])
+  nD <- paste0(nD, ":", evlab[2])
+  title <- paste(nRow, "by", nCol, "-", nA)
+  
+  # # Construct the labels for the analysis levels and (if dpa) contingency table
+  # for (i in c(1:length(atype))){
+  #   if (names(atype)[i] == "Covariate"){
+  #     nhere <- analysis$covariate
+  #     lab <- paste(nhere, analysis$covariate_level)
+  #     notlab <- paste(nhere, "NOT", analysis$covariate_level)
+  #   } else if (names(atype)[i] == "Device"){
+  #     nhere <- analysis$device_level_source
+  #     lab <- paste(nhere, analysis$device_level)
+  #     notlab <- paste(nhere, "NOT", analysis$device_level)
+  #     # 1 up device presence
+  #     if (dev_diff){
+  #       lab1up <- paste("WITHIN", analysis$device_1up_source,
+  #                       analysis$device_1up)
+  #       nhere <- paste(nhere, lab1up)
+  #       lab <- paste(lab, lab1up)
+  #       notlab <- paste(notlab, lab1up)
+  #     }
+  #   } else if (names(atype)[i] == "Event"){
+  #     nhere <- analysis$event_level_source
+  #     lab <- paste(nhere, analysis$event_level)
+  #     notlab <- paste(nhere, "NOT", analysis$event_level)
+  #     # 1 up event presence
+  #     if (ev_diff){
+  #       lab1up <- paste("WITHIN", analysis$event_1up_source,
+  #                       analysis$event_1up)
+  #       nhere <- paste(nhere, lab1up)
+  #       lab <- paste(lab, lab1up)
+  #       notlab <- paste(notlab, lab1up)
+  #     }
+  #   }
+  #   
+  #   # Assign row and columns (only 2D analysis support so far)
+  # 
+  #   ###########################
+  #   # MUST FIX - ADD FACILITY FOR 3D ANALYSIS NAMING
+  #   ###########################
+  # 
+  #   if (i == 1){
+  #     nRow <- nhere
+  #     nA <- lab
+  #     nB <- lab
+  #     nC <- notlab
+  #     nD <- notlab
+  #     title <- nRow
+  #   } else if (i == 2){
+  #     nCol <- nhere
+  #     nA <- paste0(nA, ":", lab)
+  #     nB <- paste0(nB, ":", notlab)
+  #     nC <- paste0(nC, ":", lab)
+  #     nD <- paste0(nD, ":", notlab)
+  #     title <- paste(title, "by", nCol)
+  #   }
+  # }
+  
   # Save DPA details
   if (dpa){
     dpa_dtl <- list(nA=nA, nB=nB, nC=nC, nD=nD, nRow=nRow, nCol=nCol,
@@ -481,6 +490,25 @@ time_series.mds_da <- function(
   } else{
     dpa_dtl <- NULL
   }
+  
+  #' ###########################
+  #' # MUST FIX - ADD FACILITY FOR 3D ANALYSIS NAMING
+  #' ###########################
+  #' # I AM HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  #' browser()
+  #' # Remember that this is not filtered (just statuses)
+  #' # While exposure thes is filtered already
+  #' # devlvl
+  #' # this$isdev 
+  #' # evlvl
+  #' # this$isev
+  #' # this$iscov
+  #' #' Must consider 4 covariate possibilities
+  #' #' 1. Data All
+  #' #' 2. Covar All
+  #' #' 3. Covar Level
+  #' #' 4. Covar NA
+  
   # Save the output class
   # ---------------------
   out <- structure(ts,
@@ -488,7 +516,8 @@ time_series.mds_da <- function(
                    analysis=analysis,
                    exposure=exposure,
                    dpa=dpa,
-                   dpa_detail=dpa_dtl)
+                   dpa_detail=dpa_dtl,
+                   covar_data)
   class(out) <- append("mds_ts", class(out))
 
   return(out)
