@@ -13,4 +13,4 @@ There were no ERRORs, WARNINGs, and no NOTEs.
 There were no ERRORs, WARNINGs, and no NOTEs.
 
 ## Downstream dependencies
-I have run R CMD check on downstream dependency mdsstat and the package passed.
+Ran revdepcheck::revdep_check() with 0 BROKEN.
