@@ -1,3 +1,7 @@
+## CRAN re-submit
+
+Dropped revdep folder, oops
+
 ## Test environments
 * local Windows 10 install, R 3.6.0
 * ubuntu 14.04.5 (on travis-ci), R 3.6.0
