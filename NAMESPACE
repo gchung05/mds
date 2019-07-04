@@ -3,7 +3,6 @@
 S3method(plot,mds_ts)
 S3method(summary,mds_das)
 S3method(time_series,list)
-S3method(time_series,mds_da)
 S3method(time_series,mds_das)
 export(define_analyses)
 export(define_analyses_dataframe)

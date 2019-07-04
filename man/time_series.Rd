@@ -45,23 +45,23 @@ The data frame contains, by defined date levels, the following columns:
   \item{nA}{Count of the device & event level of interest. If covariate
   analysis is indicated, this will be at the covariate & device level of
   interest.}
-  \item{nB}{Count of the device & non-event, or if covariate analysis,
+  \item{nB}{Optional. Count of the device & non-event, or if covariate analysis,
   covariate & non-device. \code{nB} will be missing if this is an
   \code{'All'} level analysis.}
-  \item{nC}{Count of the non-device & event, or if covariate analysis,
+  \item{nC}{Optional. Count of the non-device & event, or if covariate analysis,
   non-covariate & device. \code{nC} will be missing if this is an
   \code{'All'} level analysis.}
-  \item{nD}{Count of the non-device & non-event, or if covariate analysis,
+  \item{nD}{Optional. Count of the non-device & non-event, or if covariate analysis,
   non-covariate & non-device. \code{nD} will be missing if this is an
   \code{'All'} level analysis.}
   \item{ids}{List of all \code{key}s from \code{deviceevents} constituting
   \code{nA}.}
-  \item{exposure}{Count of exposures applicable to \code{nA}. This counts at
+  \item{exposure}{Optional. Count of exposures applicable to \code{nA}. This counts at
   the device and covariate levels but not at the event level. If a matching
   device and/or covariate level is not found, then \code{exposure} will be
   \code{NA}. The exception is an \code{'All'} level analysis, which counts
   exposures across all levels.}
-  \item{ids_exposure}{List of all exposure keys from \code{exposure}
+  \item{ids_exposure}{Optional. List of all exposure keys from \code{exposure}
   applicable to \code{nA}.}
 }
 
