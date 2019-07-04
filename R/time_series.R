@@ -117,14 +117,14 @@ time_series.mds_da <- function(
   analysis,
   deviceevents,
   exposure=NULL,
-  use_hierarchy,
+  use_hierarchy=T,
   ...
 ){
   # Check parameters
   # ----------------
   input_param_checker(deviceevents, check_class="mds_de")
   input_param_checker(exposure, check_class="mds_e")
-  if (!missing(use_hierarchy)) {
+  if (isFALSE(use_hierarchy)) {
     warning("argument use_hierarchy is deprecated, please discontinue use.", 
             call. = FALSE)
   }
@@ -517,7 +517,7 @@ time_series.mds_da <- function(
                    exposure=exposure,
                    dpa=dpa,
                    dpa_detail=dpa_dtl,
-                   covar_data)
+                   covar_data=covar_data)
   class(out) <- append("mds_ts", class(out))
 
   return(out)
