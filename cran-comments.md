@@ -1,9 +1,7 @@
 ## Test environments
-* local Windows 10 install, R 3.5.1
-* ubuntu 14.04.5 (on travis-ci), R 3.5.1
+* local Windows 10 install, R 3.6.0
+* ubuntu 14.04.5 (on travis-ci), R 3.6.0
 * win-builder
-
-This is a RESUBMISSION. I have fixed the NOTEs. Nothing else outstanding.
 
 ## R CMD check results
 There were no ERRORs, WARNINGs, and no NOTEs.
