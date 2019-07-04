@@ -1,6 +1,7 @@
 `mds` 0.3.0
 ---------------------------------------
-UNDER DEVELOPMENT
+
+**Implemented Updates**
 
 *General*
 - Overall improvement of documentation & detailed descriptions of functions
@@ -8,6 +9,7 @@ UNDER DEVELOPMENT
 - Input parameter `match_levels` specified in `time_series()` must be `factor`, no longer `character`.
 - Add to output of `define_analyses()` a function for adding dates in the units specified by `date_level` and `date_level_n`
 - Deprecated `use_hierarchy` parameter in `time_series()`
+- Explicit carry-forward of define_analysis id
 
 *Covariate Handling*
 - Explicit handling of covariate level analysis in `deviceevent()`, `define_analyses()`, and `time_series()`
@@ -22,15 +24,11 @@ UNDER DEVELOPMENT
 - Added analysis data frame to `time_series()` output when time in-vivo analysis is requested
 - CHANGED PARAMETER `deviceevent(implant_days)` to `deviceevent(time_invivo)` and make all downstream changes.
 
-**Implemented Updates**
-
-- Explicit carry-forward of define_analysis id
-
-**Potential updates**
-
+**To-Do List**
 - Feature allowing total events (concept of reporting fraction) as an exposure data frame
 - Facility for handling multiple events on the same actual occurrence (such as stroke and bleeding during the same operation)
 - Explicit implementation of the Unique Device Identifier (UDI)
+- Implementation of IMDRF coding for product malfunctions, patient adverse events, and analysis findings
 
 `mds` 0.2.1
 ---------------------------------------
