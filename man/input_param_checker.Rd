@@ -4,8 +4,14 @@
 \alias{input_param_checker}
 \title{Check Input Parameters}
 \usage{
-input_param_checker(x, check_class = NULL, check_names = NULL,
-  null_ok = T, exclusions = NULL, max_length = NULL)
+input_param_checker(
+  x,
+  check_class = NULL,
+  check_names = NULL,
+  null_ok = T,
+  exclusions = NULL,
+  max_length = NULL
+)
 }
 \arguments{
 \item{x}{Single object name, character, or vector of characters}

@@ -4,8 +4,15 @@
 \alias{exposure}
 \title{MD-PMS Exposure Data Frame}
 \usage{
-exposure(data_frame, time, device_hierarchy, event_hierarchy = NULL,
-  key = NULL, match_levels = NULL, count = NULL)
+exposure(
+  data_frame,
+  time,
+  device_hierarchy,
+  event_hierarchy = NULL,
+  key = NULL,
+  match_levels = NULL,
+  count = NULL
+)
 }
 \arguments{
 \item{data_frame}{The input data frame requiring components specified in the

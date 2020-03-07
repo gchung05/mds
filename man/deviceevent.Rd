@@ -4,9 +4,16 @@
 \alias{deviceevent}
 \title{MD-PMS Device Event Data Frame}
 \usage{
-deviceevent(data_frame, time, device_hierarchy, event_hierarchy,
-  key = NULL, covariates = NULL, descriptors = NULL,
-  time_invivo = NULL)
+deviceevent(
+  data_frame,
+  time,
+  device_hierarchy,
+  event_hierarchy,
+  key = NULL,
+  covariates = NULL,
+  descriptors = NULL,
+  time_invivo = NULL
+)
 }
 \arguments{
 \item{data_frame}{The input data frame requiring components specified in the
@@ -19,7 +26,7 @@ Example: \code{"event_date"}}
 
 \item{device_hierarchy}{Vector of character variable names representing the
 device hierarchy in \code{data_frame}. Vector ordering is lowest level first,
-most general level last. If more than 2 variables, see important note in 
+most general level last. If more than 2 variables, see important note in
 Details.
 
 Example: \code{c("Version", "Device", "ProductLine")}}
@@ -101,9 +108,9 @@ Rows are deduplicated. Attributes are as follows:
 Converts a data frame into a MD-PMS Device Event data frame.
 }
 \details{
-When more than 2 variables are specified in either \code{device_hierarchy} 
+When more than 2 variables are specified in either \code{device_hierarchy}
 or \code{event_hierarchy}, it is important to note that a subsequent call to
-\code{define_analyses()} currently only utilizes a maximum of 2 variables: 
+\code{define_analyses()} currently only utilizes a maximum of 2 variables:
 the lowest level and the 1-level-up parent. The user may enforce full
 hierarchy in >2 variable cases by ensuring that the parent values are
 uniquely named.

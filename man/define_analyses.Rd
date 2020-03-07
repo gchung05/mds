@@ -4,10 +4,18 @@
 \alias{define_analyses}
 \title{Assess Analyses Definitions}
 \usage{
-define_analyses(deviceevents, device_level, event_level = NULL,
-  exposure = NULL, date_level = "months", date_level_n = 1,
-  covariates = "_none_", times_to_calc = NULL, invivo = FALSE,
-  prior = NULL)
+define_analyses(
+  deviceevents,
+  device_level,
+  event_level = NULL,
+  exposure = NULL,
+  date_level = "months",
+  date_level_n = 1,
+  covariates = "_none_",
+  times_to_calc = NULL,
+  invivo = FALSE,
+  prior = NULL
+)
 }
 \arguments{
 \item{deviceevents}{A device-events object of class \code{mds_de}, created by
@@ -24,7 +32,7 @@ the source variable name for \code{device_1} is \code{'Device Code'}, specify
 
 \item{event_level}{String value indicating the source event variable name to
 analyze by. Note that \code{event_level} is not matched to \code{exposure}.
-If a hierarchy of 2 or more are present, see Details for important 
+If a hierarchy of 2 or more are present, see Details for important
 information.
 
 Example: If the \code{deviceevents} variable column is \code{event_1} where
@@ -105,7 +113,7 @@ an MD-PMS exposure data frame. See Details for how to use.
 \details{
 \code{define_analyses()} is a prerequisite to calling
 \code{time_series()}. This function enumerates all possible analyses based
-on input device-event (\code{deviceevent()}) and, optionally, 
+on input device-event (\code{deviceevent()}) and, optionally,
 exposure (\code{exposure()}) data frames. An analysis is defined as a set of
 instructions specifying at minimum the device level, event level, the date
 range of analysis, and the date unit. Additional instructions include the
@@ -123,9 +131,9 @@ covariate levels. These rollup analyses will be indicated by the keyword
 'All' in the analysis definition.
 
 When a hierarchy of 2 or more variables for either \code{device_level} or
-\code{event_level} are present in \code{deviceevents}, 
+\code{event_level} are present in \code{deviceevents},
 \code{define_analyses()} will enforce the 1-level-up parent level ONLY.
-Additional higher parent levels are not currently enforced, thus the user is 
+Additional higher parent levels are not currently enforced, thus the user is
 advised to uniquely name the 1-level-up parent level. The parent level
 DOES NOT ROLLUP currently because the parent level is intended to separate
 disparate data and devices. This may change in the future.

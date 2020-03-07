@@ -4,8 +4,7 @@
 \alias{plot.mds_ts}
 \title{Plot MD-PMS Time Series}
 \usage{
-\method{plot}{mds_ts}(x, mode = "nA", xlab = "Time", ylab = "Count",
-  main = NULL, ...)
+\method{plot}{mds_ts}(x, mode = "nA", xlab = "Time", ylab = "Count", main = NULL, ...)
 }
 \arguments{
 \item{x}{An object of class \code{mds_ts}.}

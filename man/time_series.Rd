@@ -13,8 +13,7 @@ time_series(analysis, ...)
 
 \method{time_series}{mds_das}(analysis, ...)
 
-\method{time_series}{mds_da}(analysis, deviceevents, exposure = NULL,
-  use_hierarchy = T, ...)
+\method{time_series}{mds_da}(analysis, deviceevents, exposure = NULL, use_hierarchy = T, ...)
 }
 \arguments{
 \item{analysis}{A defined analysis object of class \code{mds_da}, list of
@@ -24,17 +23,17 @@ usually created by \code{define_analyses()}.}
 \item{...}{Further arguments for future work.}
 
 \item{deviceevents}{A device-event data frame of class \code{mds_de}, usually
-created by \code{deviceevent()}. This should be the same data frame used to 
+created by \code{deviceevent()}. This should be the same data frame used to
 generate \code{analysis}.}
 
 \item{exposure}{Optional exposure data frame of class \code{mds_e}, usually
-created by \code{exposure()}. This should be the same data frame used to 
+created by \code{exposure()}. This should be the same data frame used to
 generate \code{analysis}, if exposure data was used.
 
 Default: \code{NULL} will not consider exposure data.}
 
-\item{use_hierarchy}{Deprecated - do not use. Logical value indicating 
-whether device and event hierarchies should be used in counting contingency 
+\item{use_hierarchy}{Deprecated - do not use. Logical value indicating
+whether device and event hierarchies should be used in counting contingency
 tables for disproportionality analysis.}
 }
 \value{
@@ -72,15 +71,15 @@ The \code{mds_ts} class attributes are as follows:
   \item{exposure}{Boolean of whether exposure counts are present.}
   \item{dpa}{Boolean of whether 2x2 contingency table counts are present
   (presumably for disproportionality analysis or 'DPA').}
-  \item{dpa_detail}{Optional. If \code{dpa} is \code{TRUE}, \code{list} 
+  \item{dpa_detail}{Optional. If \code{dpa} is \code{TRUE}, \code{list}
   object containing labels for the DPA contingency table.}
-  \item{covar_data}{Optional. If analysis definition includes covariate level 
+  \item{covar_data}{Optional. If analysis definition includes covariate level
   or time in-vivo, \code{data.frame} object containing the relevant data.}
 }
 }
 \description{
 Creates time series data frame(s) from defined analysis/analyses
-(\code{define_analyses()}), device-event data frame 
+(\code{define_analyses()}), device-event data frame
 (\code{deviceevent()}), and optionally, exposure data frame
 (\code{exposure()}). If analysis includes covariates or time in-vivo, creates
 the relevant supporting data frame.
