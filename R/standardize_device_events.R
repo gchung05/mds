@@ -240,7 +240,7 @@ deviceevent <- function(
         allcol <- thiscol
       } else allcol <- cbind(allcol, thiscol)
     }
-    dataset <- cbind.data.frame(dataset, allcol)
+    dataset <- cbind.data.frame(dataset, allcol, stringsAsFactors=T)
   }
 
   # Cleanup

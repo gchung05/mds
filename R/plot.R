@@ -44,7 +44,7 @@ plot.mds_ts <- function(
   main=NULL,
   ...
 ){
-  obj <- data.frame(x=x$time)
+  obj <- data.frame(x=x$time, stringsAsFactors=T)
   if (mode == 'nA'){
     obj$y <- x[[mode]]
     # Set the default title

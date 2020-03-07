@@ -1,7 +1,7 @@
 #' Generate Time Series from Defined Analysis or Analyses
-#' 
+#'
 #' Creates time series data frame(s) from defined analysis/analyses
-#' (\code{define_analyses()}), device-event data frame 
+#' (\code{define_analyses()}), device-event data frame
 #' (\code{deviceevent()}), and optionally, exposure data frame
 #' (\code{exposure()}). If analysis includes covariates or time in-vivo, creates
 #' the relevant supporting data frame.
@@ -10,22 +10,22 @@
 #' class \code{mds_das}, or a list of objects each of class \code{mds_da},
 #' usually created by \code{define_analyses()}.
 #' @param deviceevents A device-event data frame of class \code{mds_de}, usually
-#' created by \code{deviceevent()}. This should be the same data frame used to 
+#' created by \code{deviceevent()}. This should be the same data frame used to
 #' generate \code{analysis}.
 #' @param exposure Optional exposure data frame of class \code{mds_e}, usually
-#' created by \code{exposure()}. This should be the same data frame used to 
+#' created by \code{exposure()}. This should be the same data frame used to
 #' generate \code{analysis}, if exposure data was used.
 #'
 #' Default: \code{NULL} will not consider exposure data.
 #'
-#' @param use_hierarchy Deprecated - do not use. Logical value indicating 
-#' whether device and event hierarchies should be used in counting contingency 
+#' @param use_hierarchy Deprecated - do not use. Logical value indicating
+#' whether device and event hierarchies should be used in counting contingency
 #' tables for disproportionality analysis.
-#' 
+#'
 #' @param ... Further arguments for future work.
 #'
 #' @return A standardized MD-PMS time series data frame of class \code{mds_ts}.
-#' 
+#'
 #' The data frame contains, by defined date levels, the following columns:
 #' \describe{
 #'   \item{nA}{Count of the device & event level of interest. If covariate
@@ -58,9 +58,9 @@
 #'   \item{exposure}{Boolean of whether exposure counts are present.}
 #'   \item{dpa}{Boolean of whether 2x2 contingency table counts are present
 #'   (presumably for disproportionality analysis or 'DPA').}
-#'   \item{dpa_detail}{Optional. If \code{dpa} is \code{TRUE}, \code{list} 
+#'   \item{dpa_detail}{Optional. If \code{dpa} is \code{TRUE}, \code{list}
 #'   object containing labels for the DPA contingency table.}
-#'   \item{covar_data}{Optional. If analysis definition includes covariate level 
+#'   \item{covar_data}{Optional. If analysis definition includes covariate level
 #'   or time in-vivo, \code{data.frame} object containing the relevant data.}
 #' }
 #'
@@ -125,10 +125,10 @@ time_series.mds_da <- function(
   input_param_checker(deviceevents, check_class="mds_de")
   input_param_checker(exposure, check_class="mds_e")
   if (isFALSE(use_hierarchy)) {
-    warning("argument use_hierarchy is deprecated, please discontinue use.", 
+    warning("argument use_hierarchy is deprecated, please discontinue use.",
             call. = FALSE)
   }
-  
+
   # Set working device-event and exposure data frames
   # -------------------------------------------------
   this <- deviceevents
@@ -155,9 +155,9 @@ time_series.mds_da <- function(
   this$isev <- as.logical(this[[names(analysis$event_level)]] %in% evlvl)
   # Covariate
   if (is.na(analysis$covariate_level)){ # NA nominal level
-    this$iscov <- as.logical(is.na(this[[analysis$covariate]])) 
+    this$iscov <- as.logical(is.na(this[[analysis$covariate]]))
   } else if (analysis$covariate_level != "All"){ # Nominal level
-    this$iscov <- as.logical(this[[analysis$covariate]] %in% 
+    this$iscov <- as.logical(this[[analysis$covariate]] %in%
                            analysis$covariate_level)
   } else this$iscov <- as.logical(T) # Marginal, Data All level & numeric
   if (nrow(thes) > 0){
@@ -173,13 +173,13 @@ time_series.mds_da <- function(
 
   # # Identify the type of analysis
   # # -----------------------------
-  # 
+  #
   # ################
   # # need to restructure this altogether. cannot do a paired analysis at all
   # # especially not a X by covariate analysis now that numeric covariates are allowed
   # # DPA should be inferred from the levels available in device and event only
   # # Thus DPA is not possible at either All level of device or event
-  # 
+  #
   # # Note: In the future for covariate by device by event level analysis (3D),
   # # atype may be modified to return a vector of c("iscov", "isdev", "isev")
   # if (analysis$covariate_level != "All"){
@@ -207,7 +207,7 @@ time_series.mds_da <- function(
   # dpa <- length(atype) > 1
   # ################
   # # Dpa should now be isdev and isev? How?
-  
+
   # Filter to 1-level up hierarchy, if needed
   # -----------------------------------------
   # Filter device-events to 1-level up device hierarchy
@@ -242,12 +242,12 @@ time_series.mds_da <- function(
     }
     # Exposures are not currently filtered for events
   }
-  
+
   # Assess possibility for disproportionality
   # Based on device and event level only
   # -----------------------------------------
   dpa <- length(unique(this$isdev)) == 2 & length(unique(this$isev)) == 2
-  
+
   # nextdev <- nextev <- NULL
   # if (dpa & use_hierarchy){
   #   if ("isdev" %in% atype){
@@ -293,11 +293,11 @@ time_series.mds_da <- function(
   # Filter by the covariate level
   # -----------------------------
   this <- this[this$iscov, ]
-  
+
   # Overall analysis date range
   # ---------------------------
   tr <- analysis$date_range_de
-  
+
   # Loop through every deviceevent date period and count
   # ----------------------------------------------------
   ts_de <- data.frame()
@@ -309,33 +309,34 @@ time_series.mds_da <- function(
       # Populate contingency table
       if (nrow(thist) > 0){
         tbl2x2 <- list(t(stats::setNames(
-          data.frame(table(factor(thist$isdev, levels=c(T, F)), 
-                           factor(thist$isev, levels=c(T, F))))[, 3],
+          data.frame(table(factor(thist$isdev, levels=c(T, F)),
+                           factor(thist$isev, levels=c(T, F))),
+                     stringsAsFactors=T)[, 3],
           c("nA", "nC", "nB", "nD"))))
         # tbl2x2 <- list(t(stats::setNames(data.frame(table(
         #   thist[[names(analysis$device_level)]],
         #   thist[[names(analysis$event_level)]]))[, 3],
         #   c("nA", "nC", "nB", "nD"))))
-        trow <- data.frame(time=i, tbl2x2)
+        trow <- data.frame(time=i, tbl2x2, stringsAsFactors=T)
         tkey <- unique(as.character(thist[thist$isdev & thist$isev, ]$key))
         trow$ids <- list(ifelse(length(tkey) > 0, tkey, NA))
       } else{
-        trow <- data.frame(time=i, nA=0, nB=0, nC=0, nD=0)
+        trow <- data.frame(time=i, nA=0, nB=0, nC=0, nD=0, stringsAsFactors=T)
         trow$ids <- list(c(NA))
       }
     } else{
       if (nrow(thist) > 0){
         trow <- data.frame(
-          time=i, 
-          nA=sum(thist$isdev))
+          time=i,
+          nA=sum(thist$isdev), stringsAsFactors=T)
         tkey <- unique(as.character(thist[thist$isdev, ]$key))
         trow$ids <- list(ifelse(length(tkey) > 0, tkey, NA))
       } else{
-        trow <- data.frame(time=i, nA=0)
+        trow <- data.frame(time=i, nA=0, stringsAsFactors=T)
         trow$ids <- list(c(NA))
       }
     }
-    
+
     # if (length(atype) > 1){
     #   # 2-Level Analysis - Populate contingency table
     #   tbl2x2 <- list(t(stats::setNames(data.frame(table(thist[[atype[1]]],
@@ -355,7 +356,7 @@ time_series.mds_da <- function(
     i <- j
   }
   rownames(ts_de) <- c()
- 
+
   # Loop through every exposure date period and count
   # -------------------------------------------------
   if (!all(is.na(tr)) & nrow(thes) > 0){
@@ -364,7 +365,7 @@ time_series.mds_da <- function(
     while (i <= tr[2]){
       j <- analysis$date_adder(i, 1)
       thest <- thes[thes$time >= i & thes$time < j, ]
-      trow <- data.frame(time=i, exposure=sum(thest$count))
+      trow <- data.frame(time=i, exposure=sum(thest$count), stringsAsFactors=T)
       tkey <- unique(as.character(thest$key))
       trow$ids_exposure <- list(ifelse(length(tkey) > 0, tkey, NA))
       ts_e <- rbind(ts_e, trow)
@@ -389,7 +390,7 @@ time_series.mds_da <- function(
   # Device level
   nhere <- analysis$device_level_source
   lab <- paste(nhere, analysis$device_level)
-  notlab <- paste(nhere, "NOT", analysis$device_level) 
+  notlab <- paste(nhere, "NOT", analysis$device_level)
   devlab <- c(lab, notlab)
   # 1 up device level
   if (dev_diff){
@@ -427,7 +428,7 @@ time_series.mds_da <- function(
   nC <- paste0(nC, ":", evlab[1])
   nD <- paste0(nD, ":", evlab[2])
   title <- paste(nRow, "by", nCol, "-", nA)
-  
+
   # # Construct the labels for the analysis levels and (if dpa) contingency table
   # for (i in c(1:length(atype))){
   #   if (names(atype)[i] == "Covariate"){
@@ -459,13 +460,13 @@ time_series.mds_da <- function(
   #       notlab <- paste(notlab, lab1up)
   #     }
   #   }
-  #   
+  #
   #   # Assign row and columns (only 2D analysis support so far)
-  # 
+  #
   #   ###########################
   #   # MUST FIX - ADD FACILITY FOR 3D ANALYSIS NAMING
   #   ###########################
-  # 
+  #
   #   if (i == 1){
   #     nRow <- nhere
   #     nA <- lab
@@ -482,7 +483,7 @@ time_series.mds_da <- function(
   #     title <- paste(title, "by", nCol)
   #   }
   # }
-  
+
   # Save DPA details
   if (dpa){
     dpa_dtl <- list(nA=nA, nB=nB, nC=nC, nD=nD, nRow=nRow, nCol=nCol,
@@ -490,7 +491,7 @@ time_series.mds_da <- function(
   } else{
     dpa_dtl <- NULL
   }
-  
+
   #' ###########################
   #' # MUST FIX - ADD FACILITY FOR 3D ANALYSIS NAMING
   #' ###########################
@@ -499,7 +500,7 @@ time_series.mds_da <- function(
   #' # Remember that this is not filtered (just statuses)
   #' # While exposure thes is filtered already
   #' # devlvl
-  #' # this$isdev 
+  #' # this$isdev
   #' # evlvl
   #' # this$isev
   #' # this$iscov
@@ -508,7 +509,7 @@ time_series.mds_da <- function(
   #' #' 2. Covar All
   #' #' 3. Covar Level
   #' #' 4. Covar NA
-  
+
   # Save the output class
   # ---------------------
   out <- structure(ts,

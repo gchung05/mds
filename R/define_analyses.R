@@ -17,7 +17,7 @@
 #'
 #' @param event_level String value indicating the source event variable name to
 #' analyze by. Note that \code{event_level} is not matched to \code{exposure}.
-#' If a hierarchy of 2 or more are present, see Details for important 
+#' If a hierarchy of 2 or more are present, see Details for important
 #' information.
 #'
 #' Example: If the \code{deviceevents} variable column is \code{event_1} where
@@ -92,27 +92,27 @@
 #'
 #' @details \code{define_analyses()} is a prerequisite to calling
 #' \code{time_series()}. This function enumerates all possible analyses based
-#' on input device-event (\code{deviceevent()}) and, optionally, 
+#' on input device-event (\code{deviceevent()}) and, optionally,
 #' exposure (\code{exposure()}) data frames. An analysis is defined as a set of
 #' instructions specifying at minimum the device level, event level, the date
 #' range of analysis, and the date unit. Additional instructions include the
 #' covariate level, time in-vivo status, and exposure levels.
-#' 
+#'
 #' By separating the analysis enumeration (\code{define_analyses()}) from the
 #' generation of the time series (\code{time_series()}), the user may rerun
 #' the analyses on different datasets and/or filter the analyses to only those
 #' of interest.
-#' 
+#'
 #' The analyses definitions will always include rollup levels for each
 #' of \code{device_level}, \code{event_level} (if specified), and
 #' \code{covariates}. Rollups are analyses at all device, event, and/or
 #' covariate levels. These rollup analyses will be indicated by the keyword
 #' 'All' in the analysis definition.
-#' 
+#'
 #' When a hierarchy of 2 or more variables for either \code{device_level} or
-#' \code{event_level} are present in \code{deviceevents}, 
+#' \code{event_level} are present in \code{deviceevents},
 #' \code{define_analyses()} will enforce the 1-level-up parent level ONLY.
-#' Additional higher parent levels are not currently enforced, thus the user is 
+#' Additional higher parent levels are not currently enforced, thus the user is
 #' advised to uniquely name the 1-level-up parent level. The parent level
 #' DOES NOT ROLLUP currently because the parent level is intended to separate
 #' disparate data and devices. This may change in the future.
@@ -332,14 +332,14 @@ define_analyses <- function(
                 if (length(unique(devDEev1up[[x]])) == 1) this <- "_novar_"
               }
               # WARNING! If ever the upstream restriction of no NA's in the
-              # covariates is removed, this will produce NA's as a unique 
+              # covariates is removed, this will produce NA's as a unique
               # level. Subsequent handling of NAs is present but untested.
               this
             })
             names(uniq_covs) <- covariates
             uniq_covs$Data <- "All" # Set rollup level
           }
-          
+
           # Save analysis instructions by each level of device, event, covariate
           # --------------------------------------------------------------------
           for (k in names(uniq_covs)){
@@ -360,11 +360,11 @@ define_analyses <- function(
                 if (is.na(l) & is.factor(devDEev1up[[k]])){ # NA Nominal level
                   devCO <- devDEev1up[is.na(devDEev1up[[k]]), ]
                 } else if (l %in% c("All")){ # Marginal/Data All level & numeric
-                  devCO <- devDEev1up 
+                  devCO <- devDEev1up
                 } else if (is.factor(devDEev1up[[k]])){ # Nominal level
                   devCO <- devDEev1up[devDEev1up[[k]] == l, ]
                 } else stop("Unknown covariate filtering specification")
-                
+
                 # If only 1 row of data remains, skip
                 if (nrow(devCO) > 1){
                   # Verify time in-vivo variable has variance
@@ -374,7 +374,7 @@ define_analyses <- function(
                       vivovar <- T
                     }
                   }
-                  
+
                   # Assemble output starting with non-exposure data
                   # -----------------------------------------------
                   # Establish date range
@@ -415,7 +415,7 @@ define_analyses <- function(
                                    "invivo",
                                    "date_adder",
                                    "date_range_de")
-                  
+
                   # Exposure Case
                   # -------------
                   if (is.null(exposure)){
@@ -488,7 +488,7 @@ define_analyses <- function(
                   dt_range <- convert_date(dt_range, date_level, date_level_n)
                   names(dt_range) <- c("start", "end")
                   this$date_range_de_exp <- dt_range
-                  
+
                   # Finally, save the analysis
                   # --------------------------
                   class(this) <- append(class(this), "mds_da")
@@ -563,7 +563,7 @@ define_analyses_dataframe <- function(
       }
       if (all(!is.na(x[[i]]))){
         if (exists("out")){
-          out <- cbind.data.frame(out, this)
+          out <- cbind.data.frame(out, this, stringsAsFactors=T)
         } else{
           # out <- cbind.data.frame(id=j, this)
           out <- this
@@ -573,7 +573,7 @@ define_analyses_dataframe <- function(
     # If column names are not equal, use the more descriptive set of names
     ncall <- nchar(paste(names(all), collapse=""))
     ncout <- nchar(paste(names(out), collapse=""))
-    
+
     if (nrow(all) > 0){
       if (ncall > ncout){
         # browser()#########################
@@ -582,7 +582,7 @@ define_analyses_dataframe <- function(
         # names(out) <- names(all)
       } else if (ncout > ncall){
         all[setdiff(names(out), names(all))] <- NA
-        
+
         # names(all) <- names(out)
       }
     }
@@ -627,7 +627,7 @@ summary.mds_das <- function(
     'End'=c(fNA(df$date_range_de_end, max),
             ifelse(is.null(df$date_range_exposure_end), NA,
                    fNA(df$date_range_exposure_end, max)),
-            fNA(df$date_range_de_exp_end, max)))
+            fNA(df$date_range_de_exp_end, max)), stringsAsFactors=T)
   list('Analyses Timestamp'=attributes(object)$timestamp,
        'Analyses Counts'=counts,
        'Date Ranges'=date_ranges)

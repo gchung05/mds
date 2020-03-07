@@ -1,11 +1,9 @@
-## CRAN re-submit
-
-Dropped revdep folder, oops
-
 ## Test environments
-* local Windows 10 install, R 3.6.0
-* ubuntu 14.04.5 (on travis-ci), R 3.6.0
-* win-builder
+* local Windows 10 install, R 3.6.2
+* travis-ci, R 3.6.2
+* win-builder devel
+* win-builder release
+* rhub
 
 ## R CMD check results
 There were no ERRORs, WARNINGs, and no NOTEs.
