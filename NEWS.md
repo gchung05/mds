@@ -1,3 +1,12 @@
+`mds` 0.3.1
+---------------------------------------
+
+**Implemented Updates**
+
+*General*
+- Explicit declarations of `stringsAsFactors=T` in all `data.frame()` calls for cross-version compatibility
+
+
 `mds` 0.3.0
 ---------------------------------------
 

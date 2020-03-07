@@ -153,12 +153,12 @@ exposure <- function(
   # -------------------
   dataset <- cbind.data.frame(
     data.frame(key=v_key, time=v_time, count=v_ct, stringsAsFactors=F),
-    data.frame(v_dev))
+    data.frame(v_dev, stringsAsFactors=T))
   if (!is.null(event_hierarchy)){
-    dataset <- cbind.data.frame(dataset, data.frame(v_ev))
+    dataset <- cbind.data.frame(dataset, data.frame(v_ev, stringsAsFactors=T))
   }
   if (!is.null(match_levels)){
-    dataset <- cbind.data.frame(dataset, data.frame(v_ml))
+    dataset <- cbind.data.frame(dataset, data.frame(v_ml, stringsAsFactors=T))
   }
 
   # Cleanup
