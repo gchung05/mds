@@ -12,7 +12,7 @@
 #'
 #' @param device_hierarchy Vector of character variable names representing the
 #' device hierarchy in \code{data_frame}. Vector ordering is lowest level first,
-#' most general level last. If more than 2 variables, see important note in 
+#' most general level last. If more than 2 variables, see important note in
 #' Details.
 #'
 #' Example: \code{c("Version", "Device", "ProductLine")}
@@ -90,13 +90,13 @@
 #' }
 #'
 #' @details
-#' When more than 2 variables are specified in either \code{device_hierarchy} 
+#' When more than 2 variables are specified in either \code{device_hierarchy}
 #' or \code{event_hierarchy}, it is important to note that a subsequent call to
-#' \code{define_analyses()} currently only utilizes a maximum of 2 variables: 
+#' \code{define_analyses()} currently only utilizes a maximum of 2 variables:
 #' the lowest level and the 1-level-up parent. The user may enforce full
 #' hierarchy in >2 variable cases by ensuring that the parent values are
 #' uniquely named.
-#' 
+#'
 #' \code{time_invivo} can be thought of more generally as the time of
 #' exposure of the device to the subject at the time of the event. The common
 #' usage is duration of the implant in the patient at time of event, for an
@@ -143,7 +143,7 @@ deviceevent <- function(
                       check_names=data_frame, exclusions="_all_")
   input_param_checker(time_invivo, check_class="numeric",
                       check_names=data_frame, max_length=1)
-  
+
   # Address each variable
   # ---------------------
   # Key
@@ -222,15 +222,16 @@ deviceevent <- function(
   # -------------------
   dataset <- cbind.data.frame(
     data.frame(key=v_key, time=v_time, stringsAsFactors=F),
-    data.frame(v_dev),
-    data.frame(v_ev))
-  if (!is.null(time_invivo)) dataset <- cbind.data.frame(dataset,
-                                                          data.frame(v_iday))
-  if (!is.null(covs)) dataset <- cbind.data.frame(dataset, data.frame(v_cov))
+    data.frame(v_dev, stringsAsFactors=T),
+    data.frame(v_ev, stringsAsFactors=T))
+  if (!is.null(time_invivo)) dataset <- cbind.data.frame(
+    dataset, data.frame(v_iday, stringsAsFactors=T))
+  if (!is.null(covs)) dataset <- cbind.data.frame(
+    dataset, data.frame(v_cov, stringsAsFactors=T))
   if (!is.null(dscr)){
     for(i in 1:length(v_dsc)){
       if ("list" %in% class(v_dsc[[i]])){
-        thiscol <- data.frame(I(v_dsc[[i]]))
+        thiscol <- data.frame(I(v_dsc[[i]]), stringsAsFactors=T)
       } else{
         thiscol <- data.frame(v_dsc[[i]], stringsAsFactors=F)
       }
