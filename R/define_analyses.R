@@ -621,12 +621,12 @@ summary.mds_das <- function(
   date_ranges <- data.frame(
     'Data'=c('Device-Event', 'Exposure', 'Both'),
     'Start'=c(fNA(df$date_range_de_start, min),
-              ifelse(is.null(df$date_range_exposure_start), NA,
-                     fNA(df$date_range_exposure_start, min)),
+              ifelse_cp(is.null(df$date_range_exposure_start), NA,
+                        fNA(df$date_range_exposure_start, min)),
               fNA(df$date_range_de_exp_start, min)),
     'End'=c(fNA(df$date_range_de_end, max),
-            ifelse(is.null(df$date_range_exposure_end), NA,
-                   fNA(df$date_range_exposure_end, max)),
+            ifelse_cp(is.null(df$date_range_exposure_end), NA,
+                      fNA(df$date_range_exposure_end, max)),
             fNA(df$date_range_de_exp_end, max)), stringsAsFactors=T)
   list('Analyses Timestamp'=attributes(object)$timestamp,
        'Analyses Counts'=counts,

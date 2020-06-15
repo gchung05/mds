@@ -4,7 +4,8 @@
 \name{maude}
 \alias{maude}
 \title{Bone Cement MAUDE Events in 2017}
-\format{A data frame with 535 rows and 15 variables. Full variable
+\format{
+A data frame with 535 rows and 15 variables. Full variable
 descriptions may be found on the FDA Device Reference Guide
 (\url{https://open.fda.gov}). Note that \code{region}
 is a simulated variable not present in MAUDE. Descriptions as follows:
@@ -34,7 +35,8 @@ is a simulated variable not present in MAUDE. Descriptions as follows:
   devices ((Federal Food, Drug, and Cosmetic Act, section 513)}
   \item{region}{A simulated, randomly assigned geographical region for
   package example purposes.}
-}}
+}
+}
 \source{
 \url{https://open.fda.gov/data/maude/}
 }

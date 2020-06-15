@@ -4,13 +4,15 @@
 \name{sales}
 \alias{sales}
 \title{Simulated Device Sales Data}
-\format{A data frame with 360 rows and 4 variables:
+\format{
+A data frame with 360 rows and 4 variables:
 \describe{
   \item{device_name}{Name of the device mapped from the \code{maude} dataset.}
   \item{region}{Geographical region mapped from the \code{maude} dataset.}
   \item{sales_month}{The month of sales.}
   \item{sales_volume}{The volume of sales.}
-}}
+}
+}
 \source{
 Random normal distribution using \code{rnorm()}.
 }

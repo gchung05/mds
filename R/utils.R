@@ -102,7 +102,7 @@ convert_date <- function(
 }
 
 #' Character Vector to Header of Empty Data Frame
-#' 
+#'
 #' Converts a character vector into the column names of an empty data frame.
 #' Used in conjunction with \code{check_names} parameter of
 #' \code{input_param_checker()}
@@ -133,10 +133,27 @@ fNA <- function(x, f){
   }
 }
 
+#' Class-Preserving If-Else
+#' If-Else function preserving \code{T} & \code{F} classes
+#' @param test an object which can be coerced to logical mode
+#' @param yes return values for true elements of \code{test}.
+#' @param no return values for false elements of \code{test}.
+#' @return A vector of the same length and attributes as \code{test}.
+#' @keywords internal
+ifelse_cp <- function(test, yes, no){
+  tmp <- yes
+  if (is.na(tmp) & !test){
+    tmp <- no
+  } else{
+    tmp[!test] <- no[!test]
+  }
+  tmp
+}
+
 #' Return next level up device
-#' 
+#'
 #' Returns the variable name of the next level in the device hierarchy
-#' 
+#'
 #' @param x String input of device name, such as \code{"device_1"},
 #' \code{"device_2"}, etc.
 #' @return String representation of the next device level variable
@@ -148,9 +165,9 @@ next_dev <- function(
 }
 
 #' Return next level up event
-#' 
+#'
 #' Returns the variable name of the next level in the event hierarchy
-#' 
+#'
 #' @param x String input of event name, such as \code{"event_1"},
 #' \code{"event_2"}, etc.
 #' @return String representation of the next event level variable

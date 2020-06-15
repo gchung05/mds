@@ -4,7 +4,9 @@
 \name{mds_ts}
 \alias{mds_ts}
 \title{Example List of mds_ts Time Series Objects}
-\format{A list of 3 elements each of class \code{mds_ts}}
+\format{
+A list of 3 elements each of class \code{mds_ts}
+}
 \source{
 See \code{?maude} and \code{?sales} for source device-event and
 exposure data. See \code{?mds::time_series} for how to generate \code{mds_ts}
