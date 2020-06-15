@@ -13,6 +13,8 @@ There were no ERRORs, WARNINGs, and no NOTEs.
 
 ## r-hub check results
 There were no ERRORs, WARNINGs, and 1 NOTE:
+New submission
+Package was archived on CRAN
 Possibly mis-spelled words in DESCRIPTION:
   pharmacovigilance (9:46)
-It's a word used in, well, pharmacovigilance circles.
+It's a word used in epidemiology circles.
